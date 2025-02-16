@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MandArt Web</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>MandArt Web</h1>
+        <button id="openFileBtn">Open from File...</button>
+        <button id="openUrlBtn">Open from URL...</button>
+        <button id="openListBtn">Open from List...</button>
+        <input type="file" id="fileInput" hidden>
+    </header>
+
+    <div id="sidebar">
+        <h2>MandArt Catalog</h2>
+        <div id="mandartList" class="grid-container"></div>
+    </div>
+
+    <main>
+        <div id="editor">
+            <h2 id="drawingName">Loading...</h2>
+            <img id="previewImage" src="" alt="MandArt Preview" style="max-width: 100%;">
+            <canvas id="mandelbrotCanvas"></canvas>
+            <div id="hueList"></div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/file-loader.js"></script>
+    <script src="js/hues.js"></script>
+    <script src="js/canvas.js"></script>
+
+</body>
+</html>
