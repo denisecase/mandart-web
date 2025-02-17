@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: "npm"  # Cache dependencies for faster runs
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci  # Faster & safer than "npm install"
@@ -35,8 +35,8 @@ jobs:
         run: npx eslint "**/*.js" --fix || true
 
       - name: Check for changes & push if modified
-      env:
-          PAT_TOKEN: ${{ secrets.PAT_MANDART_WEB }}  # Use your stored token
+        env:  # ✅ Corrected indentation
+          PAT_TOKEN: ${{ secrets.PAT_MANDART_WEB }}
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
