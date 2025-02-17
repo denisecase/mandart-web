@@ -1,12 +1,15 @@
+// canvas.js
+
 const canvas = document.getElementById("mandelbrotCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = 800;
-canvas.height = 800;
+canvas.height = 600;
 let imageData;
 
 function drawMandelbrot() {
-    imageData = ctx.createImageData(canvas.width, canvas.height);
+    console.log("Drawing Mandelbrot with hues:", hues);
 
+    imageData = ctx.createImageData(canvas.width, canvas.height);
     for (let i = 0; i < imageData.data.length; i += 4) {
         const hueIndex = (i / 4) % hues.length;
         const hue = hues[hueIndex];
@@ -20,6 +23,9 @@ function drawMandelbrot() {
     ctx.putImageData(imageData, 0, 0);
 }
 
+/**
+ * Recolors the canvas when hues change.
+ */
 function recolorCanvas() {
     if (!imageData) return;
 

@@ -5,8 +5,8 @@ body {
     padding: 0;
     background-color: #f4f4f4;
     display: flex;
-    flex-direction: column; /* Stack header, sidebar, and main vertically */
-    height: 100vh; /* Ensure full height usage */
+    flex-direction: column;
+    height: 100vh;
 }
 
 /* Header */
@@ -14,119 +14,18 @@ header {
     width: 100%;
     background: #222;
     color: white;
-    padding: 10px 0;
+    padding: 15px 0;
     text-align: center;
-    position: relative; /* Keep it above other elements */
+    position: relative;
     z-index: 10;
 }
 
-/* Layout Wrapper (Holds Sidebar & Main) */
-#layout {
-    display: flex;
-    flex-direction: row; /* Sidebar & Main sit side by side */
-    flex-grow: 1; /* Takes remaining space below header */
-    width: 100%;
-    overflow: hidden; /* Prevent unwanted overflow */
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
 }
 
-
-/* Sidebar */
-#sidebar {
-    width: 300px;
-    background: white;
-    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    overflow-y: auto;
-    flex-shrink: 0; /* Prevents sidebar from shrinking */
-}
-
-
-#sidebar h2 {
-    font-size: 1.2rem;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-/* Single Column Layout for Catalog */
-#mandartList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-}
-
-/* Thumbnail Items (Now in a single column) */
-.mandart-item {
-    width: 90%;  /* Adjust width to fit better */
-    max-width: 200px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-    padding: 10px;
-    border-radius: 5px;
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.mandart-item img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.mandart-item span {
-    display: block;
-    font-size: 0.85rem;
-    color: #333;
-    margin-top: 5px;
-    word-wrap: break-word;
-    white-space: normal;
-    text-align: center;
-}
-
-/* Hover Effect */
-.mandart-item:hover {
-    transform: scale(1.05);
-}
-
-
-/* Main Content */
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    margin-left: 320px;
-    width: calc(100% - 320px);
-}
-
-/* Editor Box */
-#editor {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 90%;
-    max-width: 800px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    #sidebar {
-        width: 100%;
-        position: relative;
-    }
-
-    main {
-        margin-left: 0;
-        width: 100%;
-    }
-}
-
-button {
+header button {
     background-color: #007bff;
     color: white;
     border: none;
@@ -138,6 +37,171 @@ button {
     transition: background 0.3s ease-in-out;
 }
 
-button:hover {
+/* Mand Color Selector */
+#mandColorContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+#mandColorPicker {
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+}
+
+
+#addColorBtn {
+    background-color: #959798;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background 0.3s ease-in-out;
+}
+
+header button:hover {
     background-color: #0056b3;
 }
+
+/* Layout */
+main {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Sidebar (Color Editor) */
+#colorEditor {
+    width: 300px;
+    background: white;
+    padding: 15px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+#colorEditor h2 {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#colorEditor button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Hue Row - Trying to get a Single Row */
+.hue-row {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between elements */
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+    white-space: nowrap; /* Prevent wrapping */
+    flex-wrap: nowrap; /* Ensure no wrapping */
+}
+
+/* Ensure number stays a fixed width */
+.sort-num {
+    font-weight: bold;
+    min-width: 30px; /* Keeps numbers aligned */
+    text-align: center;
+}
+
+/* Keep color picker small */
+.color-picker {
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Delete Button  */
+.delete-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1.2rem;
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+
+/* Canvas Display */
+#canvasSection {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Set Canvas Background Color (temp debugging) */
+#mandelbrotCanvas {
+    background-color: #28a745;
+    width: 90%;
+    max-width: 800px;
+    height: 600px;
+    display: block;
+}
+
+/* Modal (for MandArt Catalog) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    max-width: 600px;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.modal-content {
+    text-align: center;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    main {
+        flex-direction: column;
+    }
+
+    #colorEditor {
+        width: 100%;
+    }
+
+    #canvasSection {
+        padding: 10px;
+    }
+}
+
