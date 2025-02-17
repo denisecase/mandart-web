@@ -37,6 +37,19 @@ header button {
     transition: background 0.3s ease-in-out;
 }
 
+#githubIcon {
+    display: block;
+    width: 25px;
+    height: 25px;
+    margin: 25px auto 0;
+    transition: transform 0.2s ease-in-out;
+}
+
+#githubIcon:hover {
+    transform: scale(1.5);
+}
+
+
 /* Mand Color Selector */
 #mandColorContainer {
     display: flex;
