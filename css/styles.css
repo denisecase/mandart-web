@@ -162,33 +162,82 @@ main {
     display: block;
 }
 
-/* Modal (for MandArt Catalog) */
+/* Modal (for MandArt Catalog - Scrollable, Fixed Top) */
 .modal {
     display: none;
     position: fixed;
     z-index: 100;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    max-width: 600px;
+    top: 10vh; /* Keep it near the top, about even with the page header */
+    transform: translateX(-50%);
+    width: 30%;
+    max-width: 150px; /* Narrower modal to fit one image per row */
     background: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
+    max-height: 80vh; /* Prevent it from being too tall */
+    overflow-y: auto; /* Enable scrolling if needed */
 }
 
+/* Modal Content */
 .modal-content {
     text-align: center;
+    position: relative;
+    padding-top: 40px; /* Prevents overlap with close button */
 }
 
+/* Close Button (Stays Visible) */
 .modal-close-btn {
     position: absolute;
     top: 10px;
-    right: 15px;
+    right: 10px;
     font-size: 20px;
     cursor: pointer;
+    color: black;
 }
+
+/* Catalog Grid */
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Space between entries */
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+/* MandArt Item (Single Image & Name Grouping) */
+.mandart-item {
+    background: #f4f4f4; /* Light gray background */
+    padding: 8px;
+    width: 90%;
+    max-width: 150px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure Image and Name are Clearly Grouped */
+.mandart-item img {
+    display: block;
+    width: 100%;
+    max-width: 140px;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* MandArt Name (Clearly Under Image) */
+.mandart-item span {
+    display: block;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    margin-top: 4px;
+    padding: 4px;
+    background: white;
+    border-radius: 5px;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -203,5 +252,10 @@ main {
     #canvasSection {
         padding: 10px;
     }
+    .modal {
+        width: 50%; /* Slightly wider on smaller screens */
+        max-width: 160px;
+    }
+
 }
 
