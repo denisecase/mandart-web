@@ -23,9 +23,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: "npm"  # Cache dependencies for faster runs
 
       - name: Install dependencies
-        run: npm install --save-dev prettier eslint
+        run: npm ci  # Faster & safer than "npm install"
 
       - name: Run Prettier (Format JS, HTML, CSS)
         run: npx prettier --write "**/*.{js,html,css}"
