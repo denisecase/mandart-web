@@ -9,6 +9,13 @@ Repo: <https://github.com/denisecase/mandart-web>
 brew update
 brew upgrade
 brew install node
+brew install gh
+
+gh --version
+gh auth login
+gh secret list
+gh workflow run publish.yml
+
 node -v
 npm -v
 npm init -y
