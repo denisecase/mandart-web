@@ -153,6 +153,12 @@ main {
     justify-content: center;
 }
 
+#canvasSection h2 {
+    margin: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Set Canvas Background Color (temp debugging) */
 #mandelbrotCanvas {
     background-color: #28a745;

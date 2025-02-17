@@ -211,3 +211,41 @@ function handleUrlInput() {
 function closeCatalogModal() {
     document.getElementById("catalogModal").style.display = "none";
 }
+
+async function processMandArt(jsonData, name, imagePath = "") {
+    try {
+        console.log("Processing MandArt:", name, jsonData);
+
+        if (!jsonData.picdef) {
+            console.error("Error: MandArt JSON is missing 'picdef'.", jsonData);
+            return;
+        }
+
+        const picdef = jsonData.picdef;
+        console.log("Loaded picdef:", picdef);
+
+        // Check image width/height
+        if (!picdef.imageWidth || !picdef.imageHeight) {
+            throw new Error("picdef is missing imageWidth or imageHeight.");
+        }
+
+        // Update UI Elements
+        document.getElementById("drawingName").textContent = name;
+        if (imagePath) document.getElementById("previewImage").src = imagePath;
+
+        // Resize the canvas
+        const canvas = document.getElementById("mandelbrotCanvas");
+        canvas.width = picdef.imageWidth;
+        canvas.height = picdef.imageHeight;
+        console.log(`Canvas resized: ${canvas.width}x${canvas.height}`);
+
+        // Apply Hues
+        applyJsonData(jsonData);
+
+        // Load Precomputed CSV Grid
+        const csvPath = `assets/MandArt_Catalog/${name}.csv`;
+        await loadPrecomputedGrid(csvPath);
+    } catch (error) {
+        console.error("Error processing MandArt:", error);
+    }
+}
