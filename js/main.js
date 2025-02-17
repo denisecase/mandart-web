@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Load Default MandArt file
     const defaultMandArt = "assets/MandArt_Catalog/Default.mandart";
-    await loadMandArt(defaultMandArt, "", "Default MandArt");
+    await loadMandArt(defaultMandArt, "", "Default");
 });
 
 
@@ -140,38 +140,27 @@ async function loadMandArtCatalog() {
 }
 
 
-
-/**
- * Load a MandArt file from URL, file selection, or catalog click
- */
-async function loadMandArt(url, imagePath, name) {
+async function loadMandArt(source, imagePath, name) {
     try {
-        console.log(`Fetching MandArt: ${url}`);
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-        const jsonData = await response.json();
+        let jsonData;
+        if (source.startsWith("http") || source.startsWith("assets/")) {
+            console.log(`Fetching MandArt: ${source}`);
+            const response = await fetch(source);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            jsonData = await response.json();
+        } else {
+            console.log(`Using JSON from file input`);
+            jsonData = source; // It's already an object, no need to fetch
+        }
         console.log("MandArt JSON Loaded:", jsonData);
-
-        // Extract filename from the URL (without path)
-        const filename = url.split('/').pop(); // Gets "Default.mandart" from path
-
-        // Update UI Elements
-        document.getElementById("drawingName").textContent = filename; // Show exact filename
-        if (imagePath) document.getElementById("previewImage").src = imagePath;
-
-        applyJsonData(jsonData);
+        const baseName = name || (typeof source === "string" ? source.split('/').pop().replace('.mandart', '') : "Unnamed");
+        readFromMandart(jsonData, baseName, imagePath);
     } catch (error) {
         console.error("Failed to load MandArt:", error);
     }
 }
 
 
-
-/**
- * Handle file selection from disk
- */
 function handleFileUpload(event) {
     console.log("Loading MandArt from file...");
     const file = event.target.files[0];
@@ -182,11 +171,7 @@ function handleFileUpload(event) {
         try {
             const jsonData = JSON.parse(e.target.result);
             console.log("Loaded JSON from File:", jsonData);
-
-            // Extract and update the active filename
-            document.getElementById("drawingName").textContent = file.name; // Display file name
-
-            applyJsonData(jsonData);
+            readFromMandart(jsonData, file.name.replace(".mandart", ""));
         } catch (error) {
             console.error("Error parsing file:", error);
             alert("Invalid MandArt JSON file.");
@@ -194,6 +179,7 @@ function handleFileUpload(event) {
     };
     reader.readAsText(file);
 }
+
 
 /**
  * Handle loading a MandArt JSON from a URL
@@ -212,17 +198,24 @@ function closeCatalogModal() {
     document.getElementById("catalogModal").style.display = "none";
 }
 
-async function processMandArt(jsonData, name, imagePath = "") {
+async function readFromMandart(jsonData, name, imagePath = "") {
     try {
         console.log("Processing MandArt:", name, jsonData);
-
-        if (!jsonData.picdef) {
-            console.error("Error: MandArt JSON is missing 'picdef'.", jsonData);
+        if (!jsonData) {
+            console.error("Error: MandArt JSON is empty or invalid.");
             return;
         }
 
-        const picdef = jsonData.picdef;
+        const picdef = jsonData;
         console.log("Loaded picdef:", picdef);
+
+        if (!picdef.hues || !Array.isArray(picdef.hues)) {
+            throw new Error("MandArt JSON is missing 'hues' or it's not an array.");
+        }
+        console.log("Loaded hues:", picdef.hues);
+
+        // Apply Hues
+        applyJsonData(jsonData);
 
         // Check image width/height
         if (!picdef.imageWidth || !picdef.imageHeight) {
@@ -239,13 +232,30 @@ async function processMandArt(jsonData, name, imagePath = "") {
         canvas.height = picdef.imageHeight;
         console.log(`Canvas resized: ${canvas.width}x${canvas.height}`);
 
-        // Apply Hues
-        applyJsonData(jsonData);
+        const safeName = name.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+        const csvPath = `assets/MandArt_Catalog/${safeName}.csv`;
+        console.log(`Trying to load CSV: ${csvPath}`);
 
-        // Load Precomputed CSV Grid
-        const csvPath = `assets/MandArt_Catalog/${name}.csv`;
-        await loadPrecomputedGrid(csvPath);
+        const gridLoaded = await loadPrecomputedGrid(csvPath);
+
+        if (!gridLoaded) {
+            console.warn("Precomputed grid missing or invalid. Using placeholder.");
+            drawArtSizedCanvasFromGrid();
+        }
+
     } catch (error) {
         console.error("Error processing MandArt:", error);
     }
 }
+
+function applyJsonData(data) {
+    if (!data.hues || data.hues.length === 0) {
+        console.warn("No hues found in MandArt file.");
+        return;
+    }
+    hues = data.hues;
+    console.log("Applied Hues:", hues);
+    updateHueList();
+    recolorCanvas(); // Apply hues to the canvas
+}
+

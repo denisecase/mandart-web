@@ -47,12 +47,19 @@ function recolorCanvasOld() {
 /**
  * 📌 Load precomputed grid from Default.csv
  */
-async function loadPrecomputedGrid(filePath = "assets/MandArt_Catalog/Default.csv") {
+async function loadPrecomputedGrid(filePath) {
     try {
         console.log(`Loading Precomputed Grid: ${filePath}`);
 
         const response = await fetch(filePath);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.warn(`Precomputed grid file not found: ${filePath}`);
+                return; // Let the caller handle the placeholder
+            }
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
         const csvText = await response.text();
         parseCSVGrid(csvText);
@@ -60,6 +67,7 @@ async function loadPrecomputedGrid(filePath = "assets/MandArt_Catalog/Default.cs
         console.error("Failed to load grid:", error);
     }
 }
+
 
 /**
  * 📌 Parse CSV into a 2D array
@@ -112,3 +120,37 @@ function recolorCanvas() {
 
 // Load the Default.csv when page loads
 loadPrecomputedGrid();
+
+function drawArtSizedCanvasFromGrid() {
+    console.log("Drawing Placeholder Art...");
+
+    // Get the canvas
+    const canvas = document.getElementById("mandelbrotCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Ensure hues exist
+    if (!hues || hues.length === 0) {
+        console.warn("No hues available. Cannot draw placeholder.");
+        return;
+    }
+
+    // Find the hue where num = 1
+    let primaryHue = hues.find(h => h.num === 1);
+
+    // Fallback: If not found, use the first hue
+    if (!primaryHue) {
+        console.warn("Hue with num=1 not found. Using first available hue.");
+        primaryHue = hues[0];
+    }
+    if (!primaryHue) {
+        console.error("No hues available. Using grey.");
+        primaryHue = { r: 128, g: 128, b: 128 };
+    }
+    const fillColor = `rgb(${primaryHue.r}, ${primaryHue.g}, ${primaryHue.b})`;
+    console.log("Using Primary Hue:", primaryHue);
+
+    // Fill the entire canvas with this color
+    ctx.fillStyle = fillColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    console.log(`Canvas filled with color: ${fillColor}`);
+}
