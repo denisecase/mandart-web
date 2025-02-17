@@ -46,3 +46,4 @@ jobs:
           else
             git commit -m "Auto-formatted code with Prettier & ESLint"
             git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
+          fi
