@@ -12,6 +12,7 @@ brew install node
 node -v
 npm -v
 npm init -y
+npm install
 
 git add .
 git commit -m "msg"

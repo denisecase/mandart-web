@@ -34,7 +34,9 @@ jobs:
       - name: Run ESLint (Check JS)
         run: npx eslint "**/*.js" --fix || true
 
-      - name: Check for changes
+      - name: Check for changes & push if modified
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_MANDART_WEB}}
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
@@ -43,5 +45,4 @@ jobs:
             echo "No formatting changes needed."
           else
             git commit -m "Auto-formatted code with Prettier & ESLint"
-            git push
-          fi
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
