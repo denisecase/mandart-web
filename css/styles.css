@@ -1,280 +1,274 @@
 /* General Styling */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 /* Header */
 header {
-    width: 100%;
-    background: #222;
-    color: white;
-    padding: 15px 0;
-    text-align: center;
-    position: relative;
-    z-index: 10;
+  width: 100%;
+  background: #222;
+  color: white;
+  padding: 15px 0;
+  text-align: center;
+  position: relative;
+  z-index: 10;
 }
 
 header h1 {
-    margin: 0;
-    font-size: 1.5rem;
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 header button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    border-radius: 5px;
-    transition: background 0.3s ease-in-out;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
 }
 
 #githubIcon {
-    display: block;
-    width: 25px;
-    height: 25px;
-    margin: 25px auto 0;
-    transition: transform 0.2s ease-in-out;
+  display: block;
+  width: 25px;
+  height: 25px;
+  margin: 25px auto 0;
+  transition: transform 0.2s ease-in-out;
 }
 
 #githubIcon:hover {
-    transform: scale(1.5);
+  transform: scale(1.5);
 }
-
 
 /* Mand Color Selector */
 #mandColorContainer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
 }
 
 #mandColorPicker {
-    width: 40px;
-    height: 40px;
-    border: none;
-    cursor: pointer;
-    background: transparent;
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
 }
 
-
 #addColorBtn {
-    background-color: #959798;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin: 10px;
-    cursor: pointer;
-    font-size: 1rem;
-    border-radius: 5px;
-    transition: background 0.3s ease-in-out;
+  background-color: #959798;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
 }
 
 header button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 /* Layout */
 main {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-    width: 100%;
-    overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  width: 100%;
+  overflow: hidden;
 }
 
 /* Sidebar (Color Editor) */
 #colorEditor {
-    width: 300px;
-    background: white;
-    padding: 15px;
-    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-    flex-shrink: 0;
-    overflow-y: auto;
+  width: 300px;
+  background: white;
+  padding: 15px;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  overflow-y: auto;
 }
 
 #colorEditor h2 {
-    font-size: 1.2rem;
-    text-align: center;
-    margin-bottom: 10px;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 #colorEditor button {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 /* Hue Row - Trying to get a Single Row */
 .hue-row {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between elements */
-    padding: 5px;
-    border-bottom: 1px solid #ddd;
-    background: #fff;
-    white-space: nowrap; /* Prevent wrapping */
-    flex-wrap: nowrap; /* Ensure no wrapping */
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between elements */
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+  white-space: nowrap; /* Prevent wrapping */
+  flex-wrap: nowrap; /* Ensure no wrapping */
 }
 
 /* Ensure number stays a fixed width */
 .sort-num {
-    font-weight: bold;
-    min-width: 30px; /* Keeps numbers aligned */
-    text-align: center;
+  font-weight: bold;
+  min-width: 30px; /* Keeps numbers aligned */
+  text-align: center;
 }
 
 /* Keep color picker small */
 .color-picker {
-    width: 40px;
-    height: 40px;
-    border: none;
-    cursor: pointer;
-    background: transparent;
-    flex-shrink: 0; /* Prevent shrinking */
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 /* Delete Button  */
 .delete-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 1.2rem;
-    padding: 0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
+  width: 30px;
+  height: 30px;
+  font-size: 1.2rem;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
 }
-
 
 /* Canvas Display */
 #canvasSection {
-    flex-grow: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 #canvasSection h2 {
-    margin: 5px;
-    align-items: center;
-    justify-content: center;
+  margin: 5px;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Set Canvas Background Color (temp debugging) */
 #mandelbrotCanvas {
-    background-color: #28a745;
-    width: 90%;
-    max-width: 800px;
-    height: 600px;
-    display: block;
+  background-color: #28a745;
+  width: 90%;
+  max-width: 800px;
+  height: 600px;
+  display: block;
 }
 
 /* Modal (for MandArt Catalog - Scrollable, Fixed Top) */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 50%;
-    top: 10vh; /* Keep it near the top, about even with the page header */
-    transform: translateX(-50%);
-    width: 30%;
-    max-width: 150px; /* Narrower modal to fit one image per row */
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    padding: 10px;
-    border-radius: 8px;
-    max-height: 80vh; /* Prevent it from being too tall */
-    overflow-y: auto; /* Enable scrolling if needed */
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 50%;
+  top: 10vh; /* Keep it near the top, about even with the page header */
+  transform: translateX(-50%);
+  width: 30%;
+  max-width: 150px; /* Narrower modal to fit one image per row */
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 8px;
+  max-height: 80vh; /* Prevent it from being too tall */
+  overflow-y: auto; /* Enable scrolling if needed */
 }
 
 /* Modal Content */
 .modal-content {
-    text-align: center;
-    position: relative;
-    padding-top: 40px; /* Prevents overlap with close button */
+  text-align: center;
+  position: relative;
+  padding-top: 40px; /* Prevents overlap with close button */
 }
 
 /* Close Button (Stays Visible) */
 .modal-close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    cursor: pointer;
-    color: black;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: black;
 }
 
 /* Catalog Grid */
 .grid-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px; /* Space between entries */
-    align-items: center;
-    padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between entries */
+  align-items: center;
+  padding-bottom: 8px;
 }
 
 /* MandArt Item (Single Image & Name Grouping) */
 .mandart-item {
-    background: #f4f4f4; /* Light gray background */
-    padding: 8px;
-    width: 90%;
-    max-width: 150px;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: #f4f4f4; /* Light gray background */
+  padding: 8px;
+  width: 90%;
+  max-width: 150px;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Ensure Image and Name are Clearly Grouped */
 .mandart-item img {
-    display: block;
-    width: 100%;
-    max-width: 140px;
-    height: auto;
-    border-radius: 5px;
+  display: block;
+  width: 100%;
+  max-width: 140px;
+  height: auto;
+  border-radius: 5px;
 }
 
 /* MandArt Name (Clearly Under Image) */
 .mandart-item span {
-    display: block;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #333;
-    margin-top: 4px;
-    padding: 4px;
-    background: white;
-    border-radius: 5px;
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 4px;
+  padding: 4px;
+  background: white;
+  border-radius: 5px;
 }
-
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    main {
-        flex-direction: column;
-    }
+  main {
+    flex-direction: column;
+  }
 
-    #colorEditor {
-        width: 100%;
-    }
+  #colorEditor {
+    width: 100%;
+  }
 
-    #canvasSection {
-        padding: 10px;
-    }
-    .modal {
-        width: 50%; /* Slightly wider on smaller screens */
-        max-width: 160px;
-    }
-
+  #canvasSection {
+    padding: 10px;
+  }
+  .modal {
+    width: 50%; /* Slightly wider on smaller screens */
+    max-width: 160px;
+  }
 }
-
