@@ -142,3 +142,24 @@ class ArtImage {
       ctx.putImageData(imgData, 0, 0);
   }
 }
+
+
+function colorMandelbrot(canvas, fIter, hues) {
+    let ctx = canvas.getContext("2d");
+    let imgData = ctx.createImageData(canvas.width, canvas.height);
+
+    for (let x = 0; x < canvas.width; x++) {
+        for (let y = 0; y < canvas.height; y++) {
+            let index = (y * canvas.width + x) * 4;
+            let iterValue = fIter[x][y] % hues.length; // Map iteration value to hue index
+            let hue = hues[iterValue]; // Get corresponding hue
+
+            imgData.data[index] = hue.r;
+            imgData.data[index + 1] = hue.g;
+            imgData.data[index + 2] = hue.b;
+            imgData.data[index + 3] = 255; // Full opacity
+        }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+}

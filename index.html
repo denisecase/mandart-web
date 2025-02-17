@@ -12,14 +12,23 @@
 
     <header>
         <h1>MandArt Web</h1>
-        <button id="openFileBtn">Open from File...</button>
-        <button id="openUrlBtn">Open from URL...</button>
-        <button id="openListBtn">Open from List...</button>
-        <select id="mandartSelect">
-            <option value="">Select a MandArt</option>
-        </select>
-        <button id="loadMandartBtn">Go</button>
+        <div>
+            <button id="openFileBtn">Open from File...</button>
+            <button id="openUrlBtn">Open from URL...</button>
+            <button id="openListBtn">Open from List...</button>
+            <select id="mandartSelect">
+                <option value="">Select a MandArt</option>
+            </select>
+            <button id="loadMandartBtn">Go</button>
+        </div>
+        
+        <div style="margin-top: 10px;">
+            <button id="saveMandArtBtn">Save Inputs</button>
+            <button id="savePNGBtn">Export PNG</button>
+            <button id="saveGridBtn">Export Grid</button>
+        </div>
     </header>
+    
 
 
     <main>
@@ -78,6 +87,7 @@
     <script src="js/hues.js"></script>
     <script src="js/canvas.js"></script>
     <script src="js/art-image.js"></script>
+    <script src="js/save.js"></script>
 
 </body>
 

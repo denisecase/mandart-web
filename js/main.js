@@ -1,3 +1,8 @@
+//main.js 
+
+let currentMandArt = null; // Stores the active MandArt JSON
+let currentGrid = null; // Stores the grid (fIter) data
+
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Starting MandArt...");
 
@@ -11,7 +16,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     const loadMandartBtn = document.getElementById("loadMandartBtn");
     const openUrlBtn = document.getElementById("openUrlBtn");
 
+    // export elements
+    const saveMandArtBtn = document.getElementById("saveMandArtBtn");
+    const savePNGBtn = document.getElementById("savePNGBtn");
+    const saveGridBtn = document.getElementById("saveGridBtn");
+
     // Ensure elements exist before adding event listeners
+
+    if (saveMandArtBtn) {
+        saveMandArtBtn.addEventListener("click", () => {
+            if (currentMandArt) {
+                let newName = getActiveFilename("mandart").replace(".mandart", "") + "_new";
+                saveMandArtFile(currentMandArt, `${newName}.mandart`);
+                console.log(`MandArt saved as '${newName}.mandart' but still open for editing.`);
+            } else {
+                alert("No MandArt loaded to save.");
+            }
+        });
+    }
+    
+
+    if (savePNGBtn) {
+        savePNGBtn.addEventListener("click", () => {
+            const canvas = document.getElementById("mandelbrotCanvas");
+            if (canvas) {
+                saveCanvasAsPNG(canvas);
+                console.log("PNG exported. Keeping current changes.");
+            } else {
+                alert("No canvas found to export.");
+            }
+        });
+    }
+
+    if (saveGridBtn) {
+        saveGridBtn.addEventListener("click", () => {
+            if (currentGrid) {
+                exportGridToCSV(currentGrid);
+                console.log("Grid exported. Keeping current edits.");
+            } else {
+                alert("No grid data available to export.");
+            }
+        });
+    }
+
     if (openListBtn) {
         openListBtn.addEventListener("click", () => {
             document.getElementById("catalogModal").style.display = "block";
@@ -200,12 +247,12 @@ function closeCatalogModal() {
 
 async function readFromMandart(jsonData, name, imagePath = "") {
     try {
-        console.log("Processing MandArt:", name, jsonData);
+        console.log("Reading from MandArt input data file:", name, jsonData);
         if (!jsonData) {
-            console.error("Error: MandArt JSON is empty or invalid.");
+            console.error("Error: MandArt input data file is empty or invalid.");
             return;
         }
-
+        currentMandArt = jsonData; // Store the active MandArt file
         const picdef = jsonData;
         console.log("Loaded picdef:", picdef);
 
