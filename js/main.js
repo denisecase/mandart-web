@@ -23,17 +23,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Ensure elements exist before adding event listeners
 
-    if (saveMandArtBtn) {
-        saveMandArtBtn.addEventListener("click", () => {
-            if (currentMandArt) {
-                let newName = getActiveFilename("mandart").replace(".mandart", "") + "_new";
-                saveMandArtFile(currentMandArt, `${newName}.mandart`);
-                console.log(`MandArt saved as '${newName}.mandart' but still open for editing.`);
-            } else {
-                alert("No MandArt loaded to save.");
-            }
-        });
-    }
+   // Ensure elements exist before adding event listeners
+   if (saveMandArtBtn) {
+    saveMandArtBtn.addEventListener("click", () => {
+        if (currentMandArt) {
+            let filename = getActiveFilename("mandart");
+            saveMandArtFile(currentMandArt, filename);
+            console.log(`MandArt saved as '${filename}' and remains open for editing.`);
+        } else {
+            alert("No MandArt loaded to save.");
+        }
+    });
+}
     
 
     if (savePNGBtn) {
@@ -263,11 +264,13 @@ async function readFromMandart(jsonData, name, imagePath = "") {
 
         // Apply Hues
         applyJsonData(jsonData);
-
+       
         // Check image width/height
         if (!picdef.imageWidth || !picdef.imageHeight) {
             throw new Error("picdef is missing imageWidth or imageHeight.");
         }
+        drawArtSizedCanvasFromGrid(); 
+
 
         // Update UI Elements
         document.getElementById("drawingName").textContent = name;
