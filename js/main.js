@@ -1,4 +1,5 @@
-//src/main.js
+//js/main.js
+import init, { initSync } from './pkg/mandart_engine_rust.js'; 
 
 let currentMandArt = null; // Stores the active MandArt JSON
 let currentGrid = null; // Stores the grid (fIter) data
@@ -6,8 +7,8 @@ let currentGrid = null; // Stores the grid (fIter) data
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("Starting MandArt...");
 
-  // await loadWasm();
-  // console.log("WASM loaded successfully.");
+  await loadWasm();
+   console.log("WASM loaded successfully.");
 
   // Get elements
   const fileInput = document.getElementById("fileInput");
@@ -313,82 +314,23 @@ function applyJsonData(data) {
 }
 
 async function loadWasm() {
-  try {
-    const wasm = await import("../public/pkg/mandart_engine_rust.js");
-    console.log("✅ WASM Loaded:", wasm);
-    window.wasmModule = wasm;
+  console.log("Initializing WASM...");
 
-    if (typeof wasm.api_get_image_from_mandart_file_js === "function") {
-      console.log(
-        "✅ WASM function `api_get_image_from_mandart_file_js` exists."
-      );
+  try {
+    await init();
+    window.wasmModule = initSync();
+    console.log("WASM Initialized:", window.wasmModule);
+
+    // Verify if the function exists
+    if (typeof window.wasmModule.api_get_image_from_mandart_file_js === "function") {
+      console.log("WASM function `api_get_image_from_mandart_file_js` exists.");
     } else {
-      console.error(
-        "❌ WASM function `api_get_image_from_mandart_file_js` is missing."
-      );
+      console.error("WASM function `api_get_image_from_mandart_file_js` is missing.");
     }
   } catch (error) {
-    console.error("❌ Failed to load WASM:", error);
+    console.error("Failed to initialize WASM:", error);
   }
 }
 
-async function initializeWasm() {
-  console.log("🔄 Fetching and initializing WASM...");
-
-  const importObject = {
-    wbg: {
-      // ✅ Fix missing string conversion functions
-      __wbindgen_string_new: (ptr, len) => {
-        const bytes = new Uint8Array(window.wasmInstance.exports.memory.buffer, ptr, len);
-        return new TextDecoder("utf-8").decode(bytes);
-      },
-
-      __wbg_String_8f0eb39a4a4c2f66: (ptr, len) => {
-        const textDecoder = new TextDecoder("utf-8");
-        return textDecoder.decode(new Uint8Array(window.wasmInstance.exports.memory.buffer, ptr, len));
-      },
-
-      // ✅ Fix missing number conversion function
-      __wbindgen_number_new: (num) => num,
-
-      // ✅ Fix missing `new` object function
-      __wbg_new_78feb108b6472713: () => ({}), // Returns an empty object
-    },
-  };
-  try {
-    // 1️⃣ Fetch and instantiate WASM
-    const response = await fetch("../public/pkg/mandart_engine_rust_bg.wasm"); // ✅ Adjust path
-    if (!response.ok) throw new Error(`❌ WASM file not found: ${response.status}`);
-
-    const wasmBytes = await response.arrayBuffer();
-    const wasmModule = await WebAssembly.instantiate(wasmBytes, importObject);
-
-    // 2️⃣ Save instance and exports globally
-    window.wasmInstance = wasmModule.instance;
-    window.wasmExports = wasmModule.instance.exports;
-
-    console.log("✅ WASM Initialized!");
-    console.log("✅ WASM Instance:", window.wasmInstance);
-    console.log("✅ WASM Exports:", Object.keys(window.wasmExports));
-
-    // 3️⃣ Check for available functions
-    if (window.wasmExports.api_get_image_from_mandart_file_js) {
-      console.log(
-        "✅ WASM function `api_get_image_from_mandart_file_js` is available!"
-      );
-    } else {
-      throw new Error(
-        "❌ WASM function `api_get_image_from_mandart_file_js` is missing!"
-      );
-    }
-
-    return window.wasmExports;
-  } catch (error) {
-    console.error("❌ WASM Initialization Failed:", error);
-  }
-}
-
-// 🔥 Run WASM initialization before calling any function
-initializeWasm().then(() => {
-  console.log("✅ WASM Ready to Use!");
-});
+// Call this function immediately
+loadWasm();

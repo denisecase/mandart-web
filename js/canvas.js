@@ -6,6 +6,19 @@ canvas.width = 1000; // Matching Default.csv size
 canvas.height = 1000; // Matching Default.csv size
 let gridData = [];
 
+// ✅ Ensure MandArtImageData is globally available
+if (typeof window.MandArtImageData === "undefined") {
+  class MandArtImageData {
+    constructor(width, height, data) {
+      this.width = width;
+      this.height = height;
+      this.data = data;
+    }
+  }
+
+  window.MandArtImageData = MandArtImageData; // ✅ Global reference
+}
+
 function drawMandelbrotLater() {
   console.log("Drawing Mandelbrot with hues:", hues);
 
@@ -124,116 +137,63 @@ function drawArtSizedCanvasFromGrid(strPath, jsonData) {
   const canvas = document.getElementById("mandelbrotCanvas");
   const ctx = canvas.getContext("2d");
 
-  // ✅ TRY WASM FIRST - Only use strPath within this block
+  // ✅ TRY WASM FIRST
   if (window.wasmModule) {
-    const wasmFunc1 = window.wasmModule.api_get_image_from_mandart_file_js;
-    const wasmFunc2 =
-      window.wasmModule.api_get_image_from_mandart_json_string_js;
+      const f1 = window.wasmModule.api_get_image_from_mandart_file_js;
+      const f2 = window.wasmModule.api_get_image_from_mandart_json_string_js;
 
-    if (typeof wasmFunc1 === "function" && typeof wasmFunc2 === "function") {
-      try {
-        console.log("🎨 Trying WASM to generate MandArt image...");
+      if (typeof f1 === "function" && typeof f2 === "function") {
+          try {
+              console.log("🎨 Trying WASM to generate MandArt image...");
+              const fp = strPath || "../assets/MandArt_Catalog/Default.mandart";
+              console.log("📝 WASM Loading MandArt file:", fp);
 
-        const wasmFilePath =
-          strPath || "../assets/MandArt_Catalog/Default.mandart";
-        console.log("📝 WASM Loading MandArt file:", wasmFilePath);
+              // ✅ Call WASM function
+              let rawImageData = f1(fp) || f2(jsonData);
+              console.log("🎨 WASM outputs:", rawImageData);
 
-        if (!wasmFunc1) {
-          throw new Error(
-            "WASM function `api_get_image_from_mandart_file_js` is not available."
-          );
-        }
-        console.log("📝 WASM function1 exists:", wasmFunc1);
-        if (!wasmFunc2) {
-          throw new Error(
-            "WASM function `api_get_image_from_mandart_json_string_js` is not available."
-          );
-        }
-        console.log("📝 WASM function2 exists:", wasmFunc2);
+              if (!Array.isArray(rawImageData) || rawImageData.length === 0 || !Array.isArray(rawImageData[0])) {
+                  throw new Error("❌ WASM output is not a valid 2D array.");
+              }
 
-        // ✅ Call WASM function - Option 1 (File)
-        let rawImageData1 = null;
-        try {
-          console.log("🎨 Calling WASM function1...");
-          rawImageData1 = window.wasmModule.api_get_image_from_mandart_file_js(wasmFilePath);
-          console.log("🎨 WASM File Generated Image:", rawImageData1);
-        } catch (error) {
-          console.warn("⚠️ WASM File function failed:", error);
-        }
+              // ✅ Extract dimensions from 2D array
+              const width = rawImageData.length;  // Columns
+              const height = rawImageData[0].length; // Rows
 
-        // ✅ Call WASM function - Option 2 (JSON)
-        let rawImageData2 = null;
-        try {
-          console.log("🎨 Calling WASM function2...");
-          rawImageData2 = wasmFunc2(jsonData);
-          console.log("🎨 WASM JSON Generated Image:", rawImageData2);
-        } catch (error) {
-          console.warn("⚠️ WASM JSON function failed:", error);
-        }
-        // Pick the first valid response
-        const rawImageData = rawImageData1 || rawImageData2;
-        console.log("🎨 WASM outputs", rawImageData1);
+              console.log(`✅ Processing image with width=${width}, height=${height}`);
 
-        if (Array.isArray(rawImageData) && rawImageData.length > 0) {
-          console.log("✅ WASM successfully generated the image!");
+              // ✅ Convert 2D Column-Major RGB array → 1D Uint8ClampedArray (RGBA)
+              const imageDataArray = new Uint8ClampedArray(width * height * 4);
 
-          // Convert WASM output to an ImageData object
-          const mandartImage = new MandArtImageData(
-            canvas.width,
-            canvas.height,
-            rawImageData
-          );
-          const imageDataArray = new Uint8ClampedArray(
-            mandartImage.data.flat()
-          );
-          const imageData = new ImageData(
-            imageDataArray,
-            mandartImage.width,
-            mandartImage.height
-          );
+              let index = 0;
+              for (let y = 0; y < height; y++) {  // ✅ Iterate rows first
+                  for (let x = 0; x < width; x++) {  // ✅ Then columns
+                      const [r, g, b] = rawImageData[x][y];  // ✅ Access column-first
+                      imageDataArray[index++] = r * 255; // Red
+                      imageDataArray[index++] = g * 255; // Green
+                      imageDataArray[index++] = b * 255; // Blue
+                      imageDataArray[index++] = 255;     // Alpha (fully opaque)
+                  }
+              }
 
-          ctx.putImageData(imageData, 0, 0);
-          return; // ✅ EXIT if WASM works
-        } else {
-          throw new Error("WASM returned invalid image data.");
-        }
-      } catch (error) {
-        console.error("❌ WASM failed. Falling back to JavaScript:", error);
+              // ✅ Create ImageData and draw to canvas
+              const imageData = new ImageData(imageDataArray, width, height);
+              ctx.putImageData(imageData, 0, 0);
+              console.log("✅ Successfully rendered image from WASM!");
+
+              return; // ✅ EXIT if WASM works
+          } catch (error) {
+              console.error("❌ WASM failed. Falling back to JavaScript:", error);
+          }
+      } else {
+          console.warn("⚠️ WASM functions missing.");
       }
-    } else {
-      console.warn(
-        "⚠️ WASM function `api_get_image_from_mandart_file_js` is missing."
-      );
-    }
   } else {
-    console.warn("⚠️ WASM module not loaded. Using JavaScript fallback.");
+      console.warn("⚠️ WASM module not loaded. Using JavaScript fallback.");
   }
 
-  // OTHERWISE CONTINUE
-
-  // Ensure hues exist
-  if (!hues || hues.length === 0) {
-    console.warn("No hues available. Cannot draw placeholder.");
-    return;
-  }
-
-  // Find the hue where num = 1
-  let primaryHue = hues.find((h) => h.num === 1);
-
-  // Fallback: If not found, use the first hue
-  if (!primaryHue) {
-    console.warn("Hue with num=1 not found. Using first available hue.");
-    primaryHue = hues[0];
-  }
-  if (!primaryHue) {
-    console.error("No hues available. Using grey.");
-    primaryHue = { r: 128, g: 128, b: 128 };
-  }
-  const fillColor = `rgb(${primaryHue.r}, ${primaryHue.g}, ${primaryHue.b})`;
-  console.log("Using Primary Hue:", primaryHue);
-
-  // Fill the entire canvas with this color
-  ctx.fillStyle = fillColor;
+  // ✅ If WASM fails, fall back to a placeholder fill
+  ctx.fillStyle = "rgb(100, 100, 100)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  console.log(`Canvas filled with color: ${fillColor}`);
+  console.log("⚠️ Fallback: Canvas filled with grey.");
 }
