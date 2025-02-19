@@ -95,6 +95,16 @@
       </div>
     </template>
 
+    <script type="module">
+      import init, { initSync } from "./pkg/mandart_engine_rust.js"
+      init().then(() => {
+        initSync();
+      });
+    </script>
+
+
+
+
     <script type="module" src="js/main.js"></script>
     <script src="js/hues.js"></script>
     <script src="js/canvas.js"></script>

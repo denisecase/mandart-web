@@ -1,6 +1,6 @@
 //js/main.js
-import init, { initSync } from "./pkg/mandart_engine_rust.js";
-console.log("Top of main.js");
+
+//import init, { initSync } from "./pkg/mandart_engine_rust.js";
 
 let currentMandArt = null; // Stores the active MandArt JSON
 let currentGrid = null; // Stores the grid (fIter) data
