@@ -1,4 +1,4 @@
-//main.js
+//src/main.js
 
 let currentMandArt = null; // Stores the active MandArt JSON
 let currentGrid = null; // Stores the grid (fIter) data
@@ -308,3 +308,20 @@ function applyJsonData(data) {
   updateHueList();
   recolorCanvas(); // Apply hues to the canvas
 }
+
+async function loadWasm() {
+  try {
+    const wasm = await import("../public/pkg/my_module.js"); // ✅ Adjust path
+    console.log("✅ WASM Loaded:", wasm);
+
+    // Example: Call a function exported from WASM
+    if (wasm.my_function) {
+      console.log("WASM Function Output:", wasm.my_function(42));
+    }
+  } catch (error) {
+    console.error("❌ Failed to load WASM:", error);
+  }
+}
+
+// Load WASM when the page loads
+loadWasm().catch(console.error);
