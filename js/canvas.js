@@ -117,8 +117,8 @@ function recolorCanvas() {
 // Load the Default.csv when page loads
 loadPrecomputedGrid();
 
-function drawArtSizedCanvasFromGrid() {
-  console.log("Drawing Placeholder Art...");
+function drawArtSizedCanvasFromGrid(jsonData) {
+  console.log("Drawing Canvas...");
 
   // Get the canvas
   const canvas = document.getElementById("mandelbrotCanvas");

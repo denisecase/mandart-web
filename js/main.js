@@ -6,6 +6,9 @@ let currentGrid = null; // Stores the grid (fIter) data
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("Starting MandArt...");
 
+  await loadWasm();
+  console.log("WASM loaded successfully.");
+
   // Get elements
   const fileInput = document.getElementById("fileInput");
   const openFileBtn = document.getElementById("openFileBtn");
@@ -20,8 +23,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const saveMandArtBtn = document.getElementById("saveMandArtBtn");
   const savePNGBtn = document.getElementById("savePNGBtn");
   const saveGridBtn = document.getElementById("saveGridBtn");
-
-  // Ensure elements exist before adding event listeners
 
   // Ensure elements exist before adding event listeners
   if (saveMandArtBtn) {
@@ -271,7 +272,7 @@ async function readFromMandart(jsonData, name, imagePath = "") {
     if (!picdef.imageWidth || !picdef.imageHeight) {
       throw new Error("picdef is missing imageWidth or imageHeight.");
     }
-    drawArtSizedCanvasFromGrid();
+    drawArtSizedCanvasFromGrid(jsonData);
 
     // Update UI Elements
     document.getElementById("drawingName").textContent = name;
@@ -291,7 +292,7 @@ async function readFromMandart(jsonData, name, imagePath = "") {
 
     if (!gridLoaded) {
       console.warn("Precomputed grid missing or invalid. Using placeholder.");
-      drawArtSizedCanvasFromGrid();
+      drawArtSizedCanvasFromGrid(jsonData);
     }
   } catch (error) {
     console.error("Error processing MandArt:", error);
