@@ -312,17 +312,27 @@ function applyJsonData(data) {
 
 async function loadWasm() {
   try {
-    const wasm = await import("../public/pkg/my_module.js"); // ✅ Adjust path
+    const wasm = await import("../public/pkg/mandart_engine_rust.js"); // ✅ Adjusted path
     console.log("✅ WASM Loaded:", wasm);
+    
+    // ✅ Store globally for other scripts
+    window.wasmModule = wasm;
 
-    // Example: Call a function exported from WASM
-    if (wasm.my_function) {
-      console.log("WASM Function Output:", wasm.my_function(42));
+    // ✅ Verify the function exists and can be called
+    if (typeof wasm.api_get_image_from_mandart_file_js === "function") {
+      console.log("✅ WASM function `api_get_image_from_mandart_file_js` exists.");
+      try {
+        const testOutput = wasm.api_get_image_from_mandart_file_js(42);
+        console.log("WASM Function Output:", testOutput);
+      } catch (error) {
+        console.error("❌ Error calling `api_get_image_from_mandart_file_js(42)`: ", error);
+      }
+    } else {
+      console.error("❌ WASM function `api_get_image_from_mandart_file_js` is missing.");
     }
+
   } catch (error) {
     console.error("❌ Failed to load WASM:", error);
   }
 }
 
-// Load WASM when the page loads
-loadWasm().catch(console.error);

@@ -124,6 +124,38 @@ function drawArtSizedCanvasFromGrid(jsonData) {
   const canvas = document.getElementById("mandelbrotCanvas");
   const ctx = canvas.getContext("2d");
 
+  // TRY WASM FIRST if successful then return............
+  
+  if (window.wasmModule && window.wasmModule.api_get_image_from_mandart_file_js) {
+    try {
+      console.log("🎨 Trying WASM to generate MandArt image...");
+      const imageDataArray = window.wasmModule.api_get_image_from_mandart_file_js(jsonData);
+
+      if (Array.isArray(imageDataArray) && imageDataArray.length > 0) {
+        console.log("✅ WASM successfully generated the image!");
+
+        // Convert the image data from WASM to ImageData object
+        const imageData = new ImageData(
+          new Uint8ClampedArray(imageDataArray),
+          canvas.width,
+          canvas.height
+        );
+
+        ctx.putImageData(imageData, 0, 0);
+        return; // 🎯 SUCCESS: Exit after using WASM
+      } else {
+        throw new Error("WASM returned invalid image data.");
+      }
+    } catch (error) {
+      console.error("❌ WASM failed. Falling back to JavaScript:", error);
+    }
+  } else {
+    console.warn("⚠️ WASM module not available. Using JavaScript fallback.");
+  }
+
+
+  // OTHERWISE CONTINUE
+
   // Ensure hues exist
   if (!hues || hues.length === 0) {
     console.warn("No hues available. Cannot draw placeholder.");
