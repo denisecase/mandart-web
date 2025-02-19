@@ -16,6 +16,8 @@ python3 -m http.server 8000
 ```
 Open browser to [http://localhost:8000](http://localhost:8000)
 
+CRTL c to terminate the server
+
 ## OR Serve Locally with Node.js static server
 
 ```zsh

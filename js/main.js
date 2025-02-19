@@ -1,5 +1,6 @@
 //js/main.js
-import init, { initSync } from './pkg/mandart_engine_rust.js'; 
+import init, { initSync } from "./pkg/mandart_engine_rust.js";
+console.log("Top of main.js");
 
 let currentMandArt = null; // Stores the active MandArt JSON
 let currentGrid = null; // Stores the grid (fIter) data
@@ -8,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("Starting MandArt...");
 
   await loadWasm();
-   console.log("WASM loaded successfully.");
+  console.log("WASM loaded successfully.");
 
   // Get elements
   const fileInput = document.getElementById("fileInput");
@@ -116,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await populateMandartDropdown();
 
   // Load Default MandArt file
-  const defaultMandArt = "assets/MandArt_Catalog/Default.mandart";
+  const defaultMandArt = "../assets/MandArt_Catalog/Default.mandart";
   await loadMandArt(defaultMandArt, "", "Default");
 });
 
@@ -153,7 +154,7 @@ async function populateMandartDropdown() {
  */
 async function loadMandArtCatalog() {
   try {
-    const response = await fetch("assets/mandart_discoveries.json");
+    const response = await fetch("../assets/mandart_discoveries.json");
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     const data = await response.json();
@@ -163,8 +164,8 @@ async function loadMandArtCatalog() {
     listContainer.innerHTML = ""; // Clear previous content
 
     data.forEach((item) => {
-      const imagePath = `assets/MandArt_Catalog/${item.name}.png`; // Thumbnail path
-      const mandartPath = `assets/MandArt_Catalog/${item.name}.mandart`; // JSON path
+      const imagePath = `../assets/MandArt_Catalog/${item.name}.png`; // Thumbnail path
+      const mandartPath = `../ssets/MandArt_Catalog/${item.name}.mandart`; // JSON path
 
       const itemDiv = document.createElement("div");
       itemDiv.className = "mandart-item";
@@ -173,7 +174,7 @@ async function loadMandArtCatalog() {
       itemDiv.dataset.image = imagePath;
 
       itemDiv.innerHTML = `
-                <img src="${imagePath}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
+                <img src="${imagePath}" alt="${item.name}" onerror="this.src='../assets/placeholder.png'">
                 <span>${item.name}</span>
             `;
 
@@ -190,9 +191,13 @@ async function loadMandArtCatalog() {
 }
 
 async function loadMandArt(source, imagePath, name) {
+  console.log("Loading MandArt...");
+  console.log("Loading MandArt - source = ", source);
+  console.log("Loading MandArt - imagePath = ", imagePath);
+  console.log("Loading MandArt - name = ", name);
   try {
     let jsonData;
-    if (source.startsWith("http") || source.startsWith("assets/")) {
+    if (source.startsWith("http") || source.startsWith("../assets/")) {
       console.log(`Fetching MandArt: ${source}`);
       const response = await fetch(source);
       if (!response.ok)
@@ -208,6 +213,11 @@ async function loadMandArt(source, imagePath, name) {
       (typeof source === "string"
         ? source.split("/").pop().replace(".mandart", "")
         : "Unnamed");
+
+    console.log("Loading MandArt - jsonData = ", jsonData);
+    console.log("Loading MandArt - basename = ", baseName);
+    console.log("Loading MandArt - imagePath = ", imagePath);
+    console.log("Calling readFromMandart");
     readFromMandart(jsonData, baseName, imagePath);
   } catch (error) {
     console.error("Failed to load MandArt:", error);
@@ -250,7 +260,14 @@ function closeCatalogModal() {
   document.getElementById("catalogModal").style.display = "none";
 }
 
+
+
+//* Read from MandArt JSON data file given
 async function readFromMandart(jsonData, name, imagePath = "") {
+  console.log("Reading from MandArt jsonData=", jsonData);
+  console.log("Reading from MandArt name=", name);
+  console.log("Reading from MandArt imagePath=", imagePath);
+
   try {
     console.log("Reading from MandArt input data file:", name, jsonData);
     if (!jsonData) {
@@ -322,10 +339,14 @@ async function loadWasm() {
     console.log("WASM Initialized:", window.wasmModule);
 
     // Verify if the function exists
-    if (typeof window.wasmModule.api_get_image_from_mandart_file_js === "function") {
+    if (
+      typeof window.wasmModule.api_get_image_from_mandart_file_js === "function"
+    ) {
       console.log("WASM function `api_get_image_from_mandart_file_js` exists.");
     } else {
-      console.error("WASM function `api_get_image_from_mandart_file_js` is missing.");
+      console.error(
+        "WASM function `api_get_image_from_mandart_file_js` is missing."
+      );
     }
   } catch (error) {
     console.error("Failed to initialize WASM:", error);

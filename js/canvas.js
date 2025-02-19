@@ -128,7 +128,7 @@ function recolorCanvas() {
 }
 
 // Load the Default.csv when page loads
-loadPrecomputedGrid();
+//loadPrecomputedGrid();
 
 function drawArtSizedCanvasFromGrid(strPath, jsonData) {
   console.log("Drawing Canvas...");
