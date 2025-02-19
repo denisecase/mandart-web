@@ -117,42 +117,97 @@ function recolorCanvas() {
 // Load the Default.csv when page loads
 loadPrecomputedGrid();
 
-function drawArtSizedCanvasFromGrid(jsonData) {
+function drawArtSizedCanvasFromGrid(strPath, jsonData) {
   console.log("Drawing Canvas...");
 
   // Get the canvas
   const canvas = document.getElementById("mandelbrotCanvas");
   const ctx = canvas.getContext("2d");
 
-  // TRY WASM FIRST if successful then return............
-  
-  if (window.wasmModule && window.wasmModule.api_get_image_from_mandart_file_js) {
-    try {
-      console.log("🎨 Trying WASM to generate MandArt image...");
-      const imageDataArray = window.wasmModule.api_get_image_from_mandart_file_js(jsonData);
+  // ✅ TRY WASM FIRST - Only use strPath within this block
+  if (window.wasmModule) {
+    const wasmFunc1 = window.wasmModule.api_get_image_from_mandart_file_js;
+    const wasmFunc2 =
+      window.wasmModule.api_get_image_from_mandart_json_string_js;
 
-      if (Array.isArray(imageDataArray) && imageDataArray.length > 0) {
-        console.log("✅ WASM successfully generated the image!");
+    if (typeof wasmFunc1 === "function" && typeof wasmFunc2 === "function") {
+      try {
+        console.log("🎨 Trying WASM to generate MandArt image...");
 
-        // Convert the image data from WASM to ImageData object
-        const imageData = new ImageData(
-          new Uint8ClampedArray(imageDataArray),
-          canvas.width,
-          canvas.height
-        );
+        const wasmFilePath =
+          strPath || "../assets/MandArt_Catalog/Default.mandart";
+        console.log("📝 WASM Loading MandArt file:", wasmFilePath);
 
-        ctx.putImageData(imageData, 0, 0);
-        return; // 🎯 SUCCESS: Exit after using WASM
-      } else {
-        throw new Error("WASM returned invalid image data.");
+        if (!wasmFunc1) {
+          throw new Error(
+            "WASM function `api_get_image_from_mandart_file_js` is not available."
+          );
+        }
+        console.log("📝 WASM function1 exists:", wasmFunc1);
+        if (!wasmFunc2) {
+          throw new Error(
+            "WASM function `api_get_image_from_mandart_json_string_js` is not available."
+          );
+        }
+        console.log("📝 WASM function2 exists:", wasmFunc2);
+
+        // ✅ Call WASM function - Option 1 (File)
+        let rawImageData1 = null;
+        try {
+          console.log("🎨 Calling WASM function1...");
+          rawImageData1 = window.wasmModule.api_get_image_from_mandart_file_js(wasmFilePath);
+          console.log("🎨 WASM File Generated Image:", rawImageData1);
+        } catch (error) {
+          console.warn("⚠️ WASM File function failed:", error);
+        }
+
+        // ✅ Call WASM function - Option 2 (JSON)
+        let rawImageData2 = null;
+        try {
+          console.log("🎨 Calling WASM function2...");
+          rawImageData2 = wasmFunc2(jsonData);
+          console.log("🎨 WASM JSON Generated Image:", rawImageData2);
+        } catch (error) {
+          console.warn("⚠️ WASM JSON function failed:", error);
+        }
+        // Pick the first valid response
+        const rawImageData = rawImageData1 || rawImageData2;
+        console.log("🎨 WASM outputs", rawImageData1);
+
+        if (Array.isArray(rawImageData) && rawImageData.length > 0) {
+          console.log("✅ WASM successfully generated the image!");
+
+          // Convert WASM output to an ImageData object
+          const mandartImage = new MandArtImageData(
+            canvas.width,
+            canvas.height,
+            rawImageData
+          );
+          const imageDataArray = new Uint8ClampedArray(
+            mandartImage.data.flat()
+          );
+          const imageData = new ImageData(
+            imageDataArray,
+            mandartImage.width,
+            mandartImage.height
+          );
+
+          ctx.putImageData(imageData, 0, 0);
+          return; // ✅ EXIT if WASM works
+        } else {
+          throw new Error("WASM returned invalid image data.");
+        }
+      } catch (error) {
+        console.error("❌ WASM failed. Falling back to JavaScript:", error);
       }
-    } catch (error) {
-      console.error("❌ WASM failed. Falling back to JavaScript:", error);
+    } else {
+      console.warn(
+        "⚠️ WASM function `api_get_image_from_mandart_file_js` is missing."
+      );
     }
   } else {
-    console.warn("⚠️ WASM module not available. Using JavaScript fallback.");
+    console.warn("⚠️ WASM module not loaded. Using JavaScript fallback.");
   }
-
 
   // OTHERWISE CONTINUE
 
