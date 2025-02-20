@@ -40,10 +40,14 @@ main {
   display: flex;
   flex-direction: row;
   flex-grow: 1;
+  flex-wrap: wrap;
+  align-items: flex-start;
   width: 100%;
   overflow: auto; /* Allow scrolling */
-  margin-top: calc(15px + 2em + 10px + 20px); /* Dynamically adjust based on header */
-  padding-top: 10px;
+  margin-top: var(--header-height, 110px); /* Default to 95px, updated by JS */
+  padding: 10px;
+  gap: 20px; /* Adds spacing between elements */
+  transition: margin-top 0.3s ease-in-out; /* Smooth adjustment */
 }
 
 /** HEADER STUFF **/
@@ -332,6 +336,10 @@ header button:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .header-button-groups {
+    flex-direction: column; /* Stack on smaller screens */
+    align-items: center;
+  }
 
   .header-buttons {
     flex-direction: column;
@@ -352,5 +360,15 @@ header button:hover {
   .modal {
     width: 50%; /* Slightly wider on smaller screens */
     max-width: 160px;
+  }
+}
+
+@media (max-height: 500px) {
+  header {
+    min-height: 60px;
+  }
+  .header-buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 }
