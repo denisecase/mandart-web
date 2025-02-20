@@ -14,10 +14,9 @@ body {
 /* Header - fixed at top with buttons */
 header {
   width: 100%;
-  height: 100px; /* Ensure header has a defined height */
   background: #222;
   color: white;
-  padding: 15px 0;
+  padding: 10px 10px;
   text-align: center;
   position: fixed; /* Keep header at the top */
   top: 0;
@@ -26,8 +25,12 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for visibility */
+  justify-content: flex-start; /* Align content at the top */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
+  overflow: visible; /* Prevents extra gaps */
+  height: auto; 
+  min-height: 70px; /* Ensure header has a defined height */
+  transition: min-height 0.2s ease-in-out; /* Smooth transition */
 }
 
 /* everything below the header */
@@ -39,33 +42,66 @@ main {
   flex-grow: 1;
   width: 100%;
   overflow: auto; /* Allow scrolling */
-  margin-top: 110px; /* Push main content below fixed header */
-  padding: 10px;
+  margin-top: calc(15px + 2em + 10px + 20px); /* Dynamically adjust based on header */
+  padding-top: 10px;
 }
-
 
 /** HEADER STUFF **/
 
-/* Ensure buttons inside the header are aligned properly */
+/* Ensure header auto-expands based on content */
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 5px; /* Spacing between title and button groups */
+}
+
+/* Ensure buttons wrap properly and don't overflow */
 .header-buttons {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 0;
+}
+
+/* 🛠️ Group both sets of buttons together so they can share space */
+.header-button-groups {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
-  margin-top: 10px;
+  width: 100%;
+  max-width: 900px; /* Prevents stretching too far */
+}
+
+/* Allow save/export buttons to wrap into the first row */
+.save-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
 
 /* Prevent buttons from being too large */
-.header-buttons button, .header-buttons select {
+.header-buttons button,
+.header-buttons select {
   padding: 10px 15px;
   font-size: 1rem;
+  flex-shrink: 1; /* Allow shrinking */
 }
 
-
+/* Ensure title is always visible */
 header h1 {
-  margin: 0;
+  margin: 5px 0;
   font-size: 1.5rem;
+  text-align: center;
 }
+
 
 header button {
   background-color: #007bff;
@@ -80,7 +116,6 @@ header button {
 }
 
 /** MAIN CONTENT - sidebar color editor and canvas section **/
-
 
 /* Sidebar (Color Editor) */
 /* Sidebar (Color Editor) */
@@ -99,7 +134,6 @@ header button {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
-
 }
 
 #colorEditor h2 {
@@ -107,7 +141,6 @@ header button {
   text-align: center;
   margin-bottom: 10px;
 }
-
 
 #githubIcon {
   display: block;
@@ -152,12 +185,6 @@ header button {
 header button:hover {
   background-color: #0056b3;
 }
-
-
-
-
-
-
 
 /* Hue Row - Trying to get a Single Row */
 .hue-row {
@@ -305,6 +332,12 @@ header button:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
+  .header-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
   main {
     flex-direction: column;
   }
