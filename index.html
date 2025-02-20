@@ -1,114 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MandArt Web</title>
     <link rel="shortcut icon" href="./favicon.ico" />
-    <link rel="stylesheet" href="css/styles.css" />
-  </head>
+    <link rel="stylesheet" href="./style.css" />
+</head>
 
-  <body>
-    <header>
-      <h1>MandArt Web</h1>
-      <div>
-        <button id="openFileBtn">Open from File...</button>
-        <button id="openUrlBtn">Open from URL...</button>
-        <button id="openListBtn">Open from List...</button>
-        <select id="mandartSelect">
-          <option value="">Select a MandArt</option>
-        </select>
-        <button id="loadMandartBtn">Go</button>
-      </div>
-
-      <div style="margin-top: 10px">
-        <button id="saveMandArtBtn">Save Inputs</button>
-        <button id="savePNGBtn">Export PNG</button>
-        <button id="saveGridBtn">Export Grid</button>
-      </div>
-    </header>
+<body>
+    <!-- Fixed Header (No Nested <header>) -->
+    <header id="header"></header>
 
     <main>
-      <!-- local file selected (hidden always)-->
-      <input
-        type="file"
-        id="fileInput"
-        style="display: none"
-        accept=".mandart"
-      />
+        <!-- Sidebar for Color Editing -->
+        <aside id="colorEditor">
+            <h2>Color Editor</h2>
 
-      <!-- Catalog Modal (Hidden by Default) -->
-      <aside id="catalogModal" class="modal">
-        <div class="modal-content">
-          <span class="modal-close-btn" onclick="closeCatalogModal()"
-            >&times;</span
-          >
-          <h2>MandArt Catalog</h2>
-          <div id="mandartList" class="grid-container"></div>
-        </div>
-      </aside>
+            <!-- Mand Color Selector -->
+            <div id="mandColorContainer">
+                <label for="mandColorPicker">Mand Color:</label>
+                <input type="color" id="mandColorPicker" />
+            </div>
 
-      <!-- Color Editor Sidebar -->
-      <article id="colorEditor">
-        <h2>Color Editor</h2>
+            <!-- Add Color & Select Mand Color -->
+            <button id="addColorBtn">Add New Color</button>
 
-        <!-- Mand Color Selector -->
-        <div id="mandColorContainer">
-          <label for="mandColorPicker">Mand Color:</label>
-          <input type="color" id="mandColorPicker" />
-        </div>
+            <!-- Hue List -->
+            <div id="hueList"></div>
 
-        <!-- Add Color & Select Mand Color -->
-        <button id="addColorBtn">Add New Color</button>
+            <!-- GitHub Repo Link -->
+            <a href="https://github.com/denisecase/mandart-web" target="_blank" id="githubLink">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
+                     alt="(GH)" id="githubIcon" />
+            </a>
+        </aside>
 
-        <!-- Hue List -->
-        <div id="hueList"></div>
+        <!-- Main Content: Canvas + Controls -->
+        <section id="canvasSection">
+            <h2 id="drawingName">Title Will Appear Here (Loading...)</h2>
+            <h2 id="notice">(Temporary Placeholder)</h2>
+            <canvas id="mandelbrotCanvas"></canvas>
 
-        <!-- GitHub Repo Link -->
-        <a
-          href="https://github.com/denisecase/mandart-web"
-          target="_blank"
-          id="githubLink"
-        >
-          <img
-            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-            alt="(GH)"
-            id="githubIcon"
-          />
-        </a>
-      </article>
+           
+        </section>
 
-      <!-- Canvas Display -->
-      <section id="canvasSection">
-        <h2 id="drawingName">Title Will appear here Loading...</h2>
-        <h2 id="notice">(temporary placeholder)</h2>
-        <canvas id="mandelbrotCanvas"></canvas>
-      </section>
+        <!-- Hidden File Input for Local Uploads -->
+        <input type="file" id="fileInput" style="display: none" accept=".mandart" />
+
+        <!-- Catalog Modal (Hidden by Default) -->
+        <aside id="catalogModal" class="modal">
+            <div class="modal-content">
+                <span id="catalogCloseBtn" class="modal-close-btn">&times;</span>
+                <h2>MandArt Catalog</h2>
+                <div id="mandartList" class="grid-container"></div>
+            </div>
+        </aside>
     </main>
 
-    <!-- Hue Row Template (for cloning new colors dynamically) -->
+    <!-- Hue Row Template (for dynamically adding colors) -->
     <template id="hueRowTemplate">
-      <div class="hue-row">
-        <span class="sort-num">#</span>
-        <input type="color" class="color-picker" />
-        <button class="delete-btn">🗑</button>
-      </div>
+        <div class="hue-row">
+            <span class="sort-num">#</span>
+            <input type="color" class="color-picker" />
+            <button class="delete-btn">🗑</button>
+        </div>
     </template>
 
+    <!-- Load WASM Module -->
     <script type="module">
-      import init, { initSync } from "./pkg/mandart_engine_rust.js"
-      init().then(() => {
-        initSync();
-      });
+        import init, { initSync } from "./wasm/mandart_engine_rust.js";
+        init().then(() => {
+            initSync();
+        });
     </script>
 
-
-
-
-    <script type="module" src="js/main.js"></script>
-    <script src="js/hues.js"></script>
-    <script src="js/canvas.js"></script>
-    <script src="js/art-image.js"></script>
-    <script src="js/save.js"></script>
-  </body>
+    <!-- Component-Based Modular Scripts -->
+    <script type="module" src="./wasm/mandart_engine_rust.js"></script>
+    <script type="module" src="./components/App.js"></script>
+    
+</body>
 </html>

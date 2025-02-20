@@ -9,16 +9,58 @@ body {
   height: 100vh;
 }
 
-/* Header */
+/* HEADER AND MAIN CONTENT */
+
+/* Header - fixed at top with buttons */
 header {
   width: 100%;
+  height: 100px; /* Ensure header has a defined height */
   background: #222;
   color: white;
   padding: 15px 0;
   text-align: center;
-  position: relative;
-  z-index: 10;
+  position: fixed; /* Keep header at the top */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Ensure it's above other elements */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for visibility */
 }
+
+/* everything below the header */
+
+/* Ensure everything below the fixed header */
+main {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  width: 100%;
+  overflow: auto; /* Allow scrolling */
+  margin-top: 110px; /* Push main content below fixed header */
+  padding: 10px;
+}
+
+
+/** HEADER STUFF **/
+
+/* Ensure buttons inside the header are aligned properly */
+.header-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Prevent buttons from being too large */
+.header-buttons button, .header-buttons select {
+  padding: 10px 15px;
+  font-size: 1rem;
+}
+
 
 header h1 {
   margin: 0;
@@ -36,6 +78,36 @@ header button {
   border-radius: 5px;
   transition: background 0.3s ease-in-out;
 }
+
+/** MAIN CONTENT - sidebar color editor and canvas section **/
+
+
+/* Sidebar (Color Editor) */
+/* Sidebar (Color Editor) */
+#colorEditor {
+  width: 300px;
+  background: white;
+  padding: 15px;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  overflow-y: auto;
+  height: calc(100vh - 110px); /* Full height minus header */
+}
+
+/* Ensure buttons in sidebar don’t stretch */
+#colorEditor button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+
+}
+
+#colorEditor h2 {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 
 #githubIcon {
   display: block;
@@ -81,36 +153,11 @@ header button:hover {
   background-color: #0056b3;
 }
 
-/* Layout */
-main {
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-  width: 100%;
-  overflow: hidden;
-}
 
-/* Sidebar (Color Editor) */
-#colorEditor {
-  width: 300px;
-  background: white;
-  padding: 15px;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-  flex-shrink: 0;
-  overflow-y: auto;
-}
 
-#colorEditor h2 {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 10px;
-}
 
-#colorEditor button {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
-}
+
+
 
 /* Hue Row - Trying to get a Single Row */
 .hue-row {
@@ -153,14 +200,15 @@ main {
   transition: background 0.3s ease-in-out;
 }
 
-/* Canvas Display */
+/* Ensure canvas is centered and properly aligned */
 #canvasSection {
   flex-grow: 1;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 20px;
+  overflow: hidden; /* Prevent accidental scroll */
 }
 
 #canvasSection h2 {
@@ -169,12 +217,13 @@ main {
   justify-content: center;
 }
 
-/* Set Canvas Background Color (temp debugging) */
+/* Set Canvas Background */
 #mandelbrotCanvas {
   background-color: #28a745;
   width: 90%;
   max-width: 800px;
-  height: 600px;
+  height: auto;
+  min-height: 500px;
   display: block;
 }
 
