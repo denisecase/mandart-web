@@ -1,4 +1,6 @@
 export function setupCanvasSource(getCurrentMandArt) {
+    console.log("🎨 Initializing Canvas Source...");
+
     const titleContainer = document.getElementById("canvasSourceContainer");
     if (!titleContainer) {
         console.error("❌ setupCanvasSource: Missing #canvasSourceContainer element.");
@@ -18,7 +20,8 @@ export function setupCanvasSource(getCurrentMandArt) {
             console.error("❌ setupCanvasSource: getCurrentMandArt is not a function.");
             return;
         }
-        
+        const mandart = getCurrentMandArt();
+
         if (!mandart) {
             console.warn("⚠️ No MandArt loaded. Resetting title and source.");
             drawingNameElement.textContent = "No MandArt Loaded";
@@ -38,5 +41,5 @@ export function setupCanvasSource(getCurrentMandArt) {
         titleContainer.innerHTML = "";
     }
 
-    return { updateCanvasSource, dispose };
+    return { updateCanvasSource };
 }

@@ -1,5 +1,8 @@
 // utils/WasmLoader.js
 
+import initWasm, { initSync } from "../wasm/mandart_engine_rust.js";
+import {validateWasmFunctions} from "./WasmUtils.js";
+
 let wasmInitialized = false;
 
 const isGitHubPages = window.location.hostname.includes("github.io");
@@ -20,22 +23,14 @@ export async function loadWasm() {
   console.log("🚀 Loading WASM...");
 
   try {
-    console.log("🚀 Looking for WASM at {}", wasmPath);
-    const response = await fetch(wasmPath);
-    if (!response.ok) throw new Error(`❌ Failed to load WASM file: ${wasmPath}`);
-    console.log("🚀 Found WASM...");
+    // ✅ Correctly initialize WASM using the generated init function
+    const wasmModule = await initWasm();
 
-    const wasmArrayBuffer = await response.arrayBuffer();
-    const wasmModule = await WebAssembly.instantiate(wasmArrayBuffer, {});
-    console.log("🚀  WASMmodule instantiated...");
-
-    window.wasmModule = wasmModule.instance.exports;
-    console.log("🚀 window.wasmModule is {}", window.wasmModule);
-
-    wasmInitialized = true; 
-
+    window.wasmModule = wasmModule;
     console.log("✅ WASM Loaded Successfully:", window.wasmModule);
 
+    wasmInitialized = true;
+    
     // ✅ Validate WASM functions
     validateWasmFunctions([
       "api_get_image_from_mandart_file_js",
@@ -48,4 +43,3 @@ export async function loadWasm() {
     return null;
   }
 }
-

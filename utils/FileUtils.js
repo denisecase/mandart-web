@@ -1,4 +1,5 @@
 // utils/fileUtils.js
+import {MandArtLoader} from "../components/MandArtLoader.js";
 
 /**
  * Triggers a file download for the given Blob.
@@ -74,7 +75,7 @@ export function exportGridToCSV(fIter) {
       console.error("No grid data found.");
       return;
     }
-    const filename = getActiveFilename("csv");
+    const filename = MandArtLoader.getActiveFilename("csv");
     console.log("Current filename:", filename);
     let csvContent = fIter.map((row) => row.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });

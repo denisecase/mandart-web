@@ -362,6 +362,127 @@ header button:hover {
   background: white;
   border-radius: 5px;
 }
+/* 🚀 URL Prompt Modal (Now Resizable) */
+.url-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  width: 500px;
+  height: 250px;
+  max-width: 90%;
+  min-width: 400px;
+  min-height: 180px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  z-index: 1000;
+  resize: both; /* Allow resizing */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🚀 Modal Content */
+.url-modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+}
+
+/* 🚀 Title Bar (Draggable) */
+.url-modal-titlebar {
+  background: #222;
+  color: white;
+  padding: 10px;
+  font-size: 1rem;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+/* 🚀 Resizable Input Box (Expands with Modal) */
+.url-input {
+  flex-grow: 1; /* Expands dynamically */
+  width: 100%;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background: #f9f9f9;
+  font-family: Arial, sans-serif;
+  resize: none; /* Prevent direct resizing, handled by modal */
+  overflow: auto;
+}
+
+/* 🚀 Button Container (Flexbox for Alignment) */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between; /* Left: Cancel | Right: Load */
+  padding-top: 10px;
+}
+
+/* 🚀 Buttons */
+.btn {
+  flex: 1; /* Allow buttons to stretch equally */
+  padding: 10px;
+  margin: 5px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+/* 🚀 Primary (Load) Button - Right */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* 🚀 Secondary (Cancel) Button - Left */
+.btn-secondary {
+  background-color: #ccc;
+  color: black;
+}
+
+.btn-secondary:hover {
+  background-color: #bbb;
+}
+
+/* 🚀 Smooth Fade-In Animation */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translate(-50%, -55%);
+  }
+  to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+  }
+}
+
+
+/* 🚀 Fade-In Animation */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translate(-50%, -55%);
+  }
+  to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+  }
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

@@ -36,7 +36,7 @@ export function safeWasmCall(funcName, ...args) {
  * Logs missing functions as warnings but allows execution to continue.
  * @param {string[]} functionNames - List of expected WASM functions.
  */
-function validateWasmFunctions(functionNames) {
+export function validateWasmFunctions(functionNames) {
   if (!window.wasmModule) {
     console.error("❌ Cannot validate WASM functions. Module not initialized.");
     return;

@@ -1,16 +1,16 @@
-import { populateMandartDropdown } from "../utils/ArtUtils.js";
 import {
   saveMandArtFile,
   saveCanvasAsPNG,
   exportGridToCSV,
 } from "../utils/FileUtils.js";
-import { setupCatalog } from "./Catalog.js";
-import {
-  readFromMandart,
-  loadMandArt,
-  getActiveFilename,
-} from "./MandArtLoader.js";
+import { setupCatalog , closeCatalogModal} from "./Catalog.js";
+import { MandArtLoader } from "./MandArtLoader.js";
+import { openUrlPrompt } from "./UrlPrompt.js";
+import { loadMandArtList, populateMandartDropdown } from "../utils/MandArtList.js";
 
+const defaultURL =
+  "https://raw.githubusercontent.com/denisecase/MandArt-Discoveries/main/brucehjohnson/frame_pix/Frame54.mandart";
+const mandArtLoader = new MandArtLoader();
 /**
  * Sets up the header with buttons and event listeners.
  */
@@ -43,14 +43,7 @@ export function setupHeader() {
         </div>
     `;
 
-  // Populate dropdown when WASM is ready
-  if (window.wasmModule) {
-    populateMandartDropdown();
-  } else {
-    console.warn(
-      "⚠️ WASM not yet loaded, delaying MandArt dropdown population."
-    );
-  }
+
 
   // ✅ File Input Handling (Hidden File Selector)
   const fileInput = document.getElementById("fileInput");
@@ -109,14 +102,12 @@ export function setupHeader() {
     setupCatalog();
   });
 
-  // ✅ Handle URL Input
   // ✅ Handle URL Input (with default URL)
   document.getElementById("openUrlBtn")?.addEventListener("click", async () => {
-    const defaultURL ="https://raw.githubusercontent.com/denisecase/MandArt-Discoveries/main/brucehjohnson/frame_pix/Frame54.mandart"
-   const url = prompt("Enter the URL of the MandArt JSON:", defaultURL);
-
+    const url = await openUrlPrompt(defaultURL);
     if (url) {
-      await loadMandArt(url, "", "Custom URL");
+      console.log("🌐 Loading MandArt from URL:", url);
+      await mandArtLoader.loadMandArt(url, "", "Custom URL");
     }
   });
 
@@ -128,7 +119,8 @@ export function setupHeader() {
       if (selectedValue) {
         const filePath = `assets/MandArt_Catalog/${selectedValue}.mandart`;
         const imagePath = `assets/MandArt_Catalog/${selectedValue}.png`;
-        await loadMandArt(filePath, imagePath, selectedValue);
+        await mandArtLoader.loadMandArt(filePath, imagePath, selectedValue);
+        closeCatalogModal(); // ✅ Close modal when selection is confirmed
       } else {
         alert("Please select a MandArt file first.");
       }
@@ -137,7 +129,7 @@ export function setupHeader() {
   // ✅ Save & Export Buttons
   document.getElementById("saveMandArtBtn")?.addEventListener("click", () => {
     if (window.currentMandArt) {
-      let filename = getActiveFilename("mandart");
+      let filename = mandArtLoader.getActiveFilename("mandart");
       saveMandArtFile(window.currentMandArt, filename);
       console.log(`✅ MandArt saved as '${filename}'.`);
     } else {
