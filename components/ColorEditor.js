@@ -1,6 +1,6 @@
 
 
-export function setupColorEditor(mandArtLoader, getCanvas, recolorCanvas) {
+export function setupColorEditor(mandArtLoader, recolorCanvas) {
     if (!mandArtLoader) {
         console.error("❌ setupColorEditor: mandartLoader is undefined!");
         return;

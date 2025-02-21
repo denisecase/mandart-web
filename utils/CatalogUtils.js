@@ -23,12 +23,39 @@ export function getSelectedMandArt() {
 }
 
 /**
+ * Returns the correct URL for fetching the MandArt catalog JSON file,
+ * handling both local development and GitHub Pages deployment.
+ */
+export function getMandArtCatalogUrl() {
+    const isGitHubPages = window.location.hostname.includes("github.io");
+    
+    // ✅ Adjust URL based on environment
+    return isGitHubPages
+        ? "https://denisecase.github.io/mandart-web/assets/mandart_discoveries.json" // GitHub Pages
+        : "../assets/mandart_discoveries.json"; // Local development
+}
+
+/**
+ * Returns the correct base URL for MandArt assets,
+ * handling both local development and GitHub Pages deployment.
+ */
+export function getMandArtCatalogBaseUrl() {
+    const isGitHubPages = window.location.hostname.includes("github.io");
+    
+    return isGitHubPages
+        ? "https://denisecase.github.io/mandart-web/assets/MandArt_Catalog"
+        : "../assets/MandArt_Catalog";
+}
+
+
+
+/**
  * ✅ Loads MandArt options into the dropdown
  */
 export async function loadMandArtCatalog(mandartSelect) {
     try {
         console.log("📂 Fetching MandArt discoveries...");
-        const response = await fetch("assets/mandart_discoveries.json");
+        const response = await fetch("./assets/mandart_discoveries.json");
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 

@@ -213,6 +213,7 @@ header button {
   font-size: 1rem;
   border-radius: 5px;
   transition: background 0.3s ease-in-out;
+  display: none;
 }
 
 header button:hover {
@@ -458,6 +459,19 @@ header button:hover {
 .btn-secondary:hover {
   background-color: #bbb;
 }
+
+
+#drawingName {
+  font-size: 2rem;
+  text-align: center;
+  margin: 10px 0;
+}
+#sourcePath{
+  font-size: 1rem;
+  text-align: center;
+  display: none;
+}
+
 
 /* 🚀 Smooth Fade-In Animation */
 @keyframes fadeIn {

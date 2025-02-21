@@ -1,8 +1,12 @@
+import { getMandArtCatalogUrl } from "./CatalogUtils.js";
+
 export async function loadMandArtList() {
     console.log("📦 Fetching MandArt List...");
 
     try {
-        const response = await fetch("assets/mandart_discoveries.json");
+        const catSource = getMandArtCatalogUrl();
+        console.log("📂 Fetching MandArt discoveries from:", catSource);
+        const response = await fetch(catSource);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const mandArtList = await response.json();

@@ -2,6 +2,7 @@ import { loadPrecomputedGrid } from "../utils/GridUtils.js";
 import { rgbToHex, hexToRgb } from "../utils/ColorUtils.js";
 import { extractFileName } from "../utils/FileNameUtils.js";
 import { reassignHueNumbers } from "../utils/HueUtils.js";
+import { updateCanvasSource } from "./CanvasSource.js";
 
 export class MandArtLoader {
   constructor() {
@@ -24,6 +25,8 @@ export class MandArtLoader {
     try {
       let jsonData;
       let finalName = displayName; // Preserve name but allow update
+      console.log("in LoadMandArt", sourcePath);
+      console.log("in LoadMandArt", displayName);
 
       if (typeof sourcePath === "string") {
         if (sourcePath.startsWith("http") || sourcePath.startsWith("assets/")) {
@@ -66,14 +69,82 @@ export class MandArtLoader {
     }
   }
 
+  // ✅ Read MandArt JSON data
   async readFromMandart(jsonData, displayName, imagePath = "") {
-    console.log("🖌️ Applying MandArt data...", jsonData);
+    console.log("🖌️ Reading from the MandArt JSON file...", jsonData);
+    console.log(" Reading from ", displayName);
+
+
+    // ✅ Make sure `displayName` is correct
+    this.currentMandArtTitle = displayName || "Untitled MandArt";
+    this.currentMandArtPath = imagePath || "(Unknown Source)";
+    this.currentMandArt = jsonData;
+
+    console.log("✅ MandArt Loaded:", {
+        title: this.currentMandArtTitle,
+        path: this.currentMandArtPath
+    });
+
+
+    // ✅ Directly update the UI - NO MORE RELYING ON `updateCanvasSource`
+    document.getElementById("drawingName").textContent =
+      displayName || "Untitled MandArt";
+    console.log(`🎨 Set UI Title: ${displayName}`);
+
+    document.getElementById("sourcePath").textContent = `Source: ${
+      this.currentMandArtPath || "(No source loaded)"
+    }`;
+    console.log(`📂 Set UI Source Path: ${this.currentMandArtPath}`);
+
+    // ✅ Ensure correct UI title and path
+    this.currentMandArt = jsonData;
+    this.currentMandArtPath = imagePath || "(Unknown Source)";
+    this.currentMandArtTitle = displayName || "Untitled MandArt"; 
+
+    console.log("✅ MandArt Path:", this.currentMandArtPath);
+    console.log("✅ MandArt Title:", this.currentMandArtTitle);
+
+    // ✅ Immediately update UI elements (Fixes Title)
+    const drawingNameElement = document.getElementById("drawingName");
+    const sourceElement = document.getElementById("sourcePath");
+
+    if (drawingNameElement) {
+      drawingNameElement.textContent = this.currentMandArtTitle;
+      console.log(`🎨 Set UI Title: ${this.currentMandArtTitle}`);
+    } else {
+      console.error("❌ Could not find #drawingName element.");
+    }
+
+    if (sourceElement) {
+      sourceElement.textContent = `Source: ${this.currentMandArtPath}`;
+      console.log(`📂 Set Source Path: ${this.currentMandArtPath}`);
+    }
 
     try {
       if (!jsonData || !jsonData.hues || !Array.isArray(jsonData.hues)) {
         throw new Error(
           "❌ MandArt JSON is missing 'hues' or it's not an array."
         );
+      }
+
+      // ✅ Call `updateCanvasSource()` if available, but **DO NOT** let it break things
+      if (typeof updateCanvasSource === "function") {
+        console.log("🎨 Calling updateCanvasSource...");
+        updateCanvasSource();
+      } else {
+        console.warn("⚠️ WARNING: updateCanvasSource was not found.");
+      }
+
+      console.log(
+        "🔍 Before updateCanvasSource: currentMandArtTitle:",
+        this.currentMandArtTitle
+      );
+
+      if (window.canvasSourceFunctions?.updateCanvasSource) {
+        console.log("Found function updateCanvasSource");
+        window.canvasSourceFunctions.updateCanvasSource();
+      } else {
+        console.warn("WARNING: updateCanvasSource was not found.");
       }
 
       // ✅ Preserve existing hues (only update if needed)
@@ -146,56 +217,55 @@ export class MandArtLoader {
 
     const hueList = document.getElementById("hueList");
     if (!hueList) {
-        console.error("❌ hueList container not found.");
-        return;
+      console.error("❌ hueList container not found.");
+      return;
     }
 
     hueList.innerHTML = ""; // ✅ Clear only the DOM, NOT `this.hues`
 
     if (!this.hues || this.hues.length === 0) {
-        console.warn("⚠️ No hues found.");
-        return;
+      console.warn("⚠️ No hues found.");
+      return;
     }
 
     // ✅ Preserve the order of hues
     this.hues.sort((a, b) => a.num - b.num);
 
     this.hues.forEach((hue, index) => {
-        const hexColor = rgbToHex(hue.r, hue.g, hue.b);
+      const hexColor = rgbToHex(hue.r, hue.g, hue.b);
 
-        const hueRow = document.createElement("div");
-        hueRow.classList.add("hue-row");
+      const hueRow = document.createElement("div");
+      hueRow.classList.add("hue-row");
 
-        const colorInput = document.createElement("input");
-        colorInput.type = "color";
-        colorInput.value = hexColor;
-        colorInput.classList.add("color-picker");
+      const colorInput = document.createElement("input");
+      colorInput.type = "color";
+      colorInput.value = hexColor;
+      colorInput.classList.add("color-picker");
 
-        // ✅ Display correct `num`
-        const sortNum = document.createElement("span");
-        sortNum.innerHTML = `<strong>#${hue.num}</strong>`; // ✅ Keep `num`
-        sortNum.classList.add("sort-num");
+      // ✅ Display correct `num`
+      const sortNum = document.createElement("span");
+      sortNum.innerHTML = `<strong>#${hue.num}</strong>`; // ✅ Keep `num`
+      sortNum.classList.add("sort-num");
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "🗑";
-        deleteBtn.classList.add("delete-btn");
-        deleteBtn.addEventListener("click", () => {
-            this.removeHue(hue.num);
-        });
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "🗑";
+      deleteBtn.classList.add("delete-btn");
+      deleteBtn.addEventListener("click", () => {
+        this.removeHue(hue.num);
+      });
 
-        colorInput.addEventListener("input", (event) => {
-            this.updateMandColor(hue.num, event.target.value);
-        });
+      colorInput.addEventListener("input", (event) => {
+        this.updateMandColor(hue.num, event.target.value);
+      });
 
-        hueRow.appendChild(sortNum);
-        hueRow.appendChild(colorInput);
-        hueRow.appendChild(deleteBtn);
-        hueList.appendChild(hueRow);
+      hueRow.appendChild(sortNum);
+      hueRow.appendChild(colorInput);
+      hueRow.appendChild(deleteBtn);
+      hueList.appendChild(hueRow);
     });
 
     console.log("✅ Hue UI updated with new colors:", [...this.hues]); // ✅ Log after update
-}
-
+  }
 
   /**
    * Adds a new black color to the hues list and updates the UI.
@@ -205,7 +275,7 @@ export class MandArtLoader {
     console.log("📋 Current hues before adding:", [...this.hues]);
 
     if (!Array.isArray(this.hues)) {
-        this.hues = []; // ✅ Ensure hues is always an array
+      this.hues = []; // ✅ Ensure hues is always an array
     }
 
     // ✅ Clone hues to prevent unexpected mutation
@@ -229,8 +299,7 @@ export class MandArtLoader {
 
     // ✅ Refresh UI
     this.updateHueUI();
-}
-
+  }
 
   /**
    * Updates a specific MandArt color when the user selects a new color.
