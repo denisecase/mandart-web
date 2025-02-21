@@ -67,25 +67,40 @@ export function setupHeader() {
             );
           }
 
-          jsonData.hues = jsonData.hues.map((hue) => ({
-            r:
-              hue.r !== undefined
-                ? Math.round(hue.r)
-                : Math.round((hue.color?.red ?? 0) * 255),
-            g:
-              hue.g !== undefined
-                ? Math.round(hue.g)
-                : Math.round((hue.color?.green ?? 0) * 255),
-            b:
-              hue.b !== undefined
-                ? Math.round(hue.b)
-                : Math.round((hue.color?.blue ?? 0) * 255),
-          }));
+          jsonData.hues = jsonData.hues.map((hue) => {
+            if (typeof hue !== "object") {
+                console.warn("⚠️ Skipping invalid hue entry:", hue);
+                return { r: 0, g: 0, b: 0 }; // Default to black if invalid
+            }
+        
+            // If hue contains `r, g, b` directly, use those values
+            if ("r" in hue && "g" in hue && "b" in hue) {
+                return {
+                    r: Math.round(hue.r),
+                    g: Math.round(hue.g),
+                    b: Math.round(hue.b),
+                };
+            }
+        
+            // If hue has `color` nested values, extract them
+            if (hue.color && "red" in hue.color && "green" in hue.color && "blue" in hue.color) {
+                return {
+                    r: Math.round(hue.color.red * 255),
+                    g: Math.round(hue.color.green * 255),
+                    b: Math.round(hue.color.blue * 255),
+                };
+            }
+        
+            // Fallback: Log an error and return black
+            console.error("❌ Invalid hue format detected:", hue);
+            return { r: 0, g: 0, b: 0 };
+        });
+        
 
           console.log("✅ Processed MandArt JSON:", jsonData);
 
           // ✅ Load into UI
-          await readFromMandart(jsonData, file.name.replace(".mandart", ""));
+          await mandArtLoader.readFromMandart(jsonData, file.name.replace(".mandart", ""));
         } catch (error) {
           console.error("❌ Error parsing MandArt file:", error);
           alert("Invalid MandArt JSON file. Please check the format.");

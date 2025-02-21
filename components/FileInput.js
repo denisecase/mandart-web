@@ -1,3 +1,8 @@
+import { extractFileName} from "../utils/FileNameUtils.js";
+import { MandArtLoader } from "./MandArtLoader.js";
+
+const mandArtLoader = new MandArtLoader();
+
 export function setupFileInput() {
     const fileInput = document.getElementById("fileInput");
     if (!fileInput) {
@@ -10,6 +15,7 @@ export function setupFileInput() {
         const file = event.target.files[0];
         if (file) {
           console.log(`📂 Selected file: ${file.name}`);
+
           const reader = new FileReader();
           reader.onload = async (e) => {
             try {
@@ -28,7 +34,7 @@ export function setupFileInput() {
               window.currentHues = jsonData.hues;
       
               // ✅ Fix the call: Make sure `source` contains the local file name
-              const fileName = file.name.replace(".mandart", "");
+              const fileName = extractFileName(file.name);
               await mandArtLoader.loadMandArt(file.name, "", fileName);
       
               // ✅ Ensure UI updates

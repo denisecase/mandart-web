@@ -1,35 +1,32 @@
-import { createColorEditorRow } from "./ColorEditorRow.js";
 
-let hues = [];
-let mandColor = { r: 0, g: 0, b: 0 }; // Explicitly define mandColor
 
-export function setupColorEditor(getCanvas, recolorCanvas) {
-    const colorEditor = document.getElementById("colorEditor");
-    if (!colorEditor) {
-        console.error("❌ setupColorEditor: Missing #colorEditor element.");
+export function setupColorEditor(mandArtLoader, getCanvas, recolorCanvas) {
+    if (!mandArtLoader) {
+        console.error("❌ setupColorEditor: mandartLoader is undefined!");
         return;
     }
+    if (!colorEditor) {
+        console.warn("❌ setupColorEditor: Missing #getCanvas element.");
 
+    }       
+    if (!recolorCanvas) {
+        console.warn("❌ setupColorEditor: Missing #recolorCanvas element.");
+    }   
+
+    console.log("🔄 Setting up Color Editor...");
+    
+    // ✅ Preserve hues before modifying the UI
+    const previousHues = [...mandArtLoader.hues]; // Backup existing hues
+
+    // ✅ Rebuild the UI, but keep hues intact
     colorEditor.innerHTML = `
         <h2>Color Editor</h2>
-
-        <!-- Mand Color Selector -->
         <div id="mandColorContainer">
             <label for="mandColorPicker">Mand Color:</label>
             <input type="color" id="mandColorPicker" />
         </div>
-
-        <!-- Add Color & Select Mand Color -->
         <button id="addColorBtn">Add New Color</button>
-
-        <!-- Hue List -->
         <div id="hueList"></div>
-
-        <!-- GitHub Repo Link -->
-        <a href="https://github.com/denisecase/mandart-web" target="_blank" id="githubLink">
-            <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
-                 alt="(GH)" id="githubIcon" />
-        </a>
     `;
 
     const addColorBtn = document.getElementById("addColorBtn");
@@ -41,47 +38,54 @@ export function setupColorEditor(getCanvas, recolorCanvas) {
         return;
     }
 
-    addColorBtn.addEventListener("click", addNewColor);
-    mandColorPicker.addEventListener("input", updateMandColor);
+    // ✅ Restore hues after rebuilding UI
+    mandArtLoader.hues = previousHues;
+    console.log("✅ Restored hues after UI rebuild:", mandArtLoader.hues);
 
-    updateHueList();
+    updateHueList(); // ✅ Restore the list in the UI
+
+    // ✅ Add event listener for adding colors
+    addColorBtn.addEventListener("click", () => {
+        console.log("➕ In Color Editor handling click on Add New Color...");
+        console.log("📋 Current hues before adding:", [...mandArtLoader.hues]);
+
+        mandArtLoader.addNewColor(); // ✅ Modify hues inside MandArtLoader
+        updateHueList(); // ✅ Ensure UI reflects changes
+
+        if (typeof recolorCanvas === "function") recolorCanvas();
+    });
+
+    // ✅ Update mand color event listener
+    mandColorPicker.addEventListener("input", (event) => {
+        mandArtLoader.updateMandColor(0, event.target.value);
+        if (typeof recolorCanvas === "function") recolorCanvas();
+    });
 
     function updateHueList() {
         hueListDiv.innerHTML = ""; // Clear previous list
 
-        hues.forEach((hue, index) => {
-            hueListDiv.appendChild(createColorEditorRow(index, hue, updateHueColor, removeHue));
+        if (!mandArtLoader.hues || mandArtLoader.hues.length === 0) {
+            console.warn("⚠️ No hues found in mandartLoader.");
+            return;
+        }
+
+        mandArtLoader.hues.forEach((hue, index) => {
+            hueListDiv.appendChild(
+                createColorEditorRow(index, hue, updateHueColor, removeHue)
+            );
         });
 
-        console.log("✅ Color List Updated:", hues);
+        console.log("✅ Color List Updated:", mandArtLoader.hues);
     }
 
     function updateHueColor(index, hexColor) {
-        const color = hexToRgb(hexColor);
-        hues[index] = { r: color.r, g: color.g, b: color.b };
-        recolorCanvas();
+        mandArtLoader.updateMandColor(index, hexColor);
+        if (typeof recolorCanvas === "function") recolorCanvas();
     }
 
     function removeHue(index) {
-        hues.splice(index, 1);
+        mandArtLoader.removeHue(index);
         updateHueList();
-        recolorCanvas();
-    }
-
-    function addNewColor() {
-        hues.push({ r: 0, g: 0, b: 0 }); // Default black
-        updateHueList();
-        recolorCanvas();
-    }
-
-    function updateMandColor(event) {
-        mandColor = hexToRgb(event.target.value);
-        console.log("🎨 Updated Mand Color:", mandColor);
-        recolorCanvas();
-    }
-
-    function hexToRgb(hex) {
-        let bigint = parseInt(hex.substring(1), 16);
-        return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+        if (typeof recolorCanvas === "function") recolorCanvas();
     }
 }

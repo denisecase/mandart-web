@@ -60,8 +60,10 @@ export async function initApp() {
         () => window.currentHues || []
       );
     }
+
+
     setupCanvasSource();
-    setupColorEditor();
+    setupColorEditor(mandArtLoader, getCanvas, recolorCanvas);
     console.log("✅ Canvas and Color Editor Initialized.");
   } catch (error) {
     console.error("❌ Error initializing Canvas:", error);
@@ -93,9 +95,7 @@ export async function initApp() {
   }
 
   try {
-    // ✅ Load Default MandArt
     await mandArtLoader.loadDefaultMandArt();
-    console.log("✅ Default MandArt loaded successfully.");
   } catch (error) {
     console.error("❌ Failed to load default MandArt:", error);
   }

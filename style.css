@@ -75,7 +75,7 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 5px;
   min-width: 400px; /* Prevents extreme shrinking */
 }
 
@@ -184,7 +184,7 @@ header button {
 }
 
 #githubIcon:hover {
-  transform: scale(1.5);a
+  transform: scale(1.5);
 }
 
 /* Mand Color Selector */
@@ -233,7 +233,6 @@ header button:hover {
 
 /* Ensure number stays a fixed width */
 .sort-num {
-  font-weight: bold;
   min-width: 30px; /* Keeps numbers aligned */
   text-align: center;
 }
@@ -251,6 +250,7 @@ header button:hover {
 /* Delete Button  */
 .delete-btn {
   width: 30px;
+  max-width: 40px;
   height: 30px;
   font-size: 1.2rem;
   padding: 0;
