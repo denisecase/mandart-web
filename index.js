@@ -1,23 +1,26 @@
 import { initApp } from "../components/App.js";
+function updateLayout() {
+    const header = document.querySelector("header");
+    const container = document.querySelector("#container");
 
-function updateMainMargin() {
-    requestAnimationFrame(() => {
-        const header = document.querySelector("header");
-        const main = document.querySelector("main");
+    if (header && container) {
+        const headerHeight = header.offsetHeight || 120; // Default to 120px
 
-        if (header && main) {
-            const headerHeight = header.getBoundingClientRect().height; // Ensures we get the rendered height
-            main.style.marginTop = `${headerHeight}px`; // Apply correct margin
-            console.log(`📏 Adjusted margin-top of main: ${headerHeight}px`);
-        }
-    });
+        // ✅ Set CSS variable dynamically
+        document.documentElement.style.setProperty("--header-height", `${headerHeight}px`);
+
+        // ✅ Use padding-top instead of margin-top
+        container.style.paddingTop = `${headerHeight}px`;
+
+        console.log(`📏 Updated header height: ${headerHeight}px`);
+    }
 }
 
+// ✅ Apply on load & resize
 document.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Starting MandArt Web...");
-
-    // Run on page load and resize
-    setTimeout(updateMainMargin, 100); // Small delay to ensure rendering
-    window.addEventListener("resize", updateMainMargin);
+    updateLayout();
     initApp();
 });
+
+window.addEventListener("resize", updateLayout);

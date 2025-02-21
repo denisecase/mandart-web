@@ -34,21 +34,30 @@ export async function initApp() {
 
     try {
         setupHeader();
+        console.log("✅ Header setup complete.");
     } catch (error) {
         console.error("❌ Header setup failed:", error);
     }
 
     try {
         populateMandartDropdown();
+        console.log("✅ MandArt dropdown populated successfully.");
     } catch (error) {
         console.error("⚠️ Failed to populate MandArt dropdown:", error);
     }
 
-    // ✅ Load default MandArt directly
     try {
         await loadDefaultMandArt();
+        console.log("✅ Default MandArt loaded successfully.");
     } catch (error) {
         console.error("❌ Failed to load default MandArt:", error);
+    }
+
+    try {
+        await setupCatalog();
+        console.log("✅ MandArt catalog loaded successfully.");
+    } catch (error) {
+        console.error("❌ Failed to set up MandArt catalog:", error);
     }
 
     console.log("✅ MandArt Web initialized successfully.");
@@ -74,7 +83,7 @@ function initializeUIComponents(wasmModule) {
     );
   
     // ✅ Setup Header (Now moved AFTER mandArtLoader exists)
-    setupHeader(mandArtLoader.loadMandArt, populateMandartDropdown);
+    setupHeader();
   
     // ✅ Setup Other UI Components
     setupColorEditor();

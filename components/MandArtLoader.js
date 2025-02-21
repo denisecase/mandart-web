@@ -8,28 +8,46 @@ let hues = [];
 /**
  * Loads a MandArt file from a given source (URL, JSON object, or local file).
  */
-export async function loadMandArt(source, imagePath, name) {
-    console.log("📥 Loading MandArt...", { source, imagePath, name });
+export async function loadMandArt(source, imagePath = "", name = "Unnamed") {
+  console.log("📥 Loading MandArt...", { source, imagePath, name });
 
-    try {
-        let jsonData;
-        if (typeof source === "string" && (source.startsWith("http") || source.startsWith("assets/"))) {
-            console.log(`🌐 Fetching MandArt JSON from: ${source}`);
-            const response = await fetch(source);
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            jsonData = await response.json();
-            currentMandArtPath = source; // Store full path
-        } else {
-            jsonData = source; // Already parsed JSON
-            currentMandArtPath = name; // Use name for file identification
-        }
+  try {
+      let jsonData;
 
-        console.log("✅ MandArt JSON Loaded:", jsonData);
-        await readFromMandart(jsonData, name, imagePath);
-    } catch (error) {
-        console.error("❌ Failed to load MandArt:", error);
-    }
+      if (typeof source === "string") {
+          if (source.startsWith("http")) {
+              // ✅ Fetch JSON from URL
+              console.log(`🌐 Fetching MandArt JSON from URL: ${source}`);
+              const response = await fetch(source);
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+              jsonData = await response.json();
+              currentMandArtPath = source; // Store full URL path
+          } else if (source.startsWith("assets/")) {
+              // ✅ Load from local assets folder
+              console.log(`📂 Loading MandArt JSON from assets: ${source}`);
+              const response = await fetch(source);
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+              jsonData = await response.json();
+              currentMandArtPath = source; // Store local path
+          } else {
+              console.warn("⚠️ Unknown source format. Attempting to parse as JSON object.");
+              jsonData = source; // Assume it's a parsed object
+              currentMandArtPath = name; // Use name for identification
+          }
+      } else {
+          // ✅ If already a JSON object
+          jsonData = source;
+          currentMandArtPath = name;
+      }
+
+      console.log("✅ MandArt JSON Loaded:", jsonData);
+      await readFromMandart(jsonData, name, imagePath);
+  } catch (error) {
+      console.error("❌ Failed to load MandArt:", error);
+      alert("Error loading MandArt. Please check the source URL or file.");
+  }
 }
+
 
 /**
  * Processes and applies the MandArt data.

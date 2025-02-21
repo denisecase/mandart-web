@@ -1,15 +1,20 @@
+/* 🚀 GENERAL RESET */
+* {
+  box-sizing: border-box;
+}
+
 /* General Styling */
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
   padding: 0;
   background-color: #f4f4f4;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  overflow-x: hidden;
+
 }
 
-/* HEADER AND MAIN CONTENT */
+/* HEADER AND MAIN CONTENT ============================ */
 
 /* Header - fixed at top with buttons */
 header {
@@ -30,25 +35,51 @@ header {
   overflow: visible; /* Prevents extra gaps */
   height: auto; 
   min-height: 70px; /* Ensure header has a defined height */
-  transition: min-height 0.2s ease-in-out; /* Smooth transition */
+  transition: min-height 0.3s ease-in-out; /* Smooth transition */
 }
 
-/* everything below the header */
+/* 🚀 Ensure everything inside #container starts below header */
+#container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: var(--header-height, 120px); /* Set dynamically */
+  transition: padding-top 0.3s ease-in-out;
+}
 
-/* Ensure everything below the fixed header */
+/* Ensure main takes up available space and positions sidebar properly */
 main {
   display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  flex-direction: row; /* Side-by-side layout */
+  align-items: flex-start; /* Align sidebar to top */
+  justify-content: flex-start;
   width: 100%;
-  overflow: auto; /* Allow scrolling */
-  margin-top: var(--header-height, 110px); /* Default to 95px, updated by JS */
-  padding: 10px;
-  gap: 20px; /* Adds spacing between elements */
-  transition: margin-top 0.3s ease-in-out; /* Smooth adjustment */
+  padding-top: var(--header-height, 120px); /* Account for fixed header */
 }
+
+/* Sidebar (Color Editor) - Keep it aligned properly */
+#colorEditor {
+  width: 300px;
+  background: white;
+  padding: 15px;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  height: calc(100vh - var(--header-height, 120px)); /* Full height minus header */
+  position: relative; /* Ensure it stays inside the container */
+}
+
+/* Main Content Section (Canvas) - Ensure it takes remaining space */
+#canvasSection {
+  flex-grow: 1; /* Takes up remaining space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-width: 400px; /* Prevents extreme shrinking */
+}
+
+
 
 /** HEADER STUFF **/
 
@@ -91,6 +122,17 @@ main {
   gap: 8px;
 }
 
+
+/* Ensure first 3 buttons always stay in the first row */
+.header-buttons button:nth-child(1),
+.header-buttons button:nth-child(2),
+.header-buttons button:nth-child(3) {
+  order: -1; /* Always prioritize these first */
+  flex-shrink: 1; /* Allow them to shrink if necessary */
+  min-width: 80px; /* Ensure they stay visible */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
 /* Prevent buttons from being too large */
 .header-buttons button,
 .header-buttons select {
@@ -106,7 +148,6 @@ header h1 {
   text-align: center;
 }
 
-
 header button {
   background-color: #007bff;
   color: white;
@@ -120,18 +161,6 @@ header button {
 }
 
 /** MAIN CONTENT - sidebar color editor and canvas section **/
-
-/* Sidebar (Color Editor) */
-/* Sidebar (Color Editor) */
-#colorEditor {
-  width: 300px;
-  background: white;
-  padding: 15px;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-  flex-shrink: 0;
-  overflow-y: auto;
-  height: calc(100vh - 110px); /* Full height minus header */
-}
 
 /* Ensure buttons in sidebar don’t stretch */
 #colorEditor button {
@@ -155,7 +184,7 @@ header button {
 }
 
 #githubIcon:hover {
-  transform: scale(1.5);
+  transform: scale(1.5);a
 }
 
 /* Mand Color Selector */
@@ -252,7 +281,7 @@ header button:hover {
 #mandelbrotCanvas {
   background-color: #28a745;
   width: 90%;
-  max-width: 800px;
+  max-width: 1200px;
   height: auto;
   min-height: 500px;
   display: block;
@@ -264,7 +293,7 @@ header button:hover {
   position: fixed;
   z-index: 100;
   left: 50%;
-  top: 10vh; /* Keep it near the top, about even with the page header */
+  top: 20vh; /* Keep it near the top, about even with the page header */
   transform: translateX(-50%);
   width: 30%;
   max-width: 150px; /* Narrower modal to fit one image per row */
@@ -341,20 +370,27 @@ header button:hover {
     align-items: center;
   }
 
-  .header-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
+/* Ensure buttons are grouped together and can wrap */
+.header-buttons {
+  display: flex;
+  flex-wrap: wrap; /* Allows multiple buttons per row */
+  justify-content: center; /* Centers buttons horizontally */
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 900px; /* Prevents extreme stretching */
+  padding: 5px 0;
+}
 
-  main {
-    flex-direction: column;
-  }
-
+ 
   #colorEditor {
-    width: 100%;
+    width: 100%; /* Full width on small screens */
+    height: auto; /* Let it adjust */
   }
 
   #canvasSection {
+    width: 100%; /* Full width under aside */
+    min-width: unset; /* Allow full responsiveness */
     padding: 10px;
   }
   .modal {

@@ -1,83 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MandArt Web</title>
     <link rel="shortcut icon" href="./favicon.ico" />
     <link rel="stylesheet" href="./style.css" />
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Fixed Header (No Nested <header>) -->
     <header id="header"></header>
-
-    <main>
+    <div id="container">
+      <main>
         <!-- Sidebar for Color Editing -->
         <aside id="colorEditor">
-            <h2>Color Editor</h2>
+          <h2>Color Editor</h2>
 
-            <!-- Mand Color Selector -->
-            <div id="mandColorContainer">
-                <label for="mandColorPicker">Mand Color:</label>
-                <input type="color" id="mandColorPicker" />
-            </div>
+          <!-- Mand Color Selector -->
+          <div id="mandColorContainer">
+            <label for="mandColorPicker">Mand Color:</label>
+            <input type="color" id="mandColorPicker" />
+          </div>
 
-            <!-- Add Color & Select Mand Color -->
-            <button id="addColorBtn">Add New Color</button>
+          <!-- Add Color & Select Mand Color -->
+          <button id="addColorBtn">Add New Color</button>
 
-            <!-- Hue List -->
-            <div id="hueList"></div>
+          <!-- Hue List -->
+          <div id="hueList"></div>
 
-            <!-- GitHub Repo Link -->
-            <a href="https://github.com/denisecase/mandart-web" target="_blank" id="githubLink">
-                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
-                     alt="(GH)" id="githubIcon" />
-            </a>
+          <!-- GitHub Repo Link -->
+          <a
+            href="https://github.com/denisecase/mandart-web"
+            target="_blank"
+            id="githubLink"
+          >
+            <img
+              src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              alt="(GH)"
+              id="githubIcon"
+            />
+          </a>
         </aside>
 
         <!-- Main Content: Canvas + Controls -->
         <section id="canvasSection">
-            <h2 id="drawingName">Title Will Appear Here (Loading...)</h2>
-            <h2 id="notice">(Temporary Placeholder)</h2>
-            <canvas id="mandelbrotCanvas"></canvas>
-
-           
+          <h2 id="drawingName">Title Will Appear Here (Loading...)</h2>
+          <h2 id="notice">(Temporary Placeholder)</h2>
+          <canvas id="mandelbrotCanvas"></canvas>
         </section>
 
         <!-- Hidden File Input for Local Uploads -->
-        <input type="file" id="fileInput" style="display: none" accept=".mandart" />
+        <input
+          type="file"
+          id="fileInput"
+          style="display: none"
+          accept=".mandart"
+        />
 
         <!-- Catalog Modal (Hidden by Default) -->
         <aside id="catalogModal" class="modal">
-            <div class="modal-content">
-                <span id="catalogCloseBtn" class="modal-close-btn">&times;</span>
-                <h2>MandArt Catalog</h2>
-                <div id="mandartList" class="grid-container"></div>
-            </div>
+          <div class="modal-content">
+            <span id="catalogCloseBtn" class="modal-close-btn">&times;</span>
+            <h2>MandArt Catalog</h2>
+            <div id="mandartList" class="grid-container"></div>
+          </div>
         </aside>
-    </main>
+      </main>
 
-    <!-- Hue Row Template (for dynamically adding colors) -->
-    <template id="hueRowTemplate">
+      <!-- Hue Row Template (for dynamically adding colors) -->
+      <template id="hueRowTemplate">
         <div class="hue-row">
-            <span class="sort-num">#</span>
-            <input type="color" class="color-picker" />
-            <button class="delete-btn">🗑</button>
+          <span class="sort-num">#</span>
+          <input type="color" class="color-picker" />
+          <button class="delete-btn">🗑</button>
         </div>
-    </template>
+      </template>
 
-    <!-- Load WASM Module -->
-    <script type="module">
+      <!-- Load WASM Module -->
+      <script type="module">
         import init, { initSync } from "./wasm/mandart_engine_rust.js";
         init().then(() => {
-            initSync();
+          initSync();
         });
-    </script>
+      </script>
 
-    <!-- Component-Based Modular Scripts -->
-    <script type="module" src="./wasm/mandart_engine_rust.js"></script>
-    <script type="module" src="./components/App.js"></script>
-    
-</body>
+      <!-- Component-Based Modular Scripts -->
+      <script type="module" src="./wasm/mandart_engine_rust.js"></script>
+      <script type="module" src="./components/App.js"></script>
+    </div>
+  </body>
 </html>
