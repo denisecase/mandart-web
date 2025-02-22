@@ -27,6 +27,18 @@ export function setupColorEditor(mandArtLoader, recolorCanvas) {
         </div>
         <button id="addColorBtn">Add New Color</button>
         <div id="hueList"></div>
+         <!-- GitHub Repo Link -->
+        <a
+          href="https://github.com/denisecase/mandart-web"
+          target="_blank"
+          id="githubLink"
+        >
+          <img
+            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+            alt="(GH)"
+            id="githubIcon"
+          />
+        </a>
     `;
 
     const addColorBtn = document.getElementById("addColorBtn");
