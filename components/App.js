@@ -1,125 +1,59 @@
-// ✅ Import Dependencies
+// App.js
 import { setupCanvas, setupCanvasWithWasm } from "./Canvas.js";
 import { setupColorEditor } from "./ColorEditor.js";
 import { setupHeader } from "./Header.js";
-import { setupCanvasSource, updateCanvasSource } from "./CanvasSource.js";
+import { setupCanvasSource } from "./CanvasSource.js";
 import { setupCatalog } from "./Catalog.js";
-import { setupFileInput } from "./FileInput.js";
-
 import { loadWasm } from "../utils/WasmLoader.js";
 import { MandArtLoader } from "./MandArtLoader.js";
 import {
-  loadMandArtList,
-  populateMandartDropdown,
+    loadMandArtList,
+    populateMandartDropdown,
 } from "../utils/MandArtList.js";
 
-// Assume we have a function that returns the currently loaded MandArt
-function getCurrentMandArt() {
-  return window.currentMandArt || null; // Ensure global access
-}
-
-// 🌍 Store `updateCanvasSource` globally
-window.canvasSourceFunctions = setupCanvasSource();
-
-// ✅ Global MandArt Loader Instance
-const mandArtLoader = new MandArtLoader();
-
-// ✅ Ensure app initializes after DOM loads
+window.mandArtLoader = new MandArtLoader();
 document.addEventListener("DOMContentLoaded", initApp);
 
-// ✅ Initialize the MandArt Web App
 export async function initApp() {
-  console.log("🚀 Initializing MandArt Web...");
 
-  // ✅ Ensure global MandArt name storage
-  window.currentMandArtPath = "No MandArt Loaded";
+    try {
+        console.log("🚀 Initializing MandArt Web...");
+        setupCanvasSource();
+        setupHeader();
+        console.log("✅ Header Setup Complete.");
 
-  // ✅ Initialize the UI components first
-  setupCanvasSource();
+        const wasmModule = await loadWasm();
+        if (!wasmModule) {
+            console.warn("⚠️ WASM not loaded, using fallback mode");
+            setupCanvas();
+        } else {
+            console.log("✅ WASM Loaded Successfully");
+            setupCanvasWithWasm(wasmModule);
+        }
 
-  let canvasFunctions = null;
-  let wasmModule = null;
+        setupColorEditor();
+        await setupCatalog();
 
-  try {
-    wasmModule = await loadWasm();
-    if (!wasmModule) throw new Error("⚠️ WASM module failed to initialize.");
-    console.log("✅ WASM Loaded Successfully.");
-  } catch (error) {
-    console.warn("⚠️ WASM failed to load. Using fallback mode:", error);
-  }
+        const mandArtList = await loadMandArtList();
+        if (Array.isArray(mandArtList) && mandArtList.length > 0) {
+            console.log(`🎨 Found ${mandArtList.length} items...`);
+            populateMandartDropdown("mandartSelect", mandArtList);
+        }
 
-  try {
-    setupHeader();
-    await setupFileInput();
-    console.log("✅ Header and File Input Setup Complete.");
-  } catch (error) {
-    console.error("❌ Error setting up header and file input:", error);
-  }
+        try {
+            await window.mandArtLoader.loadDefaultMandArt();
+            console.log("✅ Default MandArt loaded successfully");
+        } catch (error) {
+            console.error("⚠️ Could not load default MandArt:", error);
+            // App can continue - UI will show "No MandArt Loaded"
+        }
 
-  const mandartSelect = document.getElementById("mandartSelect");
-  if (!mandartSelect) {
-    console.warn(
-      "⚠️ mandartSelect not found! Waiting for the DOM to fully load..."
-    );
-    await new Promise((resolve) => setTimeout(resolve, 100)); // Slight delay
-  }
-
-  try {
-    // ✅ Try to use WASM first, fallback to JavaScript if unavailable
-    if (wasmModule) {
-      canvasFunctions = setupCanvasWithWasm(wasmModule);
-    } else {
-      canvasFunctions = setupCanvas(
-        () => window.currentMandArt,
-        () => window.currentHues || []
-      );
+        console.log("✅ MandArt Web initialized successfully.");
+    } catch (error) {
+        console.error("❌ Critical initialization error:", error);
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'error-message';
+        errorMsg.textContent = 'Failed to initialize MandArt Web. Please refresh the page.';
+        document.body.appendChild(errorMsg);
     }
-
-    // ✅ Initialize Main Components (below heade)
-
-    setupCanvasSource();
-    setupColorEditor(mandArtLoader);
-    console.log("✅ Canvas and Color Editor Initialized.");
-  } catch (error) {
-    console.error("❌ Error initializing Canvas:", error);
-  }
-
-  try {
-    // ✅ Setup Catalog
-    await setupCatalog();
-    console.log("✅ MandArt catalog loaded successfully.");
-  } catch (error) {
-    console.error("❌ Failed to set up MandArt catalog:", error);
-  }
-
-  try {
-    // ✅ Now load Default MandArt, AFTER UI is set up
-    console.log("📌 Loading Default MandArt at the end of UI setup...");
-    await mandArtLoader.loadDefaultMandArt();
-  } catch (error) {
-    console.error("❌ Failed to load default MandArt:", error);
-  }
-
-  try {
-    // ✅ Fetch MandArt List & Populate Dropdown
-    const mandArtList = await loadMandArtList();
-
-    if (!Array.isArray(mandArtList) || mandArtList.length === 0) {
-      throw new Error("❌ No MandArt list available or it's not an array.");
-    }
-
-    console.log(`🎨 Found ${mandArtList.length} items...`);
-    populateMandartDropdown("mandartSelect", mandArtList);
-    console.log("✅ MandArt dropdown populated successfully.");
-  } catch (error) {
-    console.error("❌ Failed to load MandArt list:", error);
-  }
-
-  window.canvasSourceFunctions = {
-    updateCanvasSource
-};
-setupCanvasSource(getCurrentMandArt);
-
-
-  console.log("✅ MandArt Web initialized successfully.");
 }

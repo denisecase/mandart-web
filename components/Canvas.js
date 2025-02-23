@@ -47,9 +47,7 @@ export function setupCanvasWithWasm(wasmModule) {
     };
 }
 
-/**
- * ✅ JavaScript Fallback (if WASM is unavailable).
- */
+
 export function setupCanvas(getPicdef, getHues) {
     console.log("🎨 Initializing JavaScript Canvas...");
     
@@ -105,3 +103,34 @@ export function setupCanvas(getPicdef, getHues) {
         drawWithJavaScript,
     };
 }
+
+function recolorCanvas() {
+    console.log("🎨 Recoloring canvas...");
+
+    // Get the current MandArt and grid data
+    const mandArt = window.mandArtLoader.currentMandArt;
+    if (!mandArt) {
+        console.warn("⚠️ No MandArt data available for recoloring");
+        return;
+    }
+
+    // Assuming you have the grid data stored
+    const grid = window.currentGrid; // Make sure this is set when you first calculate the grid
+    if (!grid) {
+        console.warn("⚠️ No grid data available for recoloring");
+        return;
+    }
+
+    // Call WASM color_grid function
+    try {
+        const result = window.wasmModule.color_grid(grid, mandArt.hues);
+        // Update the canvas with the new colors
+        // ... your canvas update code here
+        console.log("✅ Canvas recolored successfully");
+    } catch (error) {
+        console.error("❌ Error recoloring canvas:", error);
+    }
+}
+
+// Export the function to make it available to other modules
+export { recolorCanvas };

@@ -1,0 +1,19 @@
+
+    Directory: C:\Users\edaci\Documents\mandart-web\utils
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---           2/22/2025 11:29 AM           3670 ArtUtils.js
+-a---           2/22/2025 11:29 AM           2375 CatalogUtils.js
+-a---           2/22/2025 11:29 AM           1153 ColorUtils.js
+-a---           2/22/2025 11:29 AM           1731 FileNameUtils.js
+-a---           2/22/2025 11:29 AM           2652 FileUtils.js
+-a---           2/22/2025 11:29 AM           1931 GridUtils.js
+-a---           2/22/2025 11:29 AM            467 HueUtils.js
+-a---           2/22/2025 11:29 AM           1976 ImageUtils.js
+-a---           2/22/2025 11:29 AM           1785 MandArtList.js
+-a---           2/22/2025 11:29 AM            778 PathUtils.js
+-a---           2/22/2025  1:22 PM              0 utils.txt
+-a---           2/22/2025 11:29 AM           1286 WasmLoader.js
+-a---           2/22/2025 11:29 AM           1673 WasmUtils.js
+

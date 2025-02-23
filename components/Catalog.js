@@ -1,5 +1,4 @@
 import {
-  isCatalogOpen,
   setCatalogOpen,
   getSelectedMandArt,
   getMandArtCatalogUrl,
@@ -14,8 +13,8 @@ const mandArtLoader = new MandArtLoader();
  */
 export async function loadMandArtCatalog() {
   try {
-    const catalogUrl = getMandArtCatalogUrl(); 
-    const catalogBasePath = getMandArtCatalogBaseUrl(); 
+    const catalogUrl = getMandArtCatalogUrl();
+    const catalogBasePath = getMandArtCatalogBaseUrl();
     console.log("📂 Fetching MandArt discoveries JSON list from:", catalogUrl);
 
     const response = await fetch(catalogUrl);
@@ -31,11 +30,11 @@ export async function loadMandArtCatalog() {
     }
 
     listContainer.innerHTML = ""; // Clear previous content
-  
+
 
     data.forEach((item) => {
-      const imagePath = `${catalogBasePath}/${item.name}.png`; 
-      const mandartPath = `${catalogBasePath}/${item.name}.mandart`; 
+      const imagePath = `${catalogBasePath}/${item.name}.png`;
+      const mandartPath = `${catalogBasePath}/${item.name}.mandart`;
 
       const itemDiv = document.createElement("div");
       itemDiv.className = "mandart-item";
@@ -50,19 +49,18 @@ export async function loadMandArtCatalog() {
 
       itemDiv.addEventListener("click", async () => {
         console.log(`🎨 Loading selected MandArt: ${item.name}`);
+   
+        try {
+          await window.mandArtLoader.loadFromAnywhere(item.name, 'catalog');
 
-        const filePath = `assets/MandArt_Catalog/${item.name}.mandart`;
-        const imagePath = `assets/MandArt_Catalog/${item.name}.png`;
+          if (window.canvasFunctions?.draw) {
+            window.canvasFunctions.draw();
+          }
 
-        // ✅ Fix: Ensure correct arguments
-        await mandArtLoader.loadMandArt(filePath, imagePath, item.name);
-
-        // ✅ Ensure UI updates
-        if (window.canvasFunctions?.draw) {
-          window.canvasFunctions.draw();
+          closeCatalogModal();
+        } catch (error) {
+          console.error("❌ Error loading selected MandArt:", error);
         }
-
-        closeCatalogModal();
       });
 
       listContainer.appendChild(itemDiv);
@@ -85,7 +83,6 @@ export function setupCatalog() {
   const openCatalogBtn = document.getElementById("openListBtn"); // Ensure button is correctly referenced
   const mandartList = document.getElementById("mandartList");
 
-  // ✅ Validate required elements
   if (!catalogModal || !catalogCloseBtn || !mandartList) {
     console.error("❌ setupCatalog: Missing required UI elements.");
     return;
@@ -93,7 +90,6 @@ export function setupCatalog() {
 
   console.log("✅ MandArt Catalog Ready.");
 
-  // ✅ Handle Showing and Hiding Modal
   function showCatalogModal() {
     console.log("📂 Opening Catalog Modal...");
     catalogModal.style.display = "block";
@@ -106,7 +102,6 @@ export function setupCatalog() {
     setCatalogOpen(false);
   }
 
-  // ✅ Ensure `mandartSelect` exists or create it dynamically
   let mandartSelect = document.getElementById("mandartSelect");
   if (!mandartSelect) {
     console.warn("⚠️ mandartSelect not found! Creating dynamically...");
@@ -116,13 +111,11 @@ export function setupCatalog() {
     catalogModal.insertBefore(mandartSelect, mandartList);
   }
 
-  // ✅ Handle selection change
   function handleSelectionChange() {
     const selectedMandArt = getSelectedMandArt();
     console.log(`🎨 Selected MandArt: ${selectedMandArt}`);
   }
 
-  // ✅ Attach Event Listeners
   catalogCloseBtn.addEventListener("click", closeCatalogModal);
   mandartSelect.addEventListener("change", handleSelectionChange);
 
@@ -132,7 +125,6 @@ export function setupCatalog() {
     console.warn("⚠️ Open Catalog button not found.");
   }
 
-  // ✅ Populate MandArt Dropdown and Catalog
   loadMandArtCatalog();
 
   return {

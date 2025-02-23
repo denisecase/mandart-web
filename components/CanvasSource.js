@@ -1,4 +1,9 @@
-export function setupCanvasSource(getCurrentMandArt) {
+// CanvasSource.js
+
+let drawingNameElement = null;
+let sourcePathElement = null;
+
+export function setupCanvasSource() {
     console.log("🎨 Initializing Canvas Source...");
 
     const titleContainer = document.getElementById("canvasSourceContainer");
@@ -8,38 +13,31 @@ export function setupCanvasSource(getCurrentMandArt) {
     }
 
     titleContainer.innerHTML = `
-        <h2 id="drawingName">Default</h2>
-       <p id="sourcePath">source</p> 
+        <h2 id="drawingName">No MandArt Loaded</h2>
+        <p id="sourcePath">No source loaded</p>
     `;
 
-    const drawingNameElement = document.getElementById("drawingName");
-    const sourcePathElement = document.getElementById("sourcePath");
+    drawingNameElement = document.getElementById("drawingName");
+    sourcePathElement = document.getElementById("sourcePath");
+
+    // Subscribe to MandArtLoader updates
+    window.mandArtLoader.addUIUpdateCallback(updateDisplay);
+
+    // Return cleanup function
+    return () => {
+        drawingNameElement = null;
+        sourcePathElement = null;
+    };
 }
 
-export function updateCanvasSource() {
-    if (typeof getCurrentMandArt !== "function") {
-        console.error("❌ setupCanvasSource: getCurrentMandArt is not a function.");
-        return;
-    }
-    const mandart = getCurrentMandArt();
-
-    if (!mandart) {
-        console.warn("⚠️ No MandArt loaded. Resetting title and source.");
-        drawingNameElement.textContent = "No MandArt Loaded";
-        sourcePathElement.textContent = "No source loaded)";
+function updateDisplay(data) {
+    if (!drawingNameElement || !sourcePathElement) {
+        console.error("❌ updateDisplay: UI elements not initialized.");
         return;
     }
 
-    const mandartName = mandart.name?.trim() ? mandart.name : "Untitled MandArt";
-   // const mandartSource = mandart.source?.trim() ? mandart.source : "(Unknown Source)";
-    const mandartSource = window.getCurrentMandArt;
-    
-    console.log(`🎨 Updating Canvas Source: ${mandartName}, Source: ${mandartSource}`);
+    console.log("🎨 Updating Canvas Source display:", data);
 
-    drawingNameElement.textContent = mandartName;
-    sourcePathElement.textContent = mandartSource;
-}
-
-function dispose() {
-    titleContainer.innerHTML = "";
+    drawingNameElement.textContent = data.displayName;
+    sourcePathElement.textContent = data.sourcePath;
 }

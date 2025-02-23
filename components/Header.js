@@ -1,28 +1,29 @@
+// Header.js
+import { closeCatalogModal } from "./Catalog.js";
+import { openUrlPrompt } from "./UrlPrompt.js";
 import {
   saveMandArtFile,
   saveCanvasAsPNG,
   exportGridToCSV,
 } from "../utils/FileUtils.js";
-import { setupCatalog , closeCatalogModal} from "./Catalog.js";
-import { MandArtLoader } from "./MandArtLoader.js";
-import { openUrlPrompt } from "./UrlPrompt.js";
-import { loadMandArtList, populateMandartDropdown } from "../utils/MandArtList.js";
 
-const defaultURL =
-  "https://raw.githubusercontent.com/denisecase/MandArt-Discoveries/main/brucehjohnson/frame_pix/Frame54.mandart";
-const mandArtLoader = new MandArtLoader();
-/**
- * Sets up the header with buttons and event listeners.
- */
+const defaultURL = "https://raw.githubusercontent.com/denisecase/MandArt-Discoveries/main/brucehjohnson/frame_pix/Frame54.mandart";
+
 export function setupHeader() {
   console.log("🔍 Running setupHeader()...");
 
   const header = document.getElementById("header");
+  const fileInput = document.getElementById("fileInput");
+
   if (!header) {
     console.error("❌ Header element not found in the DOM.");
     return;
   }
-  console.log("✅ Found header element:", header);
+
+  if (!fileInput) {
+    console.error("❌ File input element not found in the DOM.");
+    return;
+  }
 
   header.innerHTML = `
         <h1>MandArt Web</h1>
@@ -35,7 +36,6 @@ export function setupHeader() {
             </select>
             <button id="loadMandartBtn">Go</button>
         </div>
-
         <div class="header-buttons">
             <button id="saveMandArtBtn">Save Inputs</button>
             <button id="savePNGBtn">Export PNG</button>
@@ -43,110 +43,108 @@ export function setupHeader() {
         </div>
     `;
 
-
-
-  // ✅ File Input Handling (Hidden File Selector)
-  const fileInput = document.getElementById("fileInput");
+  // File Input Handler
   document.getElementById("openFileBtn")?.addEventListener("click", () => {
+    console.log("CLICK Open from File button.");
     fileInput?.click();
   });
 
+  // File Input Handler
   fileInput?.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      console.log(`📂 Selected file: ${file.name}`);
-      const reader = new FileReader();
-      reader.onload = async (e) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      try {
+        // Read file contents using the utility function
+        const fileContents = await readFileContents(selectedFile);
+
+        console.log("Selected file:", selectedFile.name);
+        console.log("File contents length:", fileContents.length);
+
+        // Parse JSON before passing it to loadFromAnywhere
+        let jsonData;
         try {
-          let jsonData = JSON.parse(e.target.result);
-
-          // ✅ Validate and Normalize Hues
-          if (!jsonData.hues || !Array.isArray(jsonData.hues)) {
-            throw new Error(
-              "❌ Invalid MandArt file: 'hues' array missing or not an array."
-            );
-          }
-
-          jsonData.hues = jsonData.hues.map((hue) => {
-            if (typeof hue !== "object") {
-                console.warn("⚠️ Skipping invalid hue entry:", hue);
-                return { r: 0, g: 0, b: 0 }; // Default to black if invalid
-            }
-        
-            // If hue contains `r, g, b` directly, use those values
-            if ("r" in hue && "g" in hue && "b" in hue) {
-                return {
-                    r: Math.round(hue.r),
-                    g: Math.round(hue.g),
-                    b: Math.round(hue.b),
-                };
-            }
-        
-            // If hue has `color` nested values, extract them
-            if (hue.color && "red" in hue.color && "green" in hue.color && "blue" in hue.color) {
-                return {
-                    r: Math.round(hue.color.red * 255),
-                    g: Math.round(hue.color.green * 255),
-                    b: Math.round(hue.color.blue * 255),
-                };
-            }
-        
-            // Fallback: Log an error and return black
-            console.error("❌ Invalid hue format detected:", hue);
-            return { r: 0, g: 0, b: 0 };
-        });
-        
-
-          console.log("✅ Processed MandArt JSON:", jsonData);
-
-          // ✅ Load into UI
-          await mandArtLoader.readFromMandart(jsonData, file.name.replace(".mandart", ""));
+            jsonData = JSON.parse(fileContents);
+            console.log("✅ Parsed MandArt JSON:", jsonData);
         } catch (error) {
-          console.error("❌ Error parsing MandArt file:", error);
-          alert("Invalid MandArt JSON file. Please check the format.");
+            console.error("❌ Error parsing MandArt file:", error);
+            alert("Invalid MandArt file format.");
+            return; // Stop execution if JSON is invalid
         }
-      };
-      reader.readAsText(file);
+
+        // ❌ REMOVE any direct calls to loadMandArt
+        // Correct: Only call loadFromAnywhere
+        await window.mandArtLoader.loadFromAnywhere(
+            selectedFile,
+            'file',
+            jsonData
+        );
+
+
+        // Clear the file input to allow selecting the same file again
+        event.target.value = '';
+      } catch (error) {
+        console.error("❌ Error loading file:", error);
+        alert(`Failed to load MandArt file: ${error.message}`);
+      }
     }
   });
 
-  // ✅ Handle Open List (Modal)
-  document.getElementById("openListBtn")?.addEventListener("click", () => {
-    console.log("📦 Opening Catalog Modal...");
-    document.getElementById("catalogModal").style.display = "block";
-    setupCatalog();
-  });
+  // Utility function to read file contents
+  async function readFileContents(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(new Error('Error reading file'));
+      reader.readAsText(file);
+    });
+  }
 
-  // ✅ Handle URL Input (with default URL)
+  // URL Handler
   document.getElementById("openUrlBtn")?.addEventListener("click", async () => {
+    console.log("CLICK Open from URL button.");
     const url = await openUrlPrompt(defaultURL);
     if (url) {
-      console.log("🌐 Loading MandArt from URL:", url);
-      await mandArtLoader.loadMandArt(url, "", "Custom URL");
+      try {
+        await window.mandArtLoader.loadFromAnywhere(url, 'url');
+      } catch (error) {
+        console.error("❌ Error loading URL:", error);
+        alert(`Failed to load MandArt from URL: ${error.message}`);
+      }
     }
   });
 
-  // ✅ Handle MandArt Dropdown Selection
-  document
-    .getElementById("loadMandartBtn")
-    ?.addEventListener("click", async () => {
-      const selectedValue = document.getElementById("mandartSelect")?.value;
-      if (selectedValue) {
+  // List Handler
+  document.getElementById("openListBtn")?.addEventListener("click", () => {
+    console.log("CLICK Open from List button.");
+    document.getElementById("catalogModal").style.display = "block";
+  });
+
+  // Dropdown Handler
+  document.getElementById("loadMandartBtn")?.addEventListener("click", async () => {
+    console.log("CLICK Go button after selecting from dropdown list.");
+    const selectedValue = document.getElementById("mandartSelect")?.value;
+    if (selectedValue) {
+      try {
         const filePath = `assets/MandArt_Catalog/${selectedValue}.mandart`;
         const imagePath = `assets/MandArt_Catalog/${selectedValue}.png`;
-        await mandArtLoader.loadMandArt(filePath, imagePath, selectedValue);
-        closeCatalogModal(); // ✅ Close modal when selection is confirmed
-      } else {
-        alert("Please select a MandArt file first.");
+        await window.mandArtLoader.loadMandArt(filePath, imagePath, selectedValue);
+        closeCatalogModal();
+      } catch (error) {
+        console.error("❌ Error loading selected MandArt:", error);
+        alert("Failed to load selected MandArt.");
       }
-    });
+    } else {
+      alert("Please select a MandArt file first.");
+    }
+  });
 
-  // ✅ Save & Export Buttons
+  // Save/Export Handlers............................
+
   document.getElementById("saveMandArtBtn")?.addEventListener("click", () => {
-    if (window.currentMandArt) {
-      let filename = mandArtLoader.getActiveFilename("mandart");
-      saveMandArtFile(window.currentMandArt, filename);
-      console.log(`✅ MandArt saved as '${filename}'.`);
+    const currentMandArt = window.mandArtLoader.getCurrentMandArt();
+    if (currentMandArt) {
+      const filename = window.mandArtLoader.getDisplayName();
+      saveMandArtFile(currentMandArt, filename);
     } else {
       alert("No MandArt loaded to save.");
     }
@@ -156,7 +154,6 @@ export function setupHeader() {
     const canvas = document.getElementById("mandelbrotCanvas");
     if (canvas) {
       saveCanvasAsPNG(canvas);
-      console.log("✅ PNG exported successfully.");
     } else {
       alert("No canvas found to export.");
     }
@@ -165,7 +162,6 @@ export function setupHeader() {
   document.getElementById("saveGridBtn")?.addEventListener("click", () => {
     if (window.currentGrid) {
       exportGridToCSV(window.currentGrid);
-      console.log("✅ Grid exported successfully.");
     } else {
       alert("No grid data available to export.");
     }
