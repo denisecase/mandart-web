@@ -1,4 +1,4 @@
-// utils/FileNmaeUtils.js
+// utils/FileNameUtils.js
 
 /**
  * Converts a MandArt filename to a different format.
