@@ -26,15 +26,14 @@ export function setupHeader() {
   }
 
   header.innerHTML = `
-        <h1>MandArt Web</h1>
+        <h1>MandArt Web (Under Construction) </h1>
         <div class="header-buttons">
-            <button id="openFileBtn">Open from File...</button>
-            <button id="openUrlBtn">Open from URL...</button>
-            <button id="openListBtn">Open from List...</button>
+          <button id="openListBtn">Open from Catalog</button>
             <select id="mandartSelect">
                 <option value="">Select a MandArt</option>
             </select>
-            <button id="loadMandartBtn">Go</button>
+            <button id="openUrlBtn">Open from URL...</button>
+            <button id="openFileBtn">Open from File...</button>
         </div>
         <div class="header-buttons">
             <button id="saveMandArtBtn">Save Inputs</button>
@@ -113,16 +112,11 @@ export function setupHeader() {
     }
   });
 
-  // List Handler
-  document.getElementById("openListBtn")?.addEventListener("click", () => {
-    console.log("CLICK Open from List button.");
-    document.getElementById("catalogModal").style.display = "block";
-  });
 
   // Dropdown Handler
-  document.getElementById("loadMandartBtn")?.addEventListener("click", async () => {
-    console.log("CLICK Go button after selecting from dropdown list.");
-    const selectedValue = document.getElementById("mandartSelect")?.value;
+  document.getElementById("mandartSelect")?.addEventListener("change", async (event) => {
+    console.log("CLICK selection on dropdown list.");
+    const selectedValue =  event.target.value;
     if (selectedValue) {
       try {
         const filePath = `assets/MandArt_Catalog/${selectedValue}.mandart`;

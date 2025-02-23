@@ -47,4 +47,3 @@ export function populateMandartDropdown(selectElementId, mandArtList) {
     console.error("❌ Failed to populate MandArt dropdown:", error);
   }
 }
-

@@ -31,6 +31,8 @@ export async function loadMandArtCatalog() {
 
     listContainer.innerHTML = ""; // Clear previous content
 
+    // Sort data alphabetically by name
+    data.sort((a, b) => a.name.localeCompare(b.name));
 
     data.forEach((item) => {
       const imagePath = `${catalogBasePath}/${item.name}.png`;
@@ -49,7 +51,7 @@ export async function loadMandArtCatalog() {
 
       itemDiv.addEventListener("click", async () => {
         console.log(`🎨 Loading selected MandArt: ${item.name}`);
-   
+
         try {
           await window.mandArtLoader.loadFromAnywhere(item.name, 'catalog');
 
@@ -96,11 +98,7 @@ export function setupCatalog() {
     setCatalogOpen(true);
   }
 
-  function closeCatalogModal() {
-    console.log("📦 Closing Catalog Modal...");
-    catalogModal.style.display = "none";
-    setCatalogOpen(false);
-  }
+
 
   let mandartSelect = document.getElementById("mandartSelect");
   if (!mandartSelect) {
@@ -130,7 +128,6 @@ export function setupCatalog() {
   return {
     loadMandArtCatalog,
     showCatalogModal,
-    closeCatalogModal,
     handleSelectionChange,
   };
 }
