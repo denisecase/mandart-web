@@ -60,8 +60,6 @@ export async function initApp() {
 
         try {
             await window.mandArtLoader.loadDefaultMandArt();
-            console.log("✅ Default MandArt loaded successfully");
-
             if (typeof drawWithJavaScript !== "function") {
                 console.error("❌ drawWithJavaScript is NOT a function! Canvas will not update.");
             }

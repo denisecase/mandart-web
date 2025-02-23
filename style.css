@@ -1,3 +1,6 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+
 /* ==========================================
    🚀 TABLE OF CONTENTS
    1. CSS VARIABLES
@@ -325,7 +328,7 @@
     width: 30px;
     max-width:40px;
     height: 30px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     padding: 0;
     margin: 5px;
     border: none;
@@ -555,12 +558,6 @@
     background-color: #bbb;
   }
 
-  /* Add this import at the top of your CSS file */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-
-
-
-/* Add this class to your delete button HTML: class="delete-btn fas fa-trash" */
   
   /* ==========================================
      8. COMPONENTS & WIDGETS

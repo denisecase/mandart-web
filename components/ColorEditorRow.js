@@ -8,7 +8,7 @@ export function createColorEditorRow(index, hue, updateHue, removeHue) {
     hueDiv.innerHTML = `
         <span class="hue-index">${hue.num}</span>
         <input type="color" class="hue-picker" value="${rgbToHex(hue.r, hue.g, hue.b)}" data-index="${index}">
-        <button class="delete-btn" title="Remove Color">🗑</button>
+        <button class="delete-btn fas fa-trash" title="Remove Color"></button>
     `;
 
     const colorInput = hueDiv.querySelector(".hue-picker");

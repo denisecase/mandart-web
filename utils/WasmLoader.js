@@ -16,6 +16,7 @@ const wasmPath = isGitHubPages
 /**
  * Loads and initializes the WASM module dynamically.
  * Ensures it runs only once for efficiency.
+ * @returns {Promise<Object|null>} The loaded WASM module or null on failure
  */
 export async function loadWasm() {
   if (wasmInitialized) {
@@ -36,7 +37,6 @@ export async function loadWasm() {
       "api_color_grid_js",
     ]);
 
-    // Check if each function exists
     useWasmCalcGrid = availableFunctions.includes("api_calc_grid_js");
     useWasmColorGrid = availableFunctions.includes("api_color_grid_js");
     console.log(`🔍 WASM function check complete: calc=${useWasmCalcGrid}, color=${useWasmColorGrid}`);
@@ -62,7 +62,6 @@ export async function calcGrid(mandArtData) {
       return wasmResult;
     }
   }
-
   console.warn("⚠️ WASM unavailable for grid calculation. Falling back to JavaScript.");
   return generateGrid(mandArtData);
 }
@@ -82,7 +81,6 @@ export async function colorGrid(grid, hues) {
       return wasmResult;
     }
   }
-
   console.warn("⚠️ WASM unavailable for coloring. Falling back to JavaScript.");
   return applyColoring(grid, hues);
 }
