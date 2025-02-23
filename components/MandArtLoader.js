@@ -415,8 +415,8 @@ export class MandArtLoader {
 
   removeHue(index) {
     if (!this.hues || index < 0 || index >= this.hues.length) {
-        console.warn("❌ Invalid hue index:", index);
-        return;
+      console.warn("❌ Invalid hue index:", index);
+      return;
     }
 
     console.log(`🗑 Removing hue at index: ${index}`);
@@ -429,48 +429,48 @@ export class MandArtLoader {
 
     // ✅ Reapply colors based on updated hues
     this.coloredGrid = this.useFastCalc
-        ? this.fastColor()
-        : colorGrid(this.grid, this.hues);
+      ? this.fastColor()
+      : colorGrid(this.grid, this.hues);
 
     // ✅ Ensure UI updates
     this.notifyUIUpdate();
 
     console.log("🎨 Hue removed and UI updated.");
-}
-
-
-addHue() {
-  if (!this.hues) {
-      console.warn("⚠️ No hues array found. Initializing a new one.");
-      this.hues = [];
   }
 
-  // ✅ Find the highest existing `num` value
-  const maxNum = this.hues.length > 0
+
+  addHue() {
+    if (!this.hues) {
+      console.warn("⚠️ No hues array found. Initializing a new one.");
+      this.hues = [];
+    }
+
+    // ✅ Find the highest existing `num` value
+    const maxNum = this.hues.length > 0
       ? Math.max(...this.hues.map(hue => hue.num))
       : 0;
 
-  // ✅ Create a new black hue
-  const newHue = {
+    // ✅ Create a new black hue
+    const newHue = {
       r: 0,
       g: 0,
       b: 0,
       num: maxNum + 1 // New hue number
-  };
+    };
 
-  // ✅ Append the new hue
-  this.hues.push(newHue);
+    // ✅ Append the new hue
+    this.hues.push(newHue);
 
-  // ✅ Reapply colors
-  this.coloredGrid = this.useFastCalc
+    // ✅ Reapply colors
+    this.coloredGrid = this.useFastCalc
       ? this.fastColor()
       : colorGrid(this.grid, this.hues);
 
-  // ✅ Ensure UI updates
-  this.notifyUIUpdate();
+    // ✅ Ensure UI updates
+    this.notifyUIUpdate();
 
-  console.log(`🎨 Added new hue:`, newHue);
-}
+    console.log(`🎨 Added new hue:`, newHue);
+  }
 
 
 

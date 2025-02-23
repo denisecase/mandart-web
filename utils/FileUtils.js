@@ -89,10 +89,10 @@ export async function fetchAndParseCSV(csvPath) {
 
     try {
         const response = await fetch(csvPath);
-        
+
         if (!response.ok) {
             console.warn(`⚠️ CSV file not found: ${csvPath} (Status: ${response.status})`);
-            return null;  
+            return null;
         }
 
         const text = await response.text();

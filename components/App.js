@@ -10,7 +10,7 @@ import {
     loadMandArtList,
     populateMandartDropdown,
 } from "../utils/MandArtList.js";
-import { generateGrid } from "../utils/GridUtils.js";   
+import { generateGrid } from "../utils/GridUtils.js";
 
 window.mandArtLoader = new MandArtLoader();
 document.addEventListener("DOMContentLoaded", initApp);

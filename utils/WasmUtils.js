@@ -9,24 +9,24 @@
  * @returns {any} The return value of the WASM function if it exists, otherwise null.
  */
 export function safeWasmCall(funcName, ...args) {
-    if (!window.wasmModule) {
-      console.error(`❌ WASM module not initialized. Cannot call: ${funcName}`);
-      return null;
-    }
-  
-    if (typeof window.wasmModule[funcName] !== "function") {
-      console.warn(
-        `⚠️ Missing WASM function: "${funcName}". Request it before proceeding.`
-      );
-      return null;
-    }
-  
-    try {
-      return window.wasmModule[funcName](...args);
-    } catch (error) {
-      console.error(`❌ Error calling WASM function "${funcName}":`, error);
-      return null;
-    }
+  if (!window.wasmModule) {
+    console.error(`❌ WASM module not initialized. Cannot call: ${funcName}`);
+    return null;
+  }
+
+  if (typeof window.wasmModule[funcName] !== "function") {
+    console.warn(
+      `⚠️ Missing WASM function: "${funcName}". Request it before proceeding.`
+    );
+    return null;
+  }
+
+  try {
+    return window.wasmModule[funcName](...args);
+  } catch (error) {
+    console.error(`❌ Error calling WASM function "${funcName}":`, error);
+    return null;
+  }
 }
 
 

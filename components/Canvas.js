@@ -65,7 +65,7 @@ export function setupCanvas(getPicdef, getHues) {
     return {
         drawWithJavaScript: () => drawWithJavaScript(canvas, getPicdef, getHues),
     };
-   
+
 
 }
 
@@ -74,7 +74,7 @@ export function setupCanvas(getPicdef, getHues) {
  */
 function drawWithJavaScript(canvas, getPicdef, getHues) {
     console.log("🎨 Drawing Mandelbrot with JavaScript...");
-    
+
     const picdef = getPicdef();
     const hues = getHues();
 

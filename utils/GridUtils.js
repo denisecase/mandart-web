@@ -1,6 +1,6 @@
 // utils/GridUtils.js 
-import { ArtImage } from "./ArtUtils.js"; 
-import { saveGridToCSV } from "./FileUtils.js"; 
+import { ArtImage } from "./ArtUtils.js";
+import { saveGridToCSV } from "./FileUtils.js";
 
 
 
@@ -70,14 +70,14 @@ export function generateGrid(picdef) {
     try {
         // Use ArtImage to safely extract parameters
         const artImage = new ArtImage(picdef);
-        const { 
-            imageWidth, 
-            imageHeight, 
-            iterationsMax, 
-            scale, 
-            xCenter, 
-            yCenter, 
-            theta, 
+        const {
+            imageWidth,
+            imageHeight,
+            iterationsMax,
+            scale,
+            xCenter,
+            yCenter,
+            theta,
             rSqLimit,
             mandPowerReal // Extracted from shapeInputs
         } = artImage.shapeInputs;
@@ -113,10 +113,10 @@ export function generateGrid(picdef) {
                 grid[y][x] = iter;
             }
         }
-       
-       
-          // Auto-save the grid only if NOT running on GitHub Pages
-          if (!window.location.hostname.includes("github.io")) {
+
+
+        // Auto-save the grid only if NOT running on GitHub Pages
+        if (!window.location.hostname.includes("github.io")) {
             saveGridToCSV(grid);
 
         }

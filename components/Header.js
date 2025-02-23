@@ -63,20 +63,20 @@ export function setupHeader() {
         // Parse JSON before passing it to loadFromAnywhere
         let jsonData;
         try {
-            jsonData = JSON.parse(fileContents);
-            console.log("✅ Parsed MandArt JSON:", jsonData);
+          jsonData = JSON.parse(fileContents);
+          console.log("✅ Parsed MandArt JSON:", jsonData);
         } catch (error) {
-            console.error("❌ Error parsing MandArt file:", error);
-            alert("Invalid MandArt file format.");
-            return; // Stop execution if JSON is invalid
+          console.error("❌ Error parsing MandArt file:", error);
+          alert("Invalid MandArt file format.");
+          return; // Stop execution if JSON is invalid
         }
 
         // ❌ REMOVE any direct calls to loadMandArt
         // Correct: Only call loadFromAnywhere
         await window.mandArtLoader.loadFromAnywhere(
-            selectedFile,
-            'file',
-            jsonData
+          selectedFile,
+          'file',
+          jsonData
         );
 
 
@@ -166,5 +166,5 @@ export function setupHeader() {
       alert("No grid data available to export.");
     }
   });
-  
+
 }

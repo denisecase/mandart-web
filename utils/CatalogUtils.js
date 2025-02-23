@@ -28,7 +28,7 @@ export function getSelectedMandArt() {
  */
 export function getMandArtCatalogUrl() {
     const isGitHubPages = window.location.hostname.includes("github.io");
-    
+
     // ✅ Adjust URL based on environment
     return isGitHubPages
         ? "https://denisecase.github.io/mandart-web/assets/mandart_discoveries.json" // GitHub Pages
@@ -41,7 +41,7 @@ export function getMandArtCatalogUrl() {
  */
 export function getMandArtCatalogBaseUrl() {
     const isGitHubPages = window.location.hostname.includes("github.io");
-    
+
     return isGitHubPages
         ? "https://denisecase.github.io/mandart-web/assets/MandArt_Catalog"
         : "../assets/MandArt_Catalog";
