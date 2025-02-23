@@ -22,13 +22,26 @@ export async function initApp() {
         setupHeader();
         console.log("✅ Header Setup Complete.");
 
-        const wasmModule = await loadWasm();
-        if (!wasmModule) {
-            console.warn("⚠️ WASM not loaded, using fallback mode");
-            setupCanvas();
-        } else {
-            console.log("✅ WASM Loaded Successfully");
-            setupCanvasWithWasm(wasmModule);
+
+        // Define the fallback functions for picdef and hues
+        const getPicdef = () => window.mandArtLoader.currentMandArt?.picdef || { width: 1000, height: 1000 };
+        const getHues = () => window.mandArtLoader.getHues() || [{ r: 0, g: 0, b: 0, num: 1 }];
+
+        let drawWithJavaScript;
+
+        try {
+            const wasmModule = await loadWasm();
+            if (!wasmModule) {
+                console.warn("⚠️ WASM not loaded, using fallback mode");
+                setupCanvas();
+            } else {
+                console.log("✅ WASM Loaded Successfully");
+                setupCanvasWithWasm(wasmModule);
+            }
+        } catch (error) {
+            console.error("⚠️ WASM setup failed. Falling back to JavaScript:", error);
+            const canvasFunctions = setupCanvas(getPicdef, getHues);
+            drawWithJavaScript = canvasFunctions.drawWithJavaScript;
         }
 
         setupColorEditor();

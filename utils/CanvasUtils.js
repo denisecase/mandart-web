@@ -1,10 +1,10 @@
-import { ArtImage } from "../utils/ArtUtils.js";
+import { safeWasmCall } from "../utils/WasmUtils.js";
 import { loadPrecomputedGrid } from "../utils/GridUtils.js";
 
 /**
  * ✅ Uses WASM for optimized rendering (if available).
  */
-export function setupCanvasWithWasm(wasmModule) {
+export function setupCanvasWithWasm() {
     console.log("🎨 Initializing WASM Canvas...");
 
     const canvas = document.getElementById("mandelbrotCanvas");
@@ -18,25 +18,28 @@ export function setupCanvasWithWasm(wasmModule) {
         return null;
     }
 
+    canvas.width = 1000;
+    canvas.height = 1000;
     let imageData = null;
 
     function drawWithWASM(picdef) {
         try {
             console.log("🎨 Attempting WASM rendering...");
-            const mandart = new wasmModule.MandArt(JSON.stringify(picdef));
-            const rawImageData = mandart.get_image_from_grid();
-
-            if (Array.isArray(rawImageData) && rawImageData.length > 0) {
-                console.log("✅ WASM successfully generated the image.");
-                const imageDataArray = new Uint8ClampedArray(rawImageData.flat());
-                imageData = new ImageData(imageDataArray, canvas.width, canvas.height);
-                canvas.width = picdef.width;
-                canvas.height = picdef.height;
-                ctx.putImageData(imageData, 0, 0);
+            const mandart = safeWasmCall("MandArt", JSON.stringify(picdef));
+            if (!mandart) {
+                console.error("❌ Failed to create MandArt instance via WASM.");
                 return;
-            } else {
+            }
+
+            const rawImageData = safeWasmCall("api_get_image_from_grid");
+            if (!Array.isArray(rawImageData) || rawImageData.length === 0) {
                 throw new Error("❌ WASM returned invalid image data.");
             }
+
+            console.log("✅ WASM successfully generated the image!");
+            const imageDataArray = new Uint8ClampedArray(rawImageData.flat());
+            imageData = new ImageData(imageDataArray, canvas.width, canvas.height);
+            ctx.putImageData(imageData, 0, 0);
         } catch (error) {
             console.error("❌ WASM rendering failed. Falling back to JavaScript:", error);
         }
@@ -47,8 +50,10 @@ export function setupCanvasWithWasm(wasmModule) {
     };
 }
 
-
-export function setupCanvas(getPicdef, getHues) {
+/**
+ * Fallback JavaScript rendering for when WASM is unavailable.
+ */
+export function setupCanvas(getPicdef, getGrid, getHues) {
     console.log("🎨 Initializing JavaScript Canvas...");
 
     const canvas = document.getElementById("mandelbrotCanvas");
@@ -62,46 +67,42 @@ export function setupCanvas(getPicdef, getHues) {
         return null;
     }
 
-
-    let imageData = null;
-
     function drawWithJavaScript() {
         const picdef = getPicdef();
+        const grid = getGrid();
         const hues = getHues();
 
-        if (!picdef || hues.length === 0) {
+        if (!grid || hues.length === 0) {
             console.error("❌ Missing MandArt or hues data.");
             return;
         }
 
-        console.log("🖌️ Drawing Mandelbrot with JavaScript...");
-        const artImage = new ArtImage(picdef);
-        const fIter = artImage.generateGrid();
+        // Set canvas size based on picdef or grid size
+        canvas.width = picdef?.width || grid[0]?.length || 100;
+        canvas.height = picdef?.height || grid.length || 100;
 
-        // Use picdef dimensions or fallback to defaults
-        canvas.width = picdef?.width || 1000;
-        canvas.height = picdef?.height || 1000;
+        console.log(`🖌️ Drawing grid on canvas (${canvas.width}x${canvas.height}) using JavaScript...`);
 
+        const imageData = ctx.createImageData(canvas.width, canvas.height);
 
-
-        imageData = ctx.createImageData(canvas.width, canvas.height);
-        const colorScale = hues.length;
+        // Fallback: Use first hue if no proper coloring is available
+        const defaultHue = hues.find(hue => hue.num === 1) || { r: 0, g: 0, b: 0 };
 
         for (let y = 0; y < canvas.height; y++) {
             for (let x = 0; x < canvas.width; x++) {
-                const value = fIter[y][x];
-                const hueIndex = value % colorScale;
-                const hue = hues[hueIndex];
-
+                let hue = grid[y] && grid[y][x] ? hues[grid[y][x] % hues.length] : defaultHue;
+                if (!hue) hue = defaultHue; // Ensure there's always a color
+                
                 const pixelIndex = (y * canvas.width + x) * 4;
                 imageData.data[pixelIndex] = hue.r;
                 imageData.data[pixelIndex + 1] = hue.g;
                 imageData.data[pixelIndex + 2] = hue.b;
-                imageData.data[pixelIndex + 3] = 255;
+                imageData.data[pixelIndex + 3] = 255; // Full opacity
             }
         }
 
         ctx.putImageData(imageData, 0, 0);
+        console.log("✅ Canvas updated.");
     }
 
     return {
@@ -109,33 +110,36 @@ export function setupCanvas(getPicdef, getHues) {
     };
 }
 
+
+/**
+ * Recolors the existing grid using WASM.
+ */
 function recolorCanvas() {
     console.log("🎨 Recoloring canvas...");
 
-    // Get the current MandArt and grid data
-    const mandArt = window.mandArtLoader.currentMandArt;
+    const mandArt = window.mandArtLoader?.currentMandArt;
     if (!mandArt) {
         console.warn("⚠️ No MandArt data available for recoloring");
         return;
     }
 
-    // Assuming you have the grid data stored
-    const grid = window.currentGrid; // Make sure this is set when you first calculate the grid
+    const grid = window.currentGrid;
     if (!grid) {
         console.warn("⚠️ No grid data available for recoloring");
         return;
     }
 
-    // Call WASM color_grid function
     try {
-        const result = window.wasmModule.color_grid(grid, mandArt.hues);
-        // Update the canvas with the new colors
-        // ... your canvas update code here
+        const coloredGrid = safeWasmCall("api_color_grid_js", grid, mandArt.hues);
+        if (!coloredGrid) {
+            throw new Error("❌ WASM failed to recolor grid.");
+        }
+        
+        // TODO: Apply the coloredGrid to update the canvas image data
         console.log("✅ Canvas recolored successfully");
     } catch (error) {
         console.error("❌ Error recoloring canvas:", error);
     }
 }
 
-// Export the function to make it available to other modules
 export { recolorCanvas };

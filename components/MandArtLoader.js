@@ -2,6 +2,8 @@ import { loadPrecomputedGrid } from "../utils/GridUtils.js";
 import { rgbToHex, hexToRgb } from "../utils/ColorUtils.js";
 import { extractFileName } from "../utils/FileNameUtils.js";
 import { reassignHueNumbers } from "../utils/HueUtils.js";
+import { calcGrid, colorGrid } from "../utils/WasmLoader.js";
+import { generateGrid, applyColoring } from "../utils/GridUtils.js";
 
 export class MandArtLoader {
   constructor() {
@@ -10,6 +12,8 @@ export class MandArtLoader {
     this.currentDisplayName = "No MandArt Loaded";
     this.hues = [];
     this.uiUpdateCallbacks = [];
+    this.grid = null; // computed grid
+    this.coloredGrid = null; // colored grid
   }
 
   // Add a callback for UI updates
@@ -22,7 +26,9 @@ export class MandArtLoader {
     this.uiUpdateCallbacks.forEach(callback => callback({
       displayName: this.currentDisplayName,
       sourcePath: this.currentSourcePath,
-      hues: this.hues
+      hues: this.hues,
+        grid: this.grid,
+        coloredGrid: this.coloredGrid
     }));
   }
 
@@ -153,15 +159,9 @@ export class MandArtLoader {
         throw new Error("❌ MandArt JSON is missing 'hues' or it's not an array.");
       }
 
-      // Prioritize different possible display name sources
-      const finalDisplayName = displayName ||
-        jsonData.name ||
-        jsonData.displayName ||
-        "Untitled MandArt";
-
       // Update internal state
       this.currentMandArt = jsonData;
-      this.currentDisplayName = finalDisplayName;
+      this.currentDisplayName = displayName || jsonData.name || "Untitled MandArt";
       this.currentSourcePath = this.currentSourcePath || "Unknown Source";
 
       // Process hues
@@ -178,7 +178,17 @@ export class MandArtLoader {
         hueCount: this.hues.length
       });
 
-      // FORCE notify UI update
+
+      // Step 1: Compute Grid using WASM
+      this.grid = await calcGrid(jsonData);
+      if (!this.grid) throw new Error("❌ Failed to compute grid using WASM.");
+      console.log("🧮 Computed Grid:", this.grid);
+
+      // Step 2: Color Grid using WASM
+      this.coloredGrid = await colorGrid(this.grid, this.hues);
+      if (!this.coloredGrid) throw new Error("❌ Failed to color grid using WASM.");
+      console.log("🎨 Colored Grid:", this.coloredGrid);
+
       console.log("🔔 Forcing UI Update Notification");
       this.notifyUIUpdate();
 
