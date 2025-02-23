@@ -15,8 +15,9 @@ export function convertMandArtFilename(mandartFile, newExt, folderPath = "assets
         return null;
     }
 
-    const newFile = mandartFile.replace(/\.mandart$/, `.${newExt}`);
-    const newPath = `${folderPath}/${newFile}`;
+    const baseName = mandartFile.replace(/\.mandart$/, ""); // Remove `.mandart` if present
+    const newFile = `${baseName}.${newExt}`; // Ensure correct extension
+    const newPath = `${folderPath}/${newFile}`; // Ensure full path
 
     return {
         original: mandartFile,  // Original MandArt file name

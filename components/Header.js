@@ -4,7 +4,7 @@ import { openUrlPrompt } from "./UrlPrompt.js";
 import {
   saveMandArtFile,
   saveCanvasAsPNG,
-  exportGridToCSV,
+  saveGridToCSV,
 } from "../utils/FileUtils.js";
 
 const defaultURL = "https://raw.githubusercontent.com/denisecase/MandArt-Discoveries/main/brucehjohnson/frame_pix/Frame54.mandart";
@@ -160,10 +160,11 @@ export function setupHeader() {
   });
 
   document.getElementById("saveGridBtn")?.addEventListener("click", () => {
-    if (window.currentGrid) {
-      exportGridToCSV(window.currentGrid);
+    if (window.mandArtLoader.grid) {
+      saveGridToCSV(window.mandArtLoader.grid);
     } else {
       alert("No grid data available to export.");
     }
   });
+  
 }

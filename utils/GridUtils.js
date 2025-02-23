@@ -1,20 +1,8 @@
 // utils/GridUtils.js 
+import { ArtImage } from "./ArtUtils.js"; 
+import { saveGridToCSV } from "./FileUtils.js"; 
 
-/**
- * Saves a 2D grid array as a CSV file.
- * @param {Array<Array<number>>} gridData - 2D array representing grid.
- * @param {string} filename - File name (default: "grid.csv").
- */
-export function saveGridToCSV(gridData, filename = "grid.csv") {
-    if (!Array.isArray(gridData) || !gridData.length) {
-        console.error("❌ Invalid grid data.");
-        return;
-    }
 
-    const csvContent = gridData.map((row) => row.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    triggerFileDownload(blob, filename);
-}
 
 /**
  * Loads a CSV file and parses it into a 2D array.
@@ -26,7 +14,7 @@ export function loadGridFromCSV(file, callback) {
             .trim()
             .split("\n")
             .map((row) => row.split(",").map(Number));
-        
+
         callback(gridData);
     });
 }
@@ -64,17 +52,94 @@ export function parseCSVGrid(csvText) {
 }
 
 /**
- * Generates a basic grid as a fallback when WASM is unavailable.
- * @param {number} width - Width of the grid
- * @param {number} height - Height of the grid
- * @returns {Array} - 2D array representing the grid
+ * Generates the Mandelbrot fractal grid (fallback if WASM is unavailable).
+ * Auto-saves the grid if running locally (not on GitHub Pages).
+ * @param {Object} picdef - Contains image parameters.
+ * @returns {Array<Array<number>>} - 2D array of iteration counts.
  */
-export function generateGrid(width, height) {
-    console.log("🧮 Generating grid using JavaScript fallback...");
-    const grid = new Array(height).fill(0).map(() =>
-        new Array(width).fill(0).map(() => Math.floor(Math.random() * 10)) // Simple random values
-    );
-    return grid;
+export function generateGrid(picdef) {
+    console.log("🔍 Starting generateGrid with picdef:", picdef);
+
+    if (!picdef || typeof picdef !== "object") {
+        console.error("❌ Invalid or missing picdef. Cannot generate grid.");
+        return null;
+    }
+
+    console.log("🔍 Generating Mandelbrot iteration grid from picdef...");
+
+    try {
+        // Use ArtImage to safely extract parameters
+        const artImage = new ArtImage(picdef);
+        const { 
+            imageWidth, 
+            imageHeight, 
+            iterationsMax, 
+            scale, 
+            xCenter, 
+            yCenter, 
+            theta, 
+            rSqLimit,
+            mandPowerReal // Extracted from shapeInputs
+        } = artImage.shapeInputs;
+
+        console.log("🔍 Extracted Shape Inputs:", artImage.shapeInputs);
+        console.log(`🔍 Grid Size: ${imageWidth}x${imageHeight}, Max Iterations: ${iterationsMax}`);
+
+        // Initialize grid efficiently
+        const grid = Array.from({ length: imageHeight }, () => new Array(imageWidth).fill(0));
+        const thetaR = (Math.PI * theta) / 180;
+
+        for (let y = 0; y < imageHeight; y++) {
+            for (let x = 0; x < imageWidth; x++) {
+                const dX = (x - imageWidth / 2) / scale;
+                const dY = (y - imageHeight / 2) / scale;
+
+                const x0 = xCenter + dX * Math.cos(thetaR) - dY * Math.sin(thetaR);
+                const y0 = yCenter + dX * Math.sin(thetaR) + dY * Math.cos(thetaR);
+
+                let xx = x0;
+                let yy = y0;
+                let rSq = xx * xx + yy * yy;
+                let iter = 0;
+
+                while (iter < iterationsMax && rSq < rSqLimit) {
+                    [xx, yy] = complexPow(xx, yy, mandPowerReal);
+                    xx += x0;
+                    yy += y0;
+                    rSq = xx * xx + yy * yy;
+                    iter++;
+                }
+
+                grid[y][x] = iter;
+            }
+        }
+       
+       
+          // Auto-save the grid only if NOT running on GitHub Pages
+          if (!window.location.hostname.includes("github.io")) {
+            saveGridToCSV(grid);
+
+        }
+        return grid;
+    } catch (error) {
+        console.error("❌ Error in generateGrid():", error);
+        return null;
+    }
+}
+
+/**
+ * Computes the complex power for Mandelbrot iterations.
+ * @param {number} baseX - The real part of the complex number.
+ * @param {number} baseY - The imaginary part of the complex number.
+ * @param {number} powerReal - The power to raise the complex number to.
+ * @returns {Array<number>} - The new complex number [real, imaginary].
+ */
+function complexPow(baseX, baseY, powerReal) {
+    const r = Math.hypot(baseX, baseY); // More numerically stable
+    const theta = Math.atan2(baseY, baseX);
+    const newR = Math.pow(r, powerReal);
+    const newTheta = powerReal * theta;
+    return [newR * Math.cos(newTheta), newR * Math.sin(newTheta)];
 }
 
 /**

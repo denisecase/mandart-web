@@ -4,7 +4,7 @@ let drawingNameElement = null;
 let sourcePathElement = null;
 
 export function setupCanvasSource() {
-    console.log("🎨 Initializing Canvas Source...");
+    console.log("🔍 Initializing Canvas Source...");
 
     const titleContainer = document.getElementById("canvasSourceContainer");
     if (!titleContainer) {

@@ -20,7 +20,12 @@ export function createColorEditorRow(index, hue, updateHue, removeHue) {
     }
 
     colorInput.addEventListener("input", (event) => updateHue(index, event.target.value));
-    deleteBtn.addEventListener("click", () => removeHue(index));
-
+  
+  
+    deleteBtn.addEventListener("click", () => {
+        if (confirm(`Are you sure you want to delete hue ${hue.num}?`)) {
+            removeHue(index);
+        }
+    });
     return hueDiv;
 }

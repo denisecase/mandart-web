@@ -5,7 +5,7 @@ import { loadPrecomputedGrid } from "../utils/GridUtils.js";
  * ✅ Uses WASM for optimized rendering (if available).
  */
 export function setupCanvasWithWasm(wasmModule) {
-    console.log("🎨 Initializing WASM Canvas...");
+    console.log("🔍 Initializing WASM Canvas...");
 
     const canvas = document.getElementById("mandelbrotCanvas");
     if (!canvas) {
@@ -62,51 +62,60 @@ export function setupCanvas(getPicdef, getHues) {
         return null;
     }
 
+    return {
+        drawWithJavaScript: () => drawWithJavaScript(canvas, getPicdef, getHues),
+    };
+   
 
-    let imageData = null;
+}
 
-    function drawWithJavaScript() {
-        const picdef = getPicdef();
-        const hues = getHues();
+/**
+ * 🖌️ Draws the MandArt grid using JavaScript fallback (if WASM is unavailable).
+ */
+function drawWithJavaScript(canvas, getPicdef, getHues) {
+    console.log("🎨 Drawing Mandelbrot with JavaScript...");
+    
+    const picdef = getPicdef();
+    const hues = getHues();
 
-        if (!picdef || hues.length === 0) {
-            console.error("❌ Missing MandArt or hues data.");
-            return;
-        }
-
-        console.log("🖌️ Drawing Mandelbrot with JavaScript...");
-        const artImage = new ArtImage(picdef);
-        const fIter = artImage.generateGrid();
-
-        // Use picdef dimensions or fallback to defaults
-        canvas.width = picdef?.width || 1000;
-        canvas.height = picdef?.height || 1000;
-
-
-
-        imageData = ctx.createImageData(canvas.width, canvas.height);
-        const colorScale = hues.length;
-
-        for (let y = 0; y < canvas.height; y++) {
-            for (let x = 0; x < canvas.width; x++) {
-                const value = fIter[y][x];
-                const hueIndex = value % colorScale;
-                const hue = hues[hueIndex];
-
-                const pixelIndex = (y * canvas.width + x) * 4;
-                imageData.data[pixelIndex] = hue.r;
-                imageData.data[pixelIndex + 1] = hue.g;
-                imageData.data[pixelIndex + 2] = hue.b;
-                imageData.data[pixelIndex + 3] = 255;
-            }
-        }
-
-        ctx.putImageData(imageData, 0, 0);
+    if (!picdef || hues.length === 0) {
+        console.error("❌ Missing MandArt or hues data.");
+        return;
     }
 
-    return {
-        drawWithJavaScript,
-    };
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        console.error("❌ Unable to get 2D context. Browser might not support it.");
+        return;
+    }
+
+    // Use picdef dimensions or fallback to defaults
+    canvas.width = picdef?.width || 1000;
+    canvas.height = picdef?.height || 1000;
+    console.log(`🖌️ Canvas size set to ${canvas.width}x${canvas.height}`);
+
+    const artImage = new ArtImage(picdef);
+    const fIter = artImage.generateGrid();
+
+    const imageData = ctx.createImageData(canvas.width, canvas.height);
+    const colorScale = hues.length;
+
+    for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+            const value = fIter[y][x];
+            const hueIndex = value % colorScale;
+            const hue = hues[hueIndex];
+
+            const pixelIndex = (y * canvas.width + x) * 4;
+            imageData.data[pixelIndex] = hue.r;
+            imageData.data[pixelIndex + 1] = hue.g;
+            imageData.data[pixelIndex + 2] = hue.b;
+            imageData.data[pixelIndex + 3] = 255;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    console.log("✅ JavaScript canvas update complete.");
 }
 
 function recolorCanvas() {

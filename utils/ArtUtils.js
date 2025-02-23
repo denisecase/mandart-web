@@ -1,4 +1,28 @@
-// utils/ArtImage.js
+export class ArtImageShapeInputs {
+    constructor(imageHeight, imageWidth, iterationsMax, scale, xCenter, yCenter, theta, dFIterMin, rSqLimit, mandPowerReal) {
+        this.imageHeight = Number(imageHeight) || 1000;
+        this.imageWidth = Number(imageWidth) || 1000;
+        this.iterationsMax = Number(iterationsMax) || 100;
+        this.scale = Number(scale) || 200;
+        this.xCenter = Number(xCenter) || 0;
+        this.yCenter = Number(yCenter) || 0;
+        this.theta = Number(theta) || 0;
+        this.dFIterMin = Number(dFIterMin) || 0;
+        this.rSqLimit = Number(rSqLimit) || 4;
+        this.mandPowerReal = Number(mandPowerReal) || 2;  // Moved here
+    }
+}
+
+export class ArtImageColorInputs {
+    constructor(nBlocks, huesLength, spacingColorFar, spacingColorNear, yY, mandColor) {
+        this.nBlocks = Number(nBlocks) || 10;
+        this.huesLength = Number(huesLength) || 256;
+        this.spacingColorFar = Number(spacingColorFar) || 1.0;
+        this.spacingColorNear = Number(spacingColorNear) || 0.1;
+        this.yY = Number(yY) || 0;
+        this.mandColor = mandColor || {};
+    }
+}
 
 export class ArtImage {
     constructor(picdef) {
@@ -13,7 +37,8 @@ export class ArtImage {
             picdef.yCenter,
             -picdef.theta,
             picdef.dFIterMin,
-            picdef.rSqLimit
+            picdef.rSqLimit,
+            picdef.mandPowerReal // Now part of shape inputs
         );
 
         this.colorInputs = new ArtImageColorInputs(
@@ -24,8 +49,6 @@ export class ArtImage {
             picdef.yY,
             picdef.mandColor
         );
-
-        this.powerInputs = new ArtImagePowerInputs(picdef.mandPowerReal);
     }
 
     generateGrid() {
@@ -38,13 +61,13 @@ export class ArtImage {
             yCenter,
             theta,
             rSqLimit,
+            mandPowerReal, // Now extracted from shapeInputs
         } = this.shapeInputs;
 
         const thetaR = (Math.PI * theta) / 180;
-        const powerReal = this.powerInputs.mandPowerReal || 2; // Default to power 2 if missing
 
         // Initialize grid efficiently
-        const fIter = new Array(imageWidth).fill(0).map(() => new Array(imageHeight).fill(0));
+        const fIter = new Array(imageHeight).fill(0).map(() => new Array(imageWidth).fill(0));
 
         for (let u = 0; u < imageWidth; u++) {
             for (let v = 0; v < imageHeight; v++) {
@@ -59,14 +82,14 @@ export class ArtImage {
                 let iter = 0;
 
                 while (iter < iterationsMax && rSq < rSqLimit) {
-                    [xx, yy] = this.complexPow(xx, yy, powerReal);
+                    [xx, yy] = this.complexPow(xx, yy, mandPowerReal);
                     xx += x0;
                     yy += y0;
                     rSq = xx * xx + yy * yy;
                     iter++;
                 }
 
-                fIter[u][v] = iter;
+                fIter[v][u] = iter;
             }
         }
         return fIter;
@@ -95,7 +118,7 @@ export class ArtImage {
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 const index = (y * width + x) * 4;
-                const iterValue = fIter[x][y] % hues.length;
+                const iterValue = fIter[y][x] % hues.length;
                 const hue = hues[iterValue];
 
                 imgData.data[index] = hue.r;
@@ -109,4 +132,3 @@ export class ArtImage {
         console.log("✅ Mandelbrot rendering completed!");
     }
 }
-

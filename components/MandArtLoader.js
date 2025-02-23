@@ -1,9 +1,9 @@
 import { loadPrecomputedGrid } from "../utils/GridUtils.js";
 import { rgbToHex, hexToRgb } from "../utils/ColorUtils.js";
-import { extractFileName } from "../utils/FileNameUtils.js";
-import { reassignHueNumbers } from "../utils/HueUtils.js";
+import { extractFileName, convertMandArtFilename } from "../utils/FileNameUtils.js";
 import { calcGrid, colorGrid } from "../utils/WasmLoader.js";
 import { generateGrid, applyColoring } from "../utils/GridUtils.js";
+import { fetchAndParseCSV, saveGridToCSV } from "../utils/FileUtils.js";
 
 export class MandArtLoader {
   constructor() {
@@ -14,6 +14,18 @@ export class MandArtLoader {
     this.uiUpdateCallbacks = [];
     this.grid = null; // computed grid
     this.coloredGrid = null; // colored grid
+    this.useFastCalc = true;  // ✅ Default to fast calcs
+  }
+
+  // ✅ Allow toggling the setting at runtime
+  enableFullCalc() {
+    console.warn("🔧 Developer Mode: Full grid computation enabled.");
+    this.useFastCalc = false;
+  }
+
+  enableFastCalc() {
+    console.log("⚡ Fast Calculation Mode Enabled.");
+    this.useFastCalc = true;
   }
 
   // Add a callback for UI updates
@@ -27,9 +39,10 @@ export class MandArtLoader {
       displayName: this.currentDisplayName,
       sourcePath: this.currentSourcePath,
       hues: this.hues,
-        grid: this.grid,
-        coloredGrid: this.coloredGrid
+      grid: this.grid,
+      coloredGrid: this.coloredGrid
     }));
+
   }
 
   async loadFromAnywhere(source, type, jsonData = null) {
@@ -40,7 +53,7 @@ export class MandArtLoader {
 
     const sources = {
       'file': {
-        path: source, // The File object itself
+        path: source,
         imagePath: '',
         displayName: source.name?.replace('.mandart', '')
       },
@@ -81,119 +94,210 @@ export class MandArtLoader {
     console.log("📥 Loading MandArt from file...", { displayName });
 
     try {
-      // Validate JSON structure
-      if (!jsonData || !Array.isArray(jsonData.hues)) {
+      if (!jsonData || !jsonData.hues || !Array.isArray(jsonData.hues)) {
         throw new Error("❌ MandArt JSON is missing 'hues' or it's not an array.");
       }
 
-      console.log("🔄 Standardizing hues...");
+      this.currentMandArt = jsonData;
+      this.currentDisplayName = displayName || jsonData.name || "Untitled MandArt";
 
-      // Standardize hues like loadMandArt does
-      const standardizedData = {
-        name: jsonData.name || displayName,
-        hues: jsonData.hues.map((hue, index) => ({
-          r: hue.r !== undefined ? Math.round(hue.r) : Math.round((hue.color?.red ?? 0) * 255),
-          g: hue.g !== undefined ? Math.round(hue.g) : Math.round((hue.color?.green ?? 0) * 255),
-          b: hue.b !== undefined ? Math.round(hue.b) : Math.round((hue.color?.blue ?? 0) * 255),
-          num: hue.num !== undefined ? hue.num : index + 1
-        }))
-      };
+      // ✅ Extract `picdef`
+      this.picdef = jsonData.picdef || null;
+      if (!this.picdef) {
+        console.warn("⚠️ picdef not found in MandArt JSON.");
+      }
 
-      console.log("✅ Standardized MandArt JSON:", standardizedData);
+      // ✅ Extract hues
+      this.hues = jsonData.hues || [];
+      if (this.hues.length === 0) {
+        console.warn("⚠️ No hues found in MandArt JSON.");
+      }
 
-      await this.processMandartData(standardizedData, displayName);
+      // ✅ Load or Compute Grid
+      console.log("🔄 Checking for precomputed grid...");
+      this.grid = await this.loadOrComputeGridFromFile(jsonData, this.currentDisplayName);
+
+      // ✅ Apply Coloring (fast if `useFastCalc` is true)
+      this.coloredGrid = this.useFastCalc ? this.fastColor() : await colorGrid(this.grid, this.hues);
+      console.log("🎨 Coloring complete.");
+
+      // ✅ Final UI update
+      this.notifyUIUpdate();
+
     } catch (error) {
       console.error("❌ Failed to load MandArt from file:", error);
       this.currentMandArt = null;
-      this.currentDisplayName = "Error Loading MandArt";
-      this.currentSourcePath = "Error";
-      this.hues = [];
       this.notifyUIUpdate();
       throw error;
     }
   }
 
+
   async loadMandArt(sourcePath, imagePath = "", displayName = "Unnamed") {
-    console.log("📥 Loading MandArt...", { sourcePath, imagePath, displayName });
+    console.log(`📥 Loading MandArt...`, { sourcePath, imagePath, displayName });
 
     try {
       let jsonData;
       let finalName = displayName;
 
-      if (typeof sourcePath === "string") {
-        if (sourcePath.startsWith("http") || sourcePath.startsWith("assets/")) {
-          console.log(`🌐 Fetching MandArt JSON from: ${sourcePath}`);
-          const response = await fetch(sourcePath);
-          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-          jsonData = await response.json();
-          this.currentSourcePath = sourcePath;
-          finalName = extractFileName(sourcePath);
+      // ✅ If Default.mandart → Load Fast or Compute
+      if (displayName === "Default" || sourcePath.includes("Default.mandart")) {
+        console.log("🚀 Default.mandart detected. Loading precomputed grid...");
+
+        const { newPath } = convertMandArtFilename("Default.mandart", "csv", "assets/MandArt_Catalog");
+
+        // ✅ Fetch CSV **and** JSON in parallel
+        const [csvData, response] = await Promise.all([
+          fetchAndParseCSV(newPath),
+          fetch(sourcePath)
+        ]);
+
+        // ✅ Load MandArt JSON
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        jsonData = await response.json();
+        this.currentSourcePath = sourcePath;
+        finalName = extractFileName(sourcePath);
+
+        // ✅ Set displayName **before** any UI updates
+        this.currentDisplayName = finalName;
+
+        // ✅ Extract `picdef`
+        this.picdef = jsonData;
+        if (!this.picdef) console.warn("⚠️ picdef not found in MandArt JSON.");
+
+        // ✅ Extract hues
+        this.hues = this.picdef.hues || [];
+        if (this.hues.length === 0) console.warn("⚠️ No hues found in MandArt JSON.");
+
+        // ✅ Use CSV if available, otherwise decide based on `useFastCalc`
+        if (csvData) {
+          this.grid = csvData;
+          console.log(`✅ Loaded precomputed grid from ${newPath}`);
         } else {
-          jsonData = JSON.parse(sourcePath);
-          this.currentSourcePath = displayName;
+          if (this.useFastCalc) {
+            console.warn("⚠️ No precomputed grid found. Using dummy grid.");
+            this.grid = this.generateDummyGrid();
+          } else {
+            console.warn("⚠️ No precomputed grid found. Computing grid in JS.");
+            this.grid = await this.computeGridInJS(jsonData);
+          }
         }
-      } else {
-        jsonData = sourcePath;
-        this.currentSourcePath = displayName;
+
+        // ✅ Fast UI Update
+        this.notifyUIUpdate();
+
+        // ✅ Apply Coloring (fast if `useFastCalc` is true)
+        this.coloredGrid = this.useFastCalc ? this.fastColor() : await colorGrid(this.grid, this.hues);
+        console.log("🎨 Coloring complete.");
+
+        // ✅ Final UI update
+        this.notifyUIUpdate();
+        return;
       }
 
-      // Ensure JSON is processed after loading
-      await this.processMandartData(jsonData, finalName);
+      // ✅ If not Default, load JSON normally
+      const response = await fetch(sourcePath);
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      jsonData = await response.json();
+
+      this.currentSourcePath = sourcePath;
+      finalName = extractFileName(sourcePath);
+
+      // ✅ Process MandArt JSON directly
+      this.currentMandArt = jsonData;
+      this.currentDisplayName = finalName || jsonData.name || "Untitled MandArt";
+      this.currentSourcePath = sourcePath;
+
+      // ✅ Extract picdef
+      this.picdef = jsonData;
+      if (!this.picdef) console.warn("⚠️ picdef not found in MandArt JSON.");
+
+      // ✅ Extract hues
+      this.hues = jsonData.hues || [];
+      if (this.hues.length === 0) console.warn("⚠️ No hues found in MandArt JSON.");
+
+      // ✅ Compute or Load Grid
+      this.grid = await this.loadOrComputeGridFromFile(jsonData, finalName);
+
+      // ✅ Apply Fast or Normal Coloring
+      this.coloredGrid = this.useFastCalc ? this.fastColor() : await colorGrid(this.grid, this.hues);
+      console.log("🎨 Coloring complete.");
+
+      // ✅ Final UI update
+      this.notifyUIUpdate();
 
     } catch (error) {
       console.error("❌ Failed to load MandArt:", error);
-      this.currentMandArt = null;
-      this.currentDisplayName = "Error Loading MandArt";
-      this.currentSourcePath = "Error";
-      this.hues = [];
       this.notifyUIUpdate();
       throw error;
     }
   }
 
-  async processMandartData(jsonData, displayName) {
-    console.log("🖌️ Processing MandArt data...");
+
+  async loadOrComputeGridFromFile(jsonData, displayName) {
+    console.log("🔄 Loading or Computing fIter Grid from File...", { displayName });
 
     try {
-      if (!jsonData || !jsonData.hues || !Array.isArray(jsonData.hues)) {
-        throw new Error("❌ MandArt JSON is missing 'hues' or it's not an array.");
+      const { newPath } = convertMandArtFilename(displayName, "csv", "assets/MandArt_Catalog");
+
+      // ✅ Try to fetch CSV
+      let csvData = await fetchAndParseCSV(newPath);
+      if (csvData) {
+        console.log(`✅ Loaded precomputed fIter from ${newPath}`);
+        return csvData;  // ✅ Fast case - return precomputed grid
+      } else {
+        console.warn(`⚠️ No precomputed grid found for ${displayName}.`);
       }
 
-      // Update internal state
-      this.currentMandArt = jsonData;
-      this.currentDisplayName = displayName || jsonData.name || "Untitled MandArt";
-      this.currentSourcePath = this.currentSourcePath || "Unknown Source";
+      // ✅ FAST MODE: Generate placeholder grid instead of computing
+      if (this.useFastCalc) {
+        console.log("🚀 Fast mode enabled. Using a dummy grid.");
+        return this.generateDummyGrid(jsonData);
+      }
 
-      // Process hues
-      this.hues = jsonData.hues.map((hue, index) => ({
-        r: hue.r !== undefined ? Math.round(hue.r) : Math.round((hue.color?.red ?? 0) * 255),
-        g: hue.g !== undefined ? Math.round(hue.g) : Math.round((hue.color?.green ?? 0) * 255),
-        b: hue.b !== undefined ? Math.round(hue.b) : Math.round((hue.color?.blue ?? 0) * 255),
-        num: hue.num !== undefined ? hue.num : index + 1
-      }));
-
-      console.log("✅ MandArt processed successfully:", {
-        name: this.currentDisplayName,
-        source: this.currentSourcePath,
-        hueCount: this.hues.length
-      });
-
-
-      // Step 1: Compute Grid using WASM
+      // ✅ Compute grid (only if NOT in fast mode)
+      console.warn("🧮 No CSV found. Computing full grid in JavaScript...");
       this.grid = await calcGrid(jsonData);
-      if (!this.grid) throw new Error("❌ Failed to compute grid using WASM.");
       console.log("🧮 Computed Grid:", this.grid);
 
-      // Step 2: Color Grid using WASM
-      this.coloredGrid = await colorGrid(this.grid, this.hues);
-      if (!this.coloredGrid) throw new Error("❌ Failed to color grid using WASM.");
-      console.log("🎨 Colored Grid:", this.coloredGrid);
+      // ✅ Only save the CSV when **not in fast mode**
+      if (!this.useFastCalc) {
+        console.log("💾 Saving computed grid to CSV...");
+        saveGridToCSV(this.grid);
+      } else {
+        console.log("🚀 Fast mode enabled. Skipping CSV save.");
+      }
 
-      console.log("🔔 Forcing UI Update Notification");
-      this.notifyUIUpdate();
+      return this.grid;
 
     } catch (error) {
-      console.error("❌ Error processing MandArt:", error);
+      console.error("❌ Error computing/loading fIter grid from file:", error);
+      throw error;
+    }
+  }
+
+
+
+  async processMandartWithPrecomputedGrid() {
+    console.log(`🎨 Applying precomputed grid for: ${this.currentSourcePath}`);
+    try {
+      // ✅ Ensure display name is set before applying the precomputed grid
+      this.setDisplayNames(this.currentSourcePath);
+
+      // ✅ Check if grid and hues exist before processing
+      if (!this.grid || !this.hues.length) {
+        throw new Error("❌ Missing grid data or hues. Cannot process MandArt.");
+      }
+
+      // ✅ Apply color transformation
+      this.coloredGrid = await colorGrid(this.grid, this.hues);
+
+      // ✅ Force UI update
+      this.notifyUIUpdate();
+
+      console.log(`✅ Successfully applied precomputed grid for: ${this.getDisplayName()}`);
+    } catch (error) {
+      console.error("❌ Error processing MandArt with precomputed grid:", error);
       throw error;
     }
   }
@@ -201,47 +305,173 @@ export class MandArtLoader {
   async loadDefaultMandArt() {
     console.log("📌 Loading Default MandArt...");
     try {
-      await this.loadMandArt(
-        "assets/MandArt_Catalog/Default.mandart",
-        "",
-        "Default"
-      );
+      await this.loadFromAnywhere("default", "default");
     } catch (error) {
       console.error("❌ Failed to load default MandArt:", error);
       throw error;
     }
   }
 
-  // Keep your existing methods for handling hues
-  addNewColor() {
-    // Your existing code
-    this.notifyUIUpdate();  // Add this line
+  setDisplayNames(sourcePath) {
+    this.currentDisplayName = extractFileName(sourcePath); // No extension
+    this.mandartFileShortName = extractFileName(sourcePath, true); // Keep extension
+    console.log("✅ Set Names - Display:", this.currentDisplayName, "| File Short Name:", this.mandartFileShortName);
   }
 
-  updateMandColor(index, hexColor) {
-    // Your existing code
-    this.notifyUIUpdate();  // Add this line
+  getMandArtFileShortName() {
+    return this.mandartFileShortName;
   }
 
-  removeHue(index) {
-    // Your existing code
-    this.notifyUIUpdate();  // Add this line
-  }
-
-  // Getter methods for UI components
   getDisplayName() {
     return this.currentDisplayName;
   }
 
-  getSourcePath() {
-    return this.currentSourcePath;
+  extractFileName(filePath, keepExtension = false) {
+    if (!filePath) return "";
+    const parts = filePath.split("/");
+    const fileName = parts[parts.length - 1]; // Extract file name
+    return keepExtension ? fileName : fileName.replace(/\.mandart$/, ""); // Remove extension if needed
   }
 
-  getCurrentMandArt() {
-    return this.currentMandArt;
+  async computeGridInJS(picdef) {
+    console.log("🧮 Computing Grid in JavaScript...");
+
+    if (!picdef) {
+      console.warn("⚠️ No valid picdef. Using default size (10x10).");
+      return Array.from({ length: 10 }, () => Array(10).fill(1));
+    }
+
+    const height = picdef.imageHeight;
+    const width = picdef.imageWidth;
+
+    console.log(`🛠️ Generating computed grid (${height} x ${width})`);
+
+    return Array.from({ length: height }, (_, y) =>
+      Array.from({ length: width }, (_, x) => (y * width + x) % this.hues.length + 1)
+    );
   }
 
-  getHues() {
-    return [...this.hues];  // Return a copy to prevent direct mutation
+  generateDummyGrid(picdef) {
+    console.log("⚡ Generating dummy grid...");
+
+    const width = picdef?.imageWidth || 1000;
+    const height = picdef?.imageHeight || 1000;
+
+    let dummyGrid = Array.from({ length: height }, () =>
+      Array.from({ length: width }, () => 1)
+    );
+
+    console.log(`✅ Dummy grid generated: ${height}x${width}`);
+    return dummyGrid;
   }
+
+  fastColor() {
+    console.log("🎨 Applying fast color...");
+
+    if (!this.hues || this.hues.length === 0) {
+      console.warn("⚠️ No hues available. Using default gray.");
+      return this.grid.map(row => row.map(() => "#CCCCCC"));
+    }
+
+    // ✅ Find `num === 1` hue
+    const primaryHue = this.hues.find(h => h.num === 1);
+    if (!primaryHue) {
+      console.warn("⚠️ No num===1 hue found. Using first available hue.");
+    }
+
+    const color = primaryHue ? rgbToHex(primaryHue.r, primaryHue.g, primaryHue.b) : "#CCCCCC";
+    console.log("MandArtLoader.js:374 Color={}", color);
+
+    // ✅ Apply color to all grid cells
+    this.coloredGrid = this.grid.map(row => row.map(() => color));
+
+    // ✅ Apply background color to `mandelbrotCanvas`
+    setTimeout(() => {
+      const canvas = document.getElementById("mandelbrotCanvas");
+      if (canvas) {
+        console.log(`🎨 Setting canvas background to: ${color}`);
+        canvas.style.backgroundColor = color;
+      } else {
+        console.warn("❌ Canvas not found! Check ID.");
+      }
+    }, 100); // Slight delay to ensure DOM updates first
+
+    return this.coloredGrid;
+  }
+
+  /**
+ * Reassigns hue numbers sequentially after a deletion.
+ * Ensures `num` values are unique, sequential, and ordered correctly.
+ *
+ * @param {Array} hues - The list of hues to be renumbered.
+ * @returns {Array} - The updated hues list with corrected `num` values.
+ */
+  reassignHueNumbers(hues) {
+    return hues.map((hue, index) => ({
+      ...hue,
+      num: index + 1 // ✅ Reassign sequential numbers starting from 1
+    }));
+  }
+
+  removeHue(index) {
+    if (!this.hues || index < 0 || index >= this.hues.length) {
+        console.warn("❌ Invalid hue index:", index);
+        return;
+    }
+
+    console.log(`🗑 Removing hue at index: ${index}`);
+
+    // ✅ Remove the hue at the given index
+    this.hues.splice(index, 1);
+
+    // ✅ Reassign hue numbers sequentially
+    this.hues = this.reassignHueNumbers(this.hues);
+
+    // ✅ Reapply colors based on updated hues
+    this.coloredGrid = this.useFastCalc
+        ? this.fastColor()
+        : colorGrid(this.grid, this.hues);
+
+    // ✅ Ensure UI updates
+    this.notifyUIUpdate();
+
+    console.log("🎨 Hue removed and UI updated.");
+}
+
+
+addHue() {
+  if (!this.hues) {
+      console.warn("⚠️ No hues array found. Initializing a new one.");
+      this.hues = [];
+  }
+
+  // ✅ Find the highest existing `num` value
+  const maxNum = this.hues.length > 0
+      ? Math.max(...this.hues.map(hue => hue.num))
+      : 0;
+
+  // ✅ Create a new black hue
+  const newHue = {
+      r: 0,
+      g: 0,
+      b: 0,
+      num: maxNum + 1 // New hue number
+  };
+
+  // ✅ Append the new hue
+  this.hues.push(newHue);
+
+  // ✅ Reapply colors
+  this.coloredGrid = this.useFastCalc
+      ? this.fastColor()
+      : colorGrid(this.grid, this.hues);
+
+  // ✅ Ensure UI updates
+  this.notifyUIUpdate();
+
+  console.log(`🎨 Added new hue:`, newHue);
+}
+
+
+
 }

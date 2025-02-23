@@ -4,35 +4,15 @@
  * Triggers a file download for the given Blob.
  * Ensures proper cleanup of URL object to free memory.
  */
-export function triggerFileDownload(blob, filename) {
-    if (!(blob instanceof Blob)) {
-        console.error("❌ triggerFileDownload: Invalid Blob provided.");
-        return;
-    }
-
-    if (typeof filename !== "string" || filename.trim() === "") {
-        console.error("❌ triggerFileDownload: Invalid filename provided.");
-        return;
-    }
-
-    try {
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = filename;
-
-        document.body.appendChild(a);
-        requestAnimationFrame(() => {
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(blobUrl);
-                console.log(`✅ File downloaded successfully: ${filename}`);
-            }, 100);
-        });
-    } catch (error) {
-        console.error("❌ Error triggering file download:", error);
-    }
+function triggerFileDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 /**
@@ -41,7 +21,7 @@ export function triggerFileDownload(blob, filename) {
  */
 export function readFileAsText(file, callback) {
     if (!file) return console.error("❌ No file selected.");
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
@@ -69,16 +49,61 @@ export function saveCanvasAsPNG(canvas, filename = "art.png") {
     canvas.toBlob((blob) => triggerFileDownload(blob, filename), "image/png");
 }
 
-export function exportGridToCSV(fIter) {
+export function saveGridToCSV(fIter) {
     if (!fIter) {
-      console.error("No grid data found.");
-      return;
+        console.error("No grid data found.");
+        return;
     }
-    const filename = window.mandArtLoader.getActiveFilename("csv");
-    console.log("Current filename:", filename);
+    let displayName = "MandArt";
+    try {
+        if (window.mandArtLoader && typeof window.mandArtLoader.getDisplayName === "function") {
+            displayName = window.mandArtLoader.getDisplayName() || "MandArt";
+        }
+    } catch (error) {
+        console.warn("⚠️ Could not retrieve display name. Using default 'MandArt'.");
+    }
+
+    console.log(`✅ Grid '${displayName}' generated successfully.`);
+
+    const filename = `${displayName}.csv`;
+    console.log("📁 Saving file:", filename);
+
+    // Convert grid data to CSV format
     let csvContent = fIter.map((row) => row.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
+
+    // Trigger file download
     triggerFileDownload(blob, filename);
-    console.log(`Saved Grid CSV: ${filename}`);
-  }
-  
+
+    console.log(`📂 Saved Grid CSV: ${filename}`);
+}
+
+
+
+/**
+ * Fetches a CSV file and converts it to a 2D `fIter` array.
+ * Optimized for large (~1000x1000) files.
+ */
+export async function fetchAndParseCSV(csvPath) {
+    console.log(`📥 Attempting to fetch CSV: ${csvPath}`);
+
+    try {
+        const response = await fetch(csvPath);
+        
+        if (!response.ok) {
+            console.warn(`⚠️ CSV file not found: ${csvPath} (Status: ${response.status})`);
+            return null;  
+        }
+
+        const text = await response.text();
+        const lines = text.trim().split("\n");
+
+        const fIter = lines.map((line) => line.split(",").map(Number));
+        console.log(`✅ Parsed CSV into fIter (${fIter.length} rows x ${fIter[0].length} cols)`);
+        return fIter;
+    } catch (error) {
+        console.warn(`⚠️ Error fetching or parsing CSV: ${error.message}`);
+        return null;
+    }
+}
+

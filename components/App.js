@@ -10,6 +10,7 @@ import {
     loadMandArtList,
     populateMandartDropdown,
 } from "../utils/MandArtList.js";
+import { generateGrid } from "../utils/GridUtils.js";   
 
 window.mandArtLoader = new MandArtLoader();
 document.addEventListener("DOMContentLoaded", initApp);
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", initApp);
 export async function initApp() {
 
     try {
-        console.log("🚀 Initializing MandArt Web...");
+        console.log("🔍 Initializing MandArt Web...");
         setupCanvasSource();
         setupHeader();
         console.log("✅ Header Setup Complete.");
@@ -28,6 +29,7 @@ export async function initApp() {
         const getHues = () => window.mandArtLoader.getHues() || [{ r: 0, g: 0, b: 0, num: 1 }];
 
         let drawWithJavaScript;
+        console.log("🔍 Attempting to set up canvas...");
 
         try {
             const wasmModule = await loadWasm();
@@ -36,13 +38,16 @@ export async function initApp() {
                 setupCanvas();
             } else {
                 console.log("✅ WASM Loaded Successfully");
-                setupCanvasWithWasm(wasmModule);
+                const canvasFunctions = setupCanvasWithWasm(wasmModule);
+                drawWithJavaScript = canvasFunctions.drawWithJavaScript || (() => { });
             }
         } catch (error) {
             console.error("⚠️ WASM setup failed. Falling back to JavaScript:", error);
             const canvasFunctions = setupCanvas(getPicdef, getHues);
             drawWithJavaScript = canvasFunctions.drawWithJavaScript;
         }
+        console.log("🔍 Canvas setup complete. Checking function:", drawWithJavaScript);
+
 
         setupColorEditor();
         await setupCatalog();
@@ -56,9 +61,12 @@ export async function initApp() {
         try {
             await window.mandArtLoader.loadDefaultMandArt();
             console.log("✅ Default MandArt loaded successfully");
+
+            if (typeof drawWithJavaScript !== "function") {
+                console.error("❌ drawWithJavaScript is NOT a function! Canvas will not update.");
+            }
         } catch (error) {
             console.error("⚠️ Could not load default MandArt:", error);
-            // App can continue - UI will show "No MandArt Loaded"
         }
 
         console.log("✅ MandArt Web initialized successfully.");

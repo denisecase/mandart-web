@@ -68,7 +68,7 @@ export function setupColorEditor() {
         console.log("➕ In Color Editor handling click on Add New Color...");
         console.log("📋 Current hues before adding:", [...mandArtLoader.hues]);
 
-        mandArtLoader.addNewColor();
+        mandArtLoader.addHue();
         updateHueList();
 
         if (typeof recolorCanvas === "function") recolorCanvas();
@@ -86,12 +86,19 @@ export function setupColorEditor() {
     }
 
     function removeHue(index) {
-        console.log("Removing hue at index:", index);  // Debug log
-        mandArtLoader.removeHue(index);
-        updateHueList();
-        if (typeof recolorCanvas === "function") recolorCanvas();
+        console.log("Removing hue at index:", index);
+
+        // ✅ Ensure we are calling `removeHue` from the MandArtLoader instance
+        if (window.mandArtLoader && typeof window.mandArtLoader.removeHue === "function") {
+            window.mandArtLoader.removeHue(index);
+        } else {
+            console.error("❌ Error: removeHue is not defined on mandArtLoader.");
+        }
     }
+
 
     window.mandArtLoader.addUIUpdateCallback(updateHueList);
     console.log("✅ Subscribed Color Editor to UI updates.");
 }
+
+

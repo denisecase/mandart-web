@@ -42,12 +42,17 @@ export function validateWasmFunctions(functionNames) {
     return;
   }
 
+  const availableFunctions = [];
+
   functionNames.forEach((func) => {
-    if (typeof window.wasmModule[func] !== "function") {
-      console.warn(`⚠️ WASM function "${func}" is missing. Consider adding it.`);
-    } else {
+    if (typeof window.wasmModule[func] === "function") {
       console.log(`✅ WASM function "${func}" is available.`);
+      availableFunctions.push(func);  // Store the available function
+    } else {
+      console.warn(`⚠️ WASM function "${func}" is missing.`);
     }
   });
+
+  return availableFunctions;  // Return the list of available functions
 }
 
