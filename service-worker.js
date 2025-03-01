@@ -1,7 +1,7 @@
 // service-worker.js - Simple cache service worker
 
 // Cache version - update this when you release new versions
-const CACHE_VERSION = '1.0.0';
+const CACHE_VERSION = '1.0.1';
 const CACHE_NAME = `mandart-cache-${CACHE_VERSION}`;
 
 // Determine base path based on hostname
