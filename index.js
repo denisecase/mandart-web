@@ -3,6 +3,7 @@ import { loadWasmModule } from "./src/wasm_loader.js";
 import { IS_GITHUB_PAGES, BASE_PATH } from "./src/constants.js";
 import { setWasmModule } from "./src/globals.js";
 import { reorderColor } from "./src/ColorEditor.js";
+import { initSavePngButton } from './src/save_png.js';
 
 // Make reorderColor globally available (only do this once)
 window.reorderColor = reorderColor;
@@ -114,6 +115,7 @@ async function init() {
 
         console.log("Fetching catalog...");
         await fetchMandartCatalog();
+        initSavePngButton();
         console.log("✅ MandArt Web initialized");
 
     } catch (error) {

@@ -21,11 +21,17 @@
 
 <body>
     <header>
-        <h1>MandArt Web (Under Construction)</h1>
+        <h1>MandArt Web</h1>
         <div id="controlsContainer">
-            <label for="fileSelect">Select MandArt:</label>
-            <select id="fileSelect"></select>
+            <div class="select-wrapper">
+                <label for="fileSelect">Select MandArt:</label>
+                <select id="fileSelect"></select>
+            </div>
+            <button id="savePngBtn" class="header-btn">
+                <i class="fas fa-download"></i> Save PNG
+            </button>
         </div>
+
     </header>
 
     <main id="container">
@@ -59,6 +65,7 @@
                 <canvas id="canvas" width="1100" height="1000">
                 </canvas>
             </div>
+            <div id="download-container"></div>
         </section>
     </main>
 
