@@ -205,7 +205,7 @@ export function redrawCanvas() {
   
   try {
     // Find the canvas element
-    const canvas = document.querySelector("#canvasContainer canvas");
+    const canvas = document.getElementById("canvas");
     if (!canvas) {
       console.error("🚨 Canvas element not found in DOM! Make sure it exists inside #canvasContainer.");
       

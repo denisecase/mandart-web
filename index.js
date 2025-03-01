@@ -1,68 +1,58 @@
 import { fetchMandartCatalog, MANDART_CATALOG, defaultIndex } from "./src/fetch_catalog.js";
-import { processFile } from "./src/process_file.js";
 import { loadWasmModule } from "./src/wasm_loader.js";
 import { setWasmModule, wasmModule } from "./src/globals.js";
+import { IS_GITHUB_PAGES, BASE_PATH } from "./src/constants.js";
 
-// App version - update this when you deploy new changes
-const APP_VERSION = '1.0.0';
-
-// Register service worker for caching if supported
-function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(registration => {
-                    console.log('🔄 ServiceWorker registered successfully:', registration.scope);
-                })
-                .catch(error => {
-                    console.error('❌ ServiceWorker registration failed:', error);
-                });
-        });
-    } else {
-        console.log('⚠️ Service workers not supported in this browser');
-    }
-}
-
-// Add version parameter to resource URLs when they're fetched
-function addVersionToFetch() {
-    // Store the original fetch function
-    const originalFetch = window.fetch;
-
-    // Override the fetch function to add version parameters to local URLs
-    window.fetch = function (url, options) {
-        // Only add version to local URLs (not external APIs)
-        if (typeof url === 'string' && url.startsWith('/') &&
-            !url.includes('?') &&
-            (url.endsWith('.js') || url.endsWith('.css') || url.endsWith('.wasm'))) {
-            url = `${url}?v=${APP_VERSION}`;
-        }
-
-        // Call the original fetch with the possibly modified URL
-        return originalFetch(url, options);
-    };
-
-    console.log('🔄 Resource versioning enabled for cache control');
-}
-
+/**
+ * Simple initialization function with minimal dependencies
+ */
 async function init() {
     try {
-        console.log("Initializing MandArt Web...");
+        console.log("🚀 Initializing MandArt Web...");
+        console.log(`Environment: ${IS_GITHUB_PAGES ? 'GitHub Pages' : 'Local Development'}`);
+        console.log(`Base Path: ${BASE_PATH}`);
 
-        // Enable caching strategies
-        registerServiceWorker();
-        addVersionToFetch();
-
-        // Load WASM module
+        // Step 1: Load WASM module
+        console.log("Loading WASM module...");
         const wasm = await loadWasmModule();
         setWasmModule(wasm);
-        if (!wasm) return;
+        
+        if (!wasm) {
+            console.error("Failed to load WASM module. Some features may not work.");
+        }
 
-        // Fetch catalog and populate UI
+        // Step 2: Fetch catalog and populate UI
+        console.log("Fetching catalog...");
         await fetchMandartCatalog();
+        
+        console.log("✅ MandArt Web initialized");
 
     } catch (error) {
         console.error("Failed to initialize:", error);
     }
 }
 
+// Register service worker for caching if supported
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        const swPath = IS_GITHUB_PAGES 
+            ? `${BASE_PATH}service-worker.js` 
+            : './service-worker.js';
+            
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register(swPath)
+                .then(registration => {
+                    console.log('ServiceWorker registered successfully:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('ServiceWorker registration failed:', error);
+                });
+        });
+    }
+}
+
+// Register service worker, but don't make initialization wait for it
+registerServiceWorker();
+
+// Start initialization
 window.addEventListener("DOMContentLoaded", init);

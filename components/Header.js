@@ -145,7 +145,7 @@ export function setupHeader() {
   });
 
   document.getElementById("savePNGBtn")?.addEventListener("click", () => {
-    const canvas = document.getElementById("mandelbrotCanvas");
+    const canvas = document.getElementById("canvas");
     if (canvas) {
       saveCanvasAsPNG(canvas);
     } else {

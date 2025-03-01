@@ -7,7 +7,7 @@ import { loadPrecomputedGrid } from "../utils/GridUtils.js";
 export function setupCanvasWithWasm(wasmModule) {
     console.log("🔍 Initializing WASM Canvas...");
 
-    const canvas = document.getElementById("mandelbrotCanvas");
+    const canvas = document.getElementById("canvas");
     if (!canvas) {
         console.error("❌ Canvas element not found! Ensure the ID is correct.");
         return null;
@@ -51,7 +51,7 @@ export function setupCanvasWithWasm(wasmModule) {
 export function setupCanvas(getPicdef, getHues) {
     console.log("🎨 Initializing JavaScript Canvas...");
 
-    const canvas = document.getElementById("mandelbrotCanvas");
+    const canvas = document.getElementById("canvas");
     if (!canvas) {
         console.error("❌ Canvas element not found! Ensure the ID is correct.");
         return null;

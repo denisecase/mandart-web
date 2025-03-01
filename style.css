@@ -385,21 +385,7 @@
 }
 
   
-  #mandelbrotCanvas {
-    width: 100%; /* Make it take full width of parent */
-    height: auto; /* Maintains aspect ratio */
-    max-width: 100%; /* Prevents it from growing beyond container */
-    max-height: 90vh; /* Adjusts for smaller screens */
-    display: block;
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-md);
-    transition: box-shadow 0.2s ease-in-out;
-  }
-  
-  #mandelbrotCanvas:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  }
-  
+
   #drawingName {
     font-size: 2rem;
     text-align: center;
@@ -654,9 +640,7 @@
       --header-height: 120px;
     }
     
-    #mandelbrotCanvas {
-      min-height: 600px;
-    }
+
   }
   
   /* Tablets */
@@ -666,10 +650,7 @@
       --sidebar-width: 180px;
     }
     
-    #mandelbrotCanvas {
-      min-height: 550px;
-      width: 95%;
-    }
+ 
     
     #canvasSection {
       padding: var(--spacing-md);
@@ -746,10 +727,7 @@
       max-width: 160px;
     }
     
-    #mandelbrotCanvas {
-      min-height: 400px;
-      width: 95%;
-    }
+
     
     .url-modal {
       min-width: 300px;
@@ -772,9 +750,7 @@
       max-height: 200px;
     }
     
-    #mandelbrotCanvas {
-      min-height: 300px;
-    }
+ 
   }
   
   /* ==========================================
@@ -803,13 +779,7 @@
       margin: 0 auto !important;
     }
     
-    #mandelbrotCanvas {
-      max-width: 100% !important;
-      height: auto !important;
-      box-shadow: none !important;
-      border: none !important;
-      page-break-inside: avoid;
-    }
+
     
     #drawingName {
       font-size: 24pt !important;
