@@ -1,7 +1,9 @@
+// src/controllers/color_controller.js
+
 import Hue from "../models/Hue.js";
-import ColorInputs from "../models/ColorInputs.js";
-import { redrawCanvas, updateColor, deleteColor } from "../ColorEditor.js"; 
 import ColorEditorRow from "../ColorEditorRow.js";
+import ColorInputs from "../models/ColorInputs.js";
+import { redrawCanvas, updateColor, deleteColor, reorderColor } from "../ColorEditor.js"; 
 import { hueList } from "../globals.js";
 
 /**
@@ -66,16 +68,42 @@ export function updateColorInputs(currentHues, currentColorInputs) {
         mandColor, // Pass array, not Hue object
         updatedHues
     );
-    
     console.log("🎨 Updated ColorInputs:", updatedColorInputs);
-  
     hueList.innerHTML = "";
     currentHues.forEach((color, i) => {
-      const row = new ColorEditorRow(i, color, updateColor, deleteColor);  
+      const row = new ColorEditorRow(i, color, updateColor, deleteColor, reorderColor);  
       hueList.appendChild(row.element);
     });
-    
-    redrawCanvas();
-    
+    redrawCanvas(false);
     return updatedColorInputs;  
 }
+
+/**
+ * Reorder colors by moving a color from one position to another
+ * @param {Array} currentHues - The current array of hues
+ * @param {number} fromIndex - The index of the color to move
+ * @param {number} toIndex - The destination index
+ * @returns {Array} - New array with reordered hues
+ */
+export function reorderHues(currentHues, fromIndex, toIndex) {
+    console.log(`🔄 Reordering color from position ${fromIndex + 1} to ${toIndex + 1}`);
+    
+    // Make a copy of the hues array
+    const newHues = [...currentHues];
+    
+    // Remove the color from its original position
+    const [movedHue] = newHues.splice(fromIndex, 1);
+    
+    // Insert it at the target position
+    newHues.splice(toIndex, 0, movedHue);
+    
+    // Re-number all hues to ensure sequential numbering
+    return newHues.map((hue, index) => new Hue({
+        id: hue.id,
+        num: index + 1, // Update num to match new position (1-based)
+        r: hue.r,
+        g: hue.g,
+        b: hue.b
+    }));
+}
+

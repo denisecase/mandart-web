@@ -3,7 +3,7 @@ import { populateColorEditor } from "./ColorEditor.js";
 
 export async function processFile(fileObj) {
     try {
-        console.log(`📂 Processing selected file: ${fileObj.name}`);
+        console.log(`📂 PROCESS_FILE Processing selected file: ${fileObj.name}`);
         
         if (!fileObj) {
             console.error("❌ File object is null or undefined");

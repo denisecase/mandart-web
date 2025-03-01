@@ -19,32 +19,33 @@ mandColorPicker.addEventListener("input", (event) => {
   const { r, g, b } = hexToRgb(newHex); // Convert HEX to RGB
   console.log(`🎨 Updating mand_color to [${r}, ${g}, ${b}]`);
   currentColorInputs.mand_color = [r, g, b];
-  redrawCanvas();
+  redrawCanvas(false);
 });
 
 
 export async function populateColorEditor(fileObj) {
+  console.log("COLOR EDITOR:  start populateColorEditor with:", fileObj);
   if (!fileObj || !fileObj.mandart_url) {
     console.error("🚨 Invalid file object or missing URL");
     return;
   }
 
-  let content = null; 
+  let content = null;
   try {
     console.log(`Extracting colors from: ${fileObj.name}`);
     const fileURL = fileObj.mandart_url;
     const response = await fetch(fileURL);
     if (!response.ok) throw new Error(`Failed to fetch ${fileObj.name}`);
-    
+
     // Fix: Remove the 'const' declaration to use the outer scope variable
     content = await response.json();
-    
+
     // Basic validation of the content
     if (!content || typeof content !== 'object') {
       throw new Error("Invalid JSON content received");
     }
-    
-  
+
+
     // Create shape inputs with validation
     try {
       currentShapeInputs = createShapeInputs(content);
@@ -77,7 +78,7 @@ export async function populateColorEditor(fileObj) {
   } catch (error) {
     console.error(`🚨 Error extracting colors from ${fileObj.name}:`, error);
     // Set up minimal valid content to continue
-    content = { 
+    content = {
       nBlocks: 10,
       spacingColorFar: 1.0,
       spacingColorNear: 0.1,
@@ -97,7 +98,7 @@ export async function populateColorEditor(fileObj) {
         return input.map(val => Number(val) || 0); // Convert to number, default to 0 if NaN
       }
       if (typeof input === "object" && input !== null && "r" in input && "g" in input && "b" in input) {
-        return [Number(input.r) || 0, Number(input.g) || 0, Number(input.b) || 0]; 
+        return [Number(input.r) || 0, Number(input.g) || 0, Number(input.b) || 0];
       }
       return [0, 0, 0]; // Default to black
     };
@@ -113,19 +114,18 @@ export async function populateColorEditor(fileObj) {
     // Ensure we have valid inputs for createColorInputs
     const safeContent = content || {};
     const validHues = currentHues || [new Hue({ num: 1, r: 0, g: 0, b: 0 })];
-    
+
     // Create a complete and valid parameters object
     const colorParams = {
       nBlocks: safeContent.nBlocks || 10,
-      // REMOVED: huesLength - this was causing parameter mismatch
       spacingColorFar: safeContent.spacingColorFar || 1.0,
       spacingColorNear: safeContent.spacingColorNear || 0.1,
       yY: safeContent.yY || 0,
       mandColor: mandColorFixed,
       hues: validHues
     };
-    
-    
+
+
     // Create a wrapper that catches errors
     try {
       currentColorInputs = createColorInputs(colorParams);
@@ -155,13 +155,13 @@ export async function populateColorEditor(fileObj) {
         console.warn("⚠️ hueList element not found");
       }
 
-      
+
       // Handle rendering the color editor rows
       if (currentColorInputs && Array.isArray(currentColorInputs.hues)) {
-        
+
         currentColorInputs.hues.forEach((color, index) => {
           try {
-            const row = new ColorEditorRow(index, color, updateColor, deleteColor);
+            const row = new ColorEditorRow(index, color, updateColor, deleteColor, reorderColor);
             if (row && row.element) {
               hueList.appendChild(row.element);
             }
@@ -172,7 +172,7 @@ export async function populateColorEditor(fileObj) {
       } else {
         console.warn("⚠️ No valid hues available to display in the color editor");
       }
-      redrawCanvas();
+      redrawCanvas(true);
     } catch (uiError) {
       console.error("🚨 Error updating the color editor UI:", uiError);
     }
@@ -181,9 +181,13 @@ export async function populateColorEditor(fileObj) {
   }
 }
 
-
-export function redrawCanvas() {
-  console.log("🔄 Attempting to redraw canvas...");
+/**
+ * Redraw the canvas with the current shape and color inputs
+ * @param {boolean} forceGridRecalculation - Whether to force grid recalculation
+ * @returns {void}
+ */
+export function redrawCanvas(forceGridRecalculation = false) {
+  console.log("🔄 Redraw canvas...");
   
   // Check if we have the required inputs
   if (!currentShapeInputs || !currentColorInputs) {
@@ -195,24 +199,7 @@ export function redrawCanvas() {
     // Find the canvas element
     const canvas = document.getElementById("canvas");
     if (!canvas) {
-      console.error("🚨 Canvas element not found in DOM! Make sure it exists inside #canvasContainer.");
-      
-      // Try to create a canvas if it doesn't exist
-      try {
-        const container = document.querySelector("#canvasContainer");
-        if (container) {
-          const newCanvas = document.createElement("canvas");
-          newCanvas.width = 800;
-          newCanvas.height = 600;
-          container.appendChild(newCanvas);
-          console.log("🖼️ Created a new canvas element");
-          // Continue with the new canvas
-          redrawCanvas();
-          return;
-        }
-      } catch (canvasCreateError) {
-        console.error("🚨 Failed to create canvas:", canvasCreateError);
-      }
+      console.error("🚨 Canvas element not found in DOM!");
       return;
     }
     
@@ -222,28 +209,32 @@ export function redrawCanvas() {
       return;
     }
     
-    // Clear the canvas and WASM cache
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // Make sure wasmModule exists before calling methods
-    if (!wasmModule || typeof wasmModule.api_clear_grid_cache !== 'function') {
-      console.error("🚨 WASM module not properly initialized or missing required methods");
+    if (!wasmModule) {
+      console.error("🚨 WASM module not properly initialized");
       return;
     }
     
-    console.log("🧹 Clearing WASM grid cache before generating image...");
-    try {
-      wasmModule.api_clear_grid_cache();
-    } catch (wasmError) {
-      console.error("🚨 Error clearing WASM grid cache:", wasmError);
-      // Continue anyway
+    // Only clear grid cache if forced (e.g., when shape parameters change)
+    if (forceGridRecalculation && typeof wasmModule.api_clear_grid_cache === 'function') {
+      console.log("🧹 Clearing WASM grid cache before generating image...");
+      try {
+        wasmModule.api_clear_grid_cache();
+      } catch (wasmError) {
+        console.error("🚨 Error clearing WASM grid cache:", wasmError);
+      }
     }
 
     // Get data for WASM with error handling
     let shapeData, colorData;
     try {
       shapeData = getShapeInputsForWasm(currentShapeInputs);
-      console.log("📐 Sending Shape Inputs:", shapeData);
+      if (forceGridRecalculation) {
+        console.log("📐 Sending Shape Inputs:", shapeData);
+      }
     } catch (shapeError) {
       console.error("🚨 Error preparing shape data for WASM:", shapeError);
       return;
@@ -259,13 +250,30 @@ export function redrawCanvas() {
     
     // Generate the image using WASM
     let imageData;
-    try {
+    
+    // Try the color-only optimization first, fall back to full calculation if needed
+    if (!forceGridRecalculation && typeof wasmModule.api_load_or_compute_default_grid === 'function') {
+      try {
+        console.log("Attempting fast color update with existing grid...");
+        
+        // First ensure the grid is loaded
+        wasmModule.api_load_or_compute_default_grid(shapeData);
+        
+        // Then generate the image with just the color data
+        imageData = wasmModule.api_get_image_from_inputs(shapeData, colorData);
+        
+        console.log("✅ Fast color update succeeded!");
+      } catch (optimizedError) {
+        console.warn("⚠️ Fast color update failed, falling back to full calculation:", optimizedError);
+        // Fall back to full calculation
+        imageData = wasmModule.api_get_image_from_inputs(shapeData, colorData);
+      }
+    } else {
+      // Standard full calculation path
+      console.log("Computing full grid (may take longer)...");
       imageData = wasmModule.api_get_image_from_inputs(shapeData, colorData);
-    } catch (imageGenError) {
-      console.error("🚨 Error generating image in WASM:", imageGenError);
-      return;
     }
-
+    
     // Validate the image data
     if (!imageData || !imageData.data || !imageData.width || !imageData.height) {
       console.error("🚨 Invalid image data generated:", imageData);
@@ -296,7 +304,6 @@ export function redrawCanvas() {
   }
 }
 
-
 export function updateColor(index, newColor) {
   console.log(`🖍️ ColorEditor.updateColor() DEBUG: Updating color at index ${index}:`, newColor);
   if (typeof newColor !== "string") {
@@ -320,11 +327,11 @@ export function updateColor(index, newColor) {
 
   hueList.innerHTML = "";
   currentHues.forEach((color, i) => {
-    const row = new ColorEditorRow(i, color, updateColor, deleteColor);
+    const row = new ColorEditorRow(i, color, updateColor, deleteColor, reorderColor);
     hueList.appendChild(row.element);
   });
 
-  redrawCanvas();
+  redrawCanvas(false);
 }
 
 
@@ -345,7 +352,7 @@ export function addNewColor() {
   currentColorInputs = updateColorInputs(currentHues, currentColorInputs);
 
   // ✅ Re-render everything (UI + Canvas)
-  redrawCanvas();
+  redrawCanvas(false);
 }
 
 
@@ -370,9 +377,97 @@ export function deleteColor(index) {
   currentColorInputs.hues = [...currentHues];
   hueList.innerHTML = "";
   currentHues.forEach((color, i) => {
-    const row = new ColorEditorRow(i, color, updateColor, deleteColor);
+    const row = new ColorEditorRow(i, color, updateColor, deleteColor, reorderColor);
     hueList.appendChild(row.element);
   });
   currentColorInputs = updateColorInputs(currentHues, currentColorInputs);
-  redrawCanvas();
+  redrawCanvas(false);
+}
+
+// Drag and Drop Reordering
+
+export function reorderColor(fromIndex, toIndex) {
+  console.log(`🔄 ColorEditor.reorderColor(): Moving color from ${fromIndex} to ${toIndex}`);
+  try {
+    console.log("Current hues before reordering:",
+      currentHues.map(h => `${h.num}: rgb(${h.r},${h.g},${h.b})`));
+
+    try {
+      // Make sure we have valid indices
+      if (fromIndex === toIndex ||
+        !Array.isArray(currentHues) ||
+        fromIndex < 0 || fromIndex >= currentHues.length ||
+        toIndex < 0 || toIndex > currentHues.length) {
+        console.log("Invalid reordering operation - skipping");
+        return;
+      }
+
+      // Store the current state for debugging
+      const originalHues = [...currentHues];
+
+      // Create a new array with the moved item
+      const newHues = [...currentHues];
+      const [movedItem] = newHues.splice(fromIndex, 1);
+      newHues.splice(toIndex, 0, movedItem);
+
+      // Update the current hues array
+      currentHues = newHues;
+
+      console.log("Hues reordered:", {
+        originalHues: originalHues.map(h => h.num),
+        newHues: newHues.map(h => h.num)
+      });
+
+      // Update the UI directly
+      hueList.innerHTML = "";
+      currentHues.forEach((color, i) => {
+        // Create a new color with the updated index
+        const updatedColor = new Hue({
+          num: i + 1,
+          r: color.r,
+          g: color.g,
+          b: color.b
+        });
+
+        // Create a new row with all the callbacks
+        const row = new ColorEditorRow(i, updatedColor, updateColor, deleteColor, reorderColor);
+        hueList.appendChild(row.element);
+      });
+
+      // Update color inputs for rendering
+      if (currentColorInputs) {
+        currentColorInputs.hues = currentHues.map((hue, i) => new Hue({
+          num: i + 1,
+          r: hue.r,
+          g: hue.g,
+          b: hue.b
+        }));
+
+        if (typeof currentColorInputs.updateColors === 'function') {
+          currentColorInputs.updateColors();
+        }
+      }
+
+      // Redraw the canvas
+      redrawCanvas(false);
+
+      console.log("✅ Reordering completed successfully");
+    } catch (error) {
+      console.error("Error during reordering:", error);
+    }
+  } catch (err) {
+    console.error("Error during reordering:", err);
+  }
+}
+
+// Helper function for drag and drop to rebuild the color editor UI
+function refreshColorEditorUI() {
+  // Clear the hue list
+  hueList.innerHTML = "";
+
+  // Rebuild with current data
+  currentHues.forEach((color, i) => {
+    const row = new ColorEditorRow(i, color, updateColor, deleteColor, reorderColor);
+    hueList.appendChild(row.element);
+  });
 }
