@@ -19,776 +19,731 @@
 /* ==========================================
    1. CSS VARIABLES
    ========================================== */
-   :root {
-    /* Colors */
-    --primary-color: #007bff;
-    --primary-hover: #0056b3;
-    --secondary-color: #28a745;
-    --accent-color: #959798;
-    --background-color: #f4f4f4;
-    --surface-color: #fff;
-    --header-bg: #222;
-    --text-color: #333;
-    --text-light: #fff;
-    --border-color: #ddd;
-    
-    /* Spacing */
-    --spacing-xs: 5px;
-    --spacing-sm: 8px;
-    --spacing-md: 10px;
-    --spacing-lg: 15px;
-    --spacing-xl: 20px;
-    
-    /* Layout */
-    --header-height: 120px;
-    --sidebar-width: 200px;
-    
-    /* Effects */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
-    --border-radius-sm: 5px;
-    --border-radius-md: 8px;
-    
-    /* Z-index layers */
-    --z-base: 1;
-    --z-header: 1000;
-    --z-modal: 2000;
-  }
-  
-  /* ==========================================
+:root {
+  /* Colors */
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --secondary-color: #28a745;
+  --accent-color: #959798;
+  --background-color: #f4f4f4;
+  --surface-color: #fff;
+  --header-bg: #222;
+  --text-color: #333;
+  --text-light: #fff;
+  --border-color: #ddd;
+
+  /* Spacing */
+  --spacing-xs: 5px;
+  --spacing-sm: 8px;
+  --spacing-md: 10px;
+  --spacing-lg: 15px;
+  --spacing-xl: 20px;
+
+  /* Layout */
+  --header-height: 120px;
+  --sidebar-width: 200px;
+
+  /* Effects */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --border-radius-sm: 5px;
+  --border-radius-md: 8px;
+
+  /* Z-index layers */
+  --z-base: 1;
+  --z-header: 1000;
+  --z-modal: 2000;
+}
+
+/* ==========================================
      2. RESET & BASE STYLES
      ========================================== */
-  * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--background-color);
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    color: var(--text-color);
-  }
-  
-  button {
-    cursor: pointer;
-    border: none;
-    border-radius: var(--border-radius-sm);
-    font-size: 1rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-  }
-  
-  button:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-  }
-  
-  /* ==========================================
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  color: var(--text-color);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 1rem;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* ==========================================
      3. LAYOUT & STRUCTURE
      ========================================== */
-  #container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap; 
-    width: 100%;
-    padding-top: var(--header-height);
-    transition: padding-top 0.3s ease-in-out;
-    will-change: padding-top;
-  }
-  
-  main {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: left;
-    width: 100%;
-    padding-top: var(--header-height);
-  }
-  
-  /* ==========================================
+#container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  padding-top: var(--header-height);
+  transition: padding-top 0.3s ease-in-out;
+  will-change: padding-top;
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: left;
+  width: 100%;
+  padding-top: var(--header-height);
+}
+
+/* ==========================================
      4. HEADER
      ========================================== */
-  header {
+header {
+  width: 100%;
+  background: var(--header-bg);
+  color: var(--text-light);
+  padding: var(--spacing-md) var(--spacing-md);
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-header);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: var(--shadow-md);
+  overflow: visible;
+  height: auto;
+  min-height: 70px;
+  transition: min-height 0.3s ease-in-out;
+}
+
+header h1 {
+  margin: var(--spacing-xs) 0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: var(--spacing-xs);
+}
+
+#fileSelect {
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+}
+
+/* ==========================================
+     5. SIDEBAR (COLOR EDITOR)
+     ========================================== */
+#colorEditor {
+  width: var(--sidebar-width);
+  min-width: 200px;
+  max-width: 250px;
+  background: var(--surface-color);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  overflow-y: auto;
+
+  flex-shrink: 0;
+  /* shrink = false */
+  flex: 0 0 var(--sidebar-width);
+  /* Fixed width, does not grow */
+  margin: var(--spacing-sm);
+}
+
+#addColorBtn {
+  width: 100%;
+  max-width: 140px;
+  padding: var(--spacing-md);
+  margin-block: var(--spacing-sm);
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+addColorBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+#colorEditor h2 {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
+#githubIcon {
+  display: block;
+  width: 25px;
+  height: 25px;
+  margin: 25px auto 0;
+  transition: transform 0.2s ease-in-out;
+}
+
+#githubIcon:hover {
+  transform: scale(1.2);
+}
+
+#mandColorContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+}
+
+#mandColorPicker {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background: transparent;
+  border-radius: var(--border-radius-sm);
+
+}
+
+#addColorBtn {
+  background-color: var(--accent-color);
+  color: var(--text-light);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+#addColorBtn:hover {
+  opacity: 0.9;
+}
+
+.hue-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface-color);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.hue-row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.sort-num {
+  min-width: 30px;
+  text-align: center;
+}
+
+.color-picker {
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  border-radius: var(--border-radius-sm);
+  transition: transform 0.2s ease-in-out;
+}
+
+.color-picker:hover {
+  transform: scale(1.1) !important;
+}
+
+.delete-btn {
+  width: 30px;
+  max-width: 40px;
+  height: 30px;
+  font-size: 1rem;
+  padding: 0;
+  margin: 5px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  background-color: #f5f5f5 !important;
+  /* Override inherited styles */
+  color: #666 !important;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.delete-btn:hover {
+  background-color: #ff6b6b !important;
+  color: white !important;
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================
+     6. MAIN CONTENT & CANVAS
+     ========================================== */
+#canvasSection {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 400px;
+  padding: var(--spacing-sm);
+  box-shadow: var(--shadow-sm);
+  background-color: white;
+  margin: var(--spacing-sm);
+}
+
+#canvasSection h2 {
+  margin: var(--spacing-xs);
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--text-color);
+}
+
+#canvasContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* Make it take up full width of #canvasSection */
+  max-width: 100%;
+  /* Prevent it from growing beyond its parent */
+  height: auto;
+  overflow: hidden;
+  /* Prevents the canvas from overflowing */
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+#drawingName {
+  font-size: 2rem;
+  text-align: center;
+  margin: var(--spacing-md) 0;
+}
+
+#sourcePath {
+  font-size: 1rem;
+  text-align: center;
+  display: none;
+}
+
+/* ==========================================
+     7. MODALS & DIALOGS
+     ========================================== */
+/* MandArt Catalog Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: var(--z-modal);
+  left: 50%;
+  top: 20vh;
+  transform: translateX(-50%);
+  width: 30%;
+  max-width: 150px;
+  background: var(--surface-color);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  max-height: 80vh;
+  overflow-y: auto;
+  will-change: transform;
+}
+
+.modal-content {
+  text-align: center;
+  position: relative;
+  padding-top: 40px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: color 0.2s ease-in-out;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.modal-close-btn:hover {
+  color: #ff6b6b;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* URL Prompt Modal */
+.url-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface-color);
+  width: 500px;
+  height: 250px;
+  max-width: 90%;
+  min-width: 400px;
+  min-height: 180px;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  z-index: var(--z-modal);
+  resize: both;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.url-modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--spacing-md);
+}
+
+.url-modal-titlebar {
+  background: var(--header-bg);
+  color: var(--text-light);
+  padding: var(--spacing-md);
+  font-size: 1rem;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+  border-top-left-radius: var(--border-radius-md);
+  border-top-right-radius: var(--border-radius-md);
+}
+
+.url-modal-titlebar:active {
+  cursor: grabbing;
+}
+
+.url-input {
+  flex-grow: 1;
+  width: 100%;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  background: #f9f9f9;
+  font-family: Arial, sans-serif;
+  resize: none;
+  overflow: auto;
+}
+
+.url-input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding-top: var(--spacing-md);
+}
+
+.btn {
+  flex: 1;
+  padding: var(--spacing-sm);
+  margin: var(--spacing-xs);
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: #ccc;
+  color: black;
+}
+
+.btn-secondary:hover {
+  background-color: #bbb;
+}
+
+
+/* ==========================================
+     8. COMPONENTS & WIDGETS
+     ========================================== */
+/* Catalog Grid */
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+  padding-bottom: var(--spacing-sm);
+}
+
+.mandart-item {
+  background: var(--background-color);
+  padding: var(--spacing-sm);
+  width: 90%;
+  max-width: 150px;
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.mandart-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.mandart-item img {
+  display: block;
+  width: 100%;
+  max-width: 140px;
+  height: auto;
+  border-radius: var(--border-radius-sm);
+}
+
+.mandart-item span {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  background: var(--surface-color);
+  border-radius: var(--border-radius-sm);
+}
+
+/* ==========================================
+     9. ANIMATIONS
+     ========================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -55%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* ==========================================
+     10. RESPONSIVE DESIGN
+     ========================================== */
+/* Larger tablets and desktops */
+@media (min-width: 1025px) {
+  :root {
+    --header-height: 120px;
+  }
+
+
+}
+
+/* Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    --header-height: 100px;
+    --sidebar-width: 180px;
+  }
+  #canvasSection {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  :root {
+    --header-height: 90px;
+  }
+
+  #colorEditor {
     width: 100%;
-    background: var(--header-bg);
-    color: var(--text-light);
-    padding: var(--spacing-md) var(--spacing-md);
-    text-align: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: var(--z-header);
-    display: flex;
+    max-width: none;
+  }
+
+  .header-button-groups {
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    box-shadow: var(--shadow-md);
-    overflow: visible;
-    height: auto;
-    min-height: 70px;
-    transition: min-height 0.3s ease-in-out;
   }
-  
-  header h1 {
-    margin: var(--spacing-xs) 0;
-    font-size: 1.2rem;
-    text-align: center;
-  }
-  
-  .header-buttons button {
-    background-color: var(--primary-color);
-    color: var(--text-light);
-    padding: var(--spacing-xs) ;
-    margin: var(--spacing-xs);
-    font-size: 1rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-  }
-  
-  header button:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-  }
-  
-  header button:active {
-    transform: translateY(1px);
-  }
-  
-  .header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    gap: var(--spacing-xs);
-  }
-  
+
   .header-buttons {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: var(--spacing-xs);
-    width: 100%;
-    padding: var(--spacing-xs) 0;
-  }
-  
-  .header-button-groups {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
     width: 100%;
     max-width: 900px;
+    padding: var(--spacing-xs) 0;
   }
-  
-  .save-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--spacing-sm);
-  }
-  
-  .header-buttons button:nth-child(1),
-  .header-buttons button:nth-child(2),
-  .header-buttons button:nth-child(3) {
-    order: -1;
-    flex-shrink: 1;
-    min-width: 80px;
-    white-space: nowrap;
-  }
-  
-  .header-buttons button,
-  .header-buttons select {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 1rem;
-    flex-shrink: 1;
-  }
-  
- #fileSelect {
-    border-radius: var(--border-radius-sm);
-    border: 1px solid var(--border-color);
-    background-color: var(--surface-color);
-  }
-  
-  /* ==========================================
-     5. SIDEBAR (COLOR EDITOR)
-     ========================================== */
+
   #colorEditor {
-    width: var(--sidebar-width);
-    min-width: 200px;
-    max-width: 250px;
-    background: var(--surface-color);
-    padding: var(--spacing-lg);
-    box-shadow: var(--shadow-sm);
-    overflow-y: auto;
-
-    flex-shrink: 0; /* shrink = false */
-    flex: 0 0 var(--sidebar-width); /* Fixed width, does not grow */
-    margin: var(--spacing-sm);
-  }
-  
-  #addColorBtn {
-    width: 100%;
-    max-width: 140px;
-    padding: var(--spacing-md);
-    margin-block: var(--spacing-sm);
-    background-color: var(--primary-color);
-    color: var(--text-light);
-  }
-  
-  addColorBtn:hover {
-    background-color: var(--primary-hover);
-  }
-  
-  #colorEditor h2 {
-    font-size: 1.2rem;
-    text-align: center;
-    margin-bottom: var(--spacing-md);
-  }
-  
-  #githubIcon {
-    display: block;
-    width: 25px;
-    height: 25px;
-    margin: 25px auto 0;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  #githubIcon:hover {
-    transform: scale(1.2);
-  }
-  
-  #mandColorContainer {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin: var(--spacing-md) 0;
-  }
-  
-  #mandColorPicker {
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    background: transparent;
-    border-radius: var(--border-radius-sm);
-
-  }
-  
-  #addColorBtn {
-    background-color: var(--accent-color);
-    color: var(--text-light);
-    padding: var(--spacing-sm) var(--spacing-md);
-    margin: var(--spacing-sm);
-    border-radius: var(--border-radius-sm);
-    transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
-  }
-  
-  #addColorBtn:hover {
-    opacity: 0.9;
-  }
-  
-  .hue-row {
-    display: flex;
-    flex-direction: row ;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin: var(--spacing-md);
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--border-color);
-    background: var(--surface-color);
-    transition: background-color 0.2s ease-in-out;
-  }
-  
-  .hue-row:hover {
-    background-color: rgba(0, 0, 0, 0.02) ;
-  }
-  
-  .sort-num {
-    min-width: 30px;
-    text-align: center;
-  }
-  
-  .color-picker {
-    width: 40px;
-    height: 40px;
-    border: none;
-    cursor: pointer;
-    background: transparent;
-    border-radius: var(--border-radius-sm);
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .color-picker:hover {
-    transform: scale(1.1)!important;
-  }
-  
-  .delete-btn {
-    width: 30px;
-    max-width:40px;
-    height: 30px;
-    font-size: 1rem;
-    padding: 0;
-    margin: 5px;
-    border: none;
-    border-radius: var(--border-radius-sm);
-    cursor: pointer;
-    background-color: #f5f5f5 !important; /* Override inherited styles */
-    color: #666 !important;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-  }
-  
-  .delete-btn:hover {
-    background-color: #ff6b6b !important;
-    color: white!important;
-  }
-
-.delete-btn:active {
-  transform: scale(0.95);
-}
-  
-  /* ==========================================
-     6. MAIN CONTENT & CANVAS
-     ========================================== */
-  #canvasSection {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* grow = true */
     align-items: center;
     justify-content: center;
-    min-width: 400px;
-    padding: var(--spacing-sm);
-    box-shadow: var(--shadow-sm);
-    background-color: white;
-    margin: var(--spacing-sm);
-  }
-  
-  #canvasSection h2 {
-    margin: var(--spacing-xs);
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    color: var(--text-color);
-  }
-
-  #canvasContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%; /* Make it take up full width of #canvasSection */
-    max-width: 100%; /* Prevent it from growing beyond its parent */
-    height: auto;
-    overflow: hidden; /* Prevents the canvas from overflowing */
-    position: relative;
-}
-
-  
-
-  #drawingName {
-    font-size: 2rem;
-    text-align: center;
-    margin: var(--spacing-md) 0;
-  }
-  
-  #sourcePath {
-    font-size: 1rem;
-    text-align: center;
-    display: none;
-  }
-  
-  /* ==========================================
-     7. MODALS & DIALOGS
-     ========================================== */
-  /* MandArt Catalog Modal */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: var(--z-modal);
-    left: 50%;
-    top: 20vh;
-    transform: translateX(-50%);
-    width: 30%;
-    max-width: 150px;
-    background: var(--surface-color);
-    box-shadow: var(--shadow-md);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    max-height: 80vh;
-    overflow-y: auto;
-    will-change: transform;
-  }
-  
-  .modal-content {
-    text-align: center;
-    position: relative;
-    padding-top: 40px;
-  }
-  
-  .modal-close-btn {
-    position: absolute;
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--text-color);
-    transition: color 0.2s ease-in-out;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-  }
-  
-  .modal-close-btn:hover {
-    color: #ff6b6b;
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  
-  /* URL Prompt Modal */
-  .url-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--surface-color);
-    width: 500px;
-    height: 250px;
-    max-width: 90%;
-    min-width: 400px;
-    min-height: 180px;
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-md);
-    text-align: center;
-    z-index: var(--z-modal);
-    resize: both;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    will-change: transform;
-  }
-  
-  .url-modal-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: var(--spacing-md);
-  }
-  
-  .url-modal-titlebar {
-    background: var(--header-bg);
-    color: var(--text-light);
-    padding: var(--spacing-md);
-    font-size: 1rem;
-    text-align: center;
-    cursor: grab;
-    user-select: none;
-    border-top-left-radius: var(--border-radius-md);
-    border-top-right-radius: var(--border-radius-md);
-  }
-  
-  .url-modal-titlebar:active {
-    cursor: grabbing;
-  }
-  
-  .url-input {
     flex-grow: 1;
     width: 100%;
-    font-size: 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    padding: var(--spacing-md);
-    background: #f9f9f9;
-    font-family: Arial, sans-serif;
-    resize: none;
-    overflow: auto;
-  }
-  
-  .url-input:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-  }
-  
-  .modal-buttons {
-    display: flex;
-    justify-content: space-between;
-    padding-top: var(--spacing-md);
-  }
-  
-  .btn {
-    flex: 1;
-    padding: var(--spacing-sm);
-    margin: var(--spacing-xs);
-    font-size: 1rem;
-    border: none;
-    border-radius: var(--border-radius-sm);
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-  }
-  
-  .btn:hover {
-    transform: translateY(-1px);
-  }
-  
-  .btn:active {
-    transform: translateY(1px);
-  }
-  
-  .btn-primary {
-    background-color: var(--primary-color);
-    color: var(--text-light);
-  }
-  
-  .btn-primary:hover {
-    background-color: var(--primary-hover);
-  }
-  
-  .btn-secondary {
-    background-color: #ccc;
-    color: black;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #bbb;
+    height: auto;
+    min-height: 200px;
   }
 
-  
-  /* ==========================================
-     8. COMPONENTS & WIDGETS
-     ========================================== */
-  /* Catalog Grid */
-  .grid-container {
+  main {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    justify-content: space-between;
+    width: 100%;
+    padding-top: var(--header-height);
+    min-height: calc(100vh - var(--header-height));
+    /* Ensures it uses full height */
+  }
+
+  #canvasSection {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+    /* Aligns content to the top */
+    flex-grow: 1;
+    /* Allows it to expand to match #colorEditor */
+    max-width: none;
+    width: 100%;
+    min-width: unset;
+    padding: var(--spacing-md);
+    height: auto;
+    overflow-y: auto;
+    flex-shrink: 0;
+    /* Prevents shrinking */
+  }
+
+  .modal {
+    width: 50%;
+    max-width: 160px;
+  }
+
+
+
+  .url-modal {
+    min-width: 300px;
+  }
+}
+
+/* Small height screens */
+@media (max-height: 500px) {
+  header {
+    min-height: 60px;
+  }
+
+  .header-buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto;
     padding-bottom: var(--spacing-sm);
   }
-  
-  .mandart-item {
-    background: var(--background-color);
-    padding: var(--spacing-sm);
-    width: 90%;
-    max-width: 150px;
-    border-radius: var(--border-radius-sm);
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  }
-  
-  .mandart-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .mandart-item img {
-    display: block;
-    width: 100%;
-    max-width: 140px;
-    height: auto;
-    border-radius: var(--border-radius-sm);
-  }
-  
-  .mandart-item span {
-    display: block;
-    font-size: 1rem;
-    color: var(--text-color);
-    margin-top: var(--spacing-xs);
-    padding: var(--spacing-xs);
-    background: var(--surface-color);
-    border-radius: var(--border-radius-sm);
-  }
-  
-  /* ==========================================
-     9. ANIMATIONS
-     ========================================== */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -55%);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, -50%);
-    }
-  }
-  
-  .fade-in {
-    animation: fadeIn 0.3s ease-in-out forwards;
-  }
-  
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-  
-  .pulse {
-    animation: pulse 1.5s infinite ease-in-out;
-  }
-  
-  /* ==========================================
-     10. RESPONSIVE DESIGN
-     ========================================== */
-  /* Larger tablets and desktops */
-  @media (min-width: 1025px) {
-    :root {
-      --header-height: 120px;
-    }
-    
 
+  #colorEditor {
+    max-height: 200px;
   }
-  
-  /* Tablets */
-  @media (min-width: 769px) and (max-width: 1024px) {
-    :root {
-      --header-height: 100px;
-      --sidebar-width: 180px;
-    }
-    
- 
-    
-    #canvasSection {
-      padding: var(--spacing-md);
-    }
 
-  }
-  
-  /* Mobile devices */
-  @media (max-width: 768px) {
-    :root {
-      --header-height: 90px;
-    }
-    #colorEditor {
-      width: 100%;
-      max-width: none;
-  }
-  #canvasSection {
-    width: 100%;
-    max-width: none;
+
 }
-    .header-button-groups {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .header-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: var(--spacing-sm);
-      width: 100%;
-      max-width: 900px;
-      padding: var(--spacing-xs) 0;
-    }
-  
-    #colorEditor {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center; 
-      flex-grow: 1; 
-      width: 100%;
-      height: auto;
-      min-height: 200px;
-    }
-  
-    main {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 100%;
-      padding-top: var(--header-height);
-      min-height: calc(100vh - var(--header-height)); /* Ensures it uses full height */
-    }
-  
-    #canvasSection {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start; /* Aligns content to the top */
-      flex-grow: 1; /* Allows it to expand to match #colorEditor */
 
-      width: 100%;
-      min-width: unset;
-      padding: var(--spacing-md);
-      height: auto;
-      overflow-y: auto;
-      flex-shrink: 0; /* Prevents shrinking */
-    }
-  
-    .modal {
-      width: 50%;
-      max-width: 160px;
-    }
-    
-
-    
-    .url-modal {
-      min-width: 300px;
-    }
-  }
-  
-  /* Small height screens */
-  @media (max-height: 500px) {
-    header {
-      min-height: 60px;
-    }
-  
-    .header-buttons {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding-bottom: var(--spacing-sm);
-    }
-    
-    #colorEditor {
-      max-height: 200px;
-    }
-    
- 
-  }
-  
-  /* ==========================================
+/* ==========================================
      11. PRINT STYLES
      ========================================== */
-  @media print {
-    header, 
-    #colorEditor, 
-    .modal, 
-    .btn,
-    .url-modal {
-      display: none !important;
-    }
-    
-    body, 
-    #container,
-    main {
-      padding: 0 !important;
-      margin: 0 !important;
-      background: white !important;
-    }
-    
-    #canvasSection {
-      width: 100% !important;
-      padding: 0 !important;
-      margin: 0 auto !important;
-    }
-    
+@media print {
 
-    
-    #drawingName {
-      font-size: 24pt !important;
-      margin-bottom: 10mm !important;
-    }
-    
-    #sourcePath {
-      display: block !important;
-      font-size: 10pt !important;
-      color: #666 !important;
-    }
+  header,
+  #colorEditor,
+  .modal,
+  .btn,
+  .url-modal {
+    display: none !important;
   }
+
+  body,
+  #container,
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+
+  #canvasSection {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  #drawingName {
+    font-size: 24pt !important;
+    margin-bottom: 10mm !important;
+  }
+
+  #sourcePath {
+    display: block !important;
+    font-size: 10pt !important;
+    color: #666 !important;
+  }
+}

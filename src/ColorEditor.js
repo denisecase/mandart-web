@@ -44,9 +44,7 @@ export async function populateColorEditor(fileObj) {
       throw new Error("Invalid JSON content received");
     }
     
-    console.log("🔥 [DEBUG] Raw content:", content);
-    console.log("🔥 [DEBUG] Raw hues:", content.hues);
-
+  
     // Create shape inputs with validation
     try {
       currentShapeInputs = createShapeInputs(content);
@@ -66,7 +64,6 @@ export async function populateColorEditor(fileObj) {
       }))
       : [];
 
-    console.log("🔥 Processed hues array:", huesArray);
 
     if (huesArray.length === 0) {
       console.warn("⚠️ No hues found in input file, using default values");
@@ -76,7 +73,6 @@ export async function populateColorEditor(fileObj) {
 
     // Convert to Hue objects
     currentHues = huesArray.map(hue => new Hue(hue));
-    console.log("🔥 Created Hue objects:", currentHues);
 
   } catch (error) {
     console.error(`🚨 Error extracting colors from ${fileObj.name}:`, error);
@@ -106,9 +102,7 @@ export async function populateColorEditor(fileObj) {
       return [0, 0, 0]; // Default to black
     };
 
-    console.log("mandColor input:", content?.mandColor);
     mandColorFixed = safeMandColor(content?.mandColor);
-    console.log("safeMandColor result:", mandColorFixed);
   }
   catch (error) {
     console.error("🚨 Error processing mandColor:", error);
@@ -131,12 +125,10 @@ export async function populateColorEditor(fileObj) {
       hues: validHues
     };
     
-    console.log("🎨 Creating ColorInputs with:", colorParams);
     
     // Create a wrapper that catches errors
     try {
       currentColorInputs = createColorInputs(colorParams);
-      console.log("✅ Successfully created ColorInputs");
     } catch (createError) {
       console.error("🚨 Error in createColorInputs:", createError);
       // Try a more minimal approach if the first attempt fails
@@ -163,11 +155,9 @@ export async function populateColorEditor(fileObj) {
         console.warn("⚠️ hueList element not found");
       }
 
-      console.log("🔍 currentColorInputs:", currentColorInputs);
       
       // Handle rendering the color editor rows
       if (currentColorInputs && Array.isArray(currentColorInputs.hues)) {
-        console.log("🔍 Rendering color rows for hues:", currentColorInputs.hues);
         
         currentColorInputs.hues.forEach((color, index) => {
           try {
@@ -182,8 +172,6 @@ export async function populateColorEditor(fileObj) {
       } else {
         console.warn("⚠️ No valid hues available to display in the color editor");
       }
-      
-      // Update the canvas with our current state
       redrawCanvas();
     } catch (uiError) {
       console.error("🚨 Error updating the color editor UI:", uiError);

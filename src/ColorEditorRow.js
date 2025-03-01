@@ -22,13 +22,10 @@ export default class ColorEditorRow {
       console.log(`🖍️ Color picker changed to: ${newHex}`);
       this.updateCallback(this.index, newHex);
     });
-
     deleteBtn.addEventListener("click", () => this.handleDelete());
   }
 
   _createRow() {
-    console.log(`🖍️ ColorEditorRow.createRow() DEBUG: Creating row #${this.index} with color:`, this.color);
-
     if (!this.color || typeof this.color !== "object") {
       console.error(`🚨 Error: Invalid color object at index ${this.index}:`, this.color);
       return document.createElement("div");  // Return empty div to prevent crashes

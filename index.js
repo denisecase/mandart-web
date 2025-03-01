@@ -1,7 +1,7 @@
 import { fetchMandartCatalog, MANDART_CATALOG, defaultIndex } from "./src/fetch_catalog.js";
 import { loadWasmModule } from "./src/wasm_loader.js";
-import { setWasmModule, wasmModule } from "./src/globals.js";
 import { IS_GITHUB_PAGES, BASE_PATH } from "./src/constants.js";
+import { setWasmModule } from "./src/globals.js";
 
 /**
  * Simple initialization function with minimal dependencies
@@ -12,19 +12,14 @@ async function init() {
         console.log(`Environment: ${IS_GITHUB_PAGES ? 'GitHub Pages' : 'Local Development'}`);
         console.log(`Base Path: ${BASE_PATH}`);
 
-        // Step 1: Load WASM module
-        console.log("Loading WASM module...");
         const wasm = await loadWasmModule();
-        setWasmModule(wasm);
-        
         if (!wasm) {
             console.error("Failed to load WASM module. Some features may not work.");
         }
+        setWasmModule(wasm);
 
-        // Step 2: Fetch catalog and populate UI
         console.log("Fetching catalog...");
         await fetchMandartCatalog();
-        
         console.log("✅ MandArt Web initialized");
 
     } catch (error) {
