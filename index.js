@@ -1,36 +1,23 @@
-import { initApp } from "../components/App.js";
+import { fetchMandartCatalog, MANDART_CATALOG, defaultIndex } from "./src/fetch_catalog.js";
+import { processFile } from "./src/process_file.js";
+import { loadWasmModule } from "./src/wasm_loader.js";
+import { setWasmModule, wasmModule } from "./src/globals.js";
 
-function updateLayout() {
-    const header = document.querySelector("header");
-    const container = document.querySelector("#container");
-    const canvas = document.getElementById("mandelbrotCanvas");
+async function init() {
+    try {
+        console.log("Initializing MandArt Web...");
 
-    if (header && container) {
-        const headerHeight = header.offsetHeight || 120; // Default to 120px
-        document.documentElement.style.setProperty("--header-height", `${headerHeight}px`);
-        container.style.paddingTop = `${headerHeight}px`;
+        // Load WASM module
+        const wasm = await loadWasmModule();
+        setWasmModule(wasm);
+        if (!wasm) return;
 
-        console.log(`📏 Updated header height: ${headerHeight}px`);
-    }
+        // Fetch catalog and populate UI
+        await fetchMandartCatalog();
 
-    // ✅ Ensure canvas size matches the MandArt image
-    if (canvas && window.mandArtLoader && window.mandArtLoader.picdef) {
-        const { imageWidth, imageHeight } = window.mandArtLoader.picdef;
-
-        if (imageWidth && imageHeight) {
-            canvas.width = imageWidth;
-            canvas.height = imageHeight;
-
-            console.log(`🖼️ Canvas resized to: ${imageWidth} x ${imageHeight}`);
-        }
+    } catch (error) {
+        console.error("Failed to initialize:", error);
     }
 }
 
-// ✅ Apply on load & resize
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 Starting MandArt Web...");
-    updateLayout();
-    initApp();
-});
-
-window.addEventListener("resize", updateLayout);
+window.addEventListener("DOMContentLoaded", init);

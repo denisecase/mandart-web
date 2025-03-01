@@ -42,4 +42,11 @@ Users can save the recolored inputs as .mandart, save the grid as csv, save a bi
 
 The web app uses a wasm rust engine for the calculations. 
 
+## Services Layer
 
+- MandArtService.js - Manages MandArt state, processes, updates, and computes grids.
+- FileService.js - Handles file I/O (reading/writing .mandart, .png, .csv).
+- MandArtCatalogService.js - Loads and caches the catalog of available MandArt files.
+- services/loaders/ (FileLoader, UrlLoader, CatalogLoader, index.js) - Abstracts loading from different sources (file, URL, catalog).
+- MandArtServiceInputUtils.js - Extracts and sanitizes shape and color inputs.
+- MandArtServiceValidatorUtils.js - Ensures valid MandArt data, prevents corruption.

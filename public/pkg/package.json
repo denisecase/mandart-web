@@ -1,0 +1,15 @@
+{
+  "name": "mandart-wasm",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "mandart_wasm_bg.wasm",
+    "mandart_wasm.js",
+    "mandart_wasm.d.ts"
+  ],
+  "main": "mandart_wasm.js",
+  "types": "mandart_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

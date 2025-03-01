@@ -91,12 +91,12 @@
      ========================================== */
   #container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap; 
     width: 100%;
     padding-top: var(--header-height);
     transition: padding-top 0.3s ease-in-out;
     will-change: padding-top;
-
   }
   
   main {
@@ -134,7 +134,7 @@
   
   header h1 {
     margin: var(--spacing-xs) 0;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     text-align: center;
   }
   
@@ -207,7 +207,7 @@
     flex-shrink: 1;
   }
   
-  .header-buttons select {
+ #fileSelect {
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--border-color);
     background-color: var(--surface-color);
@@ -219,13 +219,14 @@
   #colorEditor {
     width: var(--sidebar-width);
     min-width: 200px;
+    max-width: 250px;
     background: var(--surface-color);
     padding: var(--spacing-lg);
     box-shadow: var(--shadow-sm);
     overflow-y: auto;
-    height: auto;
-    position: relative;
+
     flex-shrink: 0; /* shrink = false */
+    flex: 0 0 var(--sidebar-width); /* Fixed width, does not grow */
     margin: var(--spacing-sm);
   }
   
@@ -357,7 +358,6 @@
     flex-grow: 1; /* grow = true */
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-xl);
     min-width: 400px;
     padding: var(--spacing-sm);
     box-shadow: var(--shadow-sm);
@@ -372,12 +372,24 @@
     font-size: 1.3rem;
     color: var(--text-color);
   }
+
+  #canvasContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Make it take up full width of #canvasSection */
+    max-width: 100%; /* Prevent it from growing beyond its parent */
+    height: auto;
+    overflow: hidden; /* Prevents the canvas from overflowing */
+    position: relative;
+}
+
   
   #mandelbrotCanvas {
-    width: 95%;
-    max-width: 1200px;
-    height: auto;
-    min-height: 500px;
+    width: 100%; /* Make it take full width of parent */
+    height: auto; /* Maintains aspect ratio */
+    max-width: 100%; /* Prevents it from growing beyond container */
+    max-height: 90vh; /* Adjusts for smaller screens */
     display: block;
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-md);
@@ -662,6 +674,7 @@
     #canvasSection {
       padding: var(--spacing-md);
     }
+
   }
   
   /* Mobile devices */
@@ -669,7 +682,14 @@
     :root {
       --header-height: 90px;
     }
-  
+    #colorEditor {
+      width: 100%;
+      max-width: none;
+  }
+  #canvasSection {
+    width: 100%;
+    max-width: none;
+}
     .header-button-groups {
       flex-direction: column;
       align-items: center;

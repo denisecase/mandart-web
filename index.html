@@ -1,69 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MandArt Web</title>
-    <link rel="shortcut icon" href="./favicon.ico" />
-    <link rel="stylesheet" href="./style.css" />
-  </head>
+    <link rel="icon" href="./favicon_io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="./favicon_io/site.webmanifest">
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
 
-  <body>
-    <!-- Fixed Header (No Nested <header>) -->
-    <header id="header"></header>
-    <div id="container">
-      <main>
-        <!-- Sidebar for Color Editing -->
-        <aside id="colorEditor">
-        </aside>
-
-        <!-- Main Content: Canvas + Controls -->
-        <section id="canvasSection">
-          <!-- Canvas Source Container -->
-          <div id="canvasSourceContainer">
-          </div>
-
-          <canvas id="mandelbrotCanvas"></canvas>
-        </section>
-
-        <!-- Hidden File Input for Local Uploads -->
-        <input
-          type="file"
-          id="fileInput"
-          style="display: none"
-          accept=".mandart"
-        />
-
-        <!-- Catalog Modal (Hidden by Default) -->
-        <aside id="catalogModal" class="modal">
-          <div class="modal-content">
-            <span id="catalogCloseBtn" class="modal-close-btn">&times;</span>
-            <h2>MandArt Catalog</h2>
-            <div id="mandartList" class="grid-container"></div>
-          </div>
-        </aside>
-      </main>
-
-      <!-- Hue Row Template (for dynamically adding colors) -->
-      <template id="hueRowTemplate">
-        <div class="hue-row">
-          <span class="sort-num">#</span>
-          <input type="color" class="color-picker" />
-          <button class="delete-btn fas fa-trash">🗑</button>
+<body>
+    <header>
+        <h1>MandArt Web (Under Construction)</h1>
+        <div id="controlsContainer">
+            <label for="fileSelect">Select MandArt:</label>
+            <select id="fileSelect"></select>
         </div>
-      </template>
+    </header>
 
-      <!-- Load WASM Module -->
-      <script type="module">
-        import init, { initSync } from "./wasm/mandart_engine_rust.js";
-        init().then(() => {
-          initSync();
-        });
-      </script>
+    <main id="container">
+        <!-- Left Side: Color Editor -->
+        <aside id="colorEditor">
+            <h2>Color Editor</h2>
+            <div id="mandColorContainer">
+                <label for="mandColorPicker">Mand Color:</label>
+                <input type="color" id="mandColorPicker" value="#000000">
+            </div>
+            <button id="addColorBtn">Add New Color</button>
+            <div id="hueList"></div>
+        </aside>
 
-      <!-- Component-Based Modular Scripts -->
-      <script type="module" src="./wasm/mandart_engine_rust.js"></script>
-      <script type="module" src="./components/App.js"></script>
-    </div>
-  </body>
+        <!-- Right Side: Canvas -->
+        <section id="canvasSection">
+            <h2>MandArt Canvas</h2>
+            <div id="canvasContainer">
+                <canvas id="canvas" width="1100" height="1000">
+                </canvas>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="./index.js"></script>
+</body>
+
 </html>
