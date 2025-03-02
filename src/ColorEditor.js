@@ -25,8 +25,12 @@ mandColorPicker.addEventListener("input", (event) => {
 
 export async function populateColorEditor(fileObj) {
   console.log("COLOR EDITOR:  start populateColorEditor with:", fileObj);
-  if (!fileObj || !fileObj.mandart_url) {
-    console.error("🚨 Invalid file object or missing URL");
+  if (!fileObj ) {
+    console.error("🚨 Invalid file object ");
+    return;
+  }
+  if ( !fileObj.mandart_url) {
+    console.warn("⚠️  missing URL");
     return;
   }
 
@@ -264,7 +268,6 @@ export function redrawCanvas(forceGridRecalculation = false) {
         
         console.log("✅ Fast color update succeeded!");
       } catch (optimizedError) {
-        console.warn("⚠️ Fast color update failed, falling back to full calculation:", optimizedError);
         // Fall back to full calculation
         imageData = wasmModule.api_get_image_from_inputs(shapeData, colorData);
       }

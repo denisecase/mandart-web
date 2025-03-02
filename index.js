@@ -4,6 +4,8 @@ import { IS_GITHUB_PAGES, BASE_PATH } from "./src/constants.js";
 import { setWasmModule } from "./src/globals.js";
 import { reorderColor } from "./src/ColorEditor.js";
 import { initSavePngButton } from './src/save_png.js';
+import { initSaveButton } from './src/save_mandart.js';
+import { initOpenFileButton } from './src/open_mandart.js';
 
 // Make reorderColor globally available (only do this once)
 window.reorderColor = reorderColor;
@@ -20,37 +22,37 @@ document.addEventListener('drop', (e) => {
 // Global handler for drops on the container
 document.addEventListener('DOMContentLoaded', () => {
     const hueList = document.getElementById('hueList');
-    
+
     // Special handling for drops directly on the hueList container
     if (hueList) {
         hueList.addEventListener('drop', (e) => {
             e.preventDefault();
             console.log('Drop detected on hueList container');
-            
+
             // Try to get the drag data
             const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
             if (isNaN(fromIndex)) {
                 console.error('Invalid fromIndex in drag data');
                 return;
             }
-            
+
             // Default to the end position if dropped on container
             const toIndex = document.querySelectorAll('.hue-row').length;
-            
+
             console.log(`Container drop: Moving color from ${fromIndex + 1} to position ${toIndex + 1}`);
-            
+
             // Use the global reorderColor function
             if (typeof window.reorderColor === 'function') {
                 window.reorderColor(fromIndex, toIndex);
             }
         });
-        
+
         // Need this to allow drops
         hueList.addEventListener('dragover', (e) => {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
         });
-        
+
         console.log('Added drop handlers to hueList container');
     }
 
@@ -60,12 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList && e.target.classList.contains('insert-marker')) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
-            
+
             // Clear all active markers
             document.querySelectorAll('.insert-marker.active').forEach(m => {
                 m.classList.remove('active');
             });
-            
+
             // Highlight the current marker
             e.target.classList.add('active');
         }
@@ -75,11 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList && e.target.classList.contains('insert-marker')) {
             e.preventDefault();
             console.log('Drop on marker', e.target);
-            
+
             // Get the position from the marker
             const toIndex = parseInt(e.target.dataset.position, 10);
             const fromIndex = window.draggedIndex;
-            
+
             if (!isNaN(fromIndex) && !isNaN(toIndex)) {
                 console.log(`Marker drop: Moving from ${fromIndex + 1} to ${toIndex + 1}`);
                 if (typeof window.reorderColor === 'function') {
@@ -102,7 +104,7 @@ async function init() {
             reorderColor: typeof reorderColor === 'function',
             globalReorderColor: typeof window.reorderColor === 'function'
         });
-        
+
         console.log("🚀 Initializing MandArt Web...");
         console.log(`Environment: ${IS_GITHUB_PAGES ? 'GitHub Pages' : 'Local Development'}`);
         console.log(`Base Path: ${BASE_PATH}`);
@@ -116,6 +118,8 @@ async function init() {
         console.log("Fetching catalog...");
         await fetchMandartCatalog();
         initSavePngButton();
+        initSaveButton();
+        initOpenFileButton();
         console.log("✅ MandArt Web initialized");
 
     } catch (error) {

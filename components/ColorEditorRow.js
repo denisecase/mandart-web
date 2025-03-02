@@ -1,5 +1,5 @@
 // ColorEditorRow.js
-import { rgbToHex } from "../utils/ColorUtils.js";
+import { rgbToHex } from "../utils/color_editor_utils.js";
 
 export function createColorEditorRow(index, hue, updateHue, removeHue) {
     const hueDiv = document.createElement("div");

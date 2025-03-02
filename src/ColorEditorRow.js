@@ -1,6 +1,8 @@
 // src/ColorEditorRow.js
 // Update the ColorEditorRow class to support drag and drop
 
+import {rgbToHex} from './utils/color_editor_utils.js';
+
 export default class ColorEditorRow {
   constructor(index, color, updateCallback, deleteCallback, reorderCallback) {
     this.index = index;
@@ -439,10 +441,3 @@ export default class ColorEditorRow {
   }
 }
 
-// Helper function imported from color_editor_utils.js
-function rgbToHex(r, g, b) {
-  return '#' + [r, g, b].map(x => {
-    const hex = Math.round(x).toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  }).join('');
-}

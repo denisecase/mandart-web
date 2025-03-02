@@ -5,11 +5,13 @@
  * Ensures values are within 0-255 range.
  */
 export function rgbToHex(r, g, b) {
-    return `#${((1 << 24) | (r << 16) | (g << 8) | b)
-        .toString(16)
-        .slice(1)
-        .toUpperCase()}`;
-}
+    const toHex = (n) => {
+      const hex = Math.max(0, Math.min(255, Math.round(n))).toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+    
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
 
 /**
  * Convert Hex color string to RGB object.
