@@ -67,7 +67,7 @@ function createPngDownloadLink(
     }
   
     // Create download link
-    const downloadLink = document.createElement("a");
+    let downloadLink = document.createElement("a");
     downloadLink.href = pngUrl;
     downloadLink.download = filename;
     downloadLink.textContent = `Download ${filename}`;
