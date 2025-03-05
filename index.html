@@ -21,20 +21,31 @@
 
 <body>
     <header>
-        <h1>MandArt Web</h1>
+      <!--   <h1 id="appTitle">MandArt Web </h1>--> 
+
+      <h1 id="appTitle">MandArt Web </h1>
         <div id="controlsContainer">
-            <button id="openFileBtn" class="header-btn">
-                <i class="fas fa-folder-open"></i> Open File
+            <button id="openCatalogBtn" class="header-btn" title="Open from Mandart Catalog">
+                <i class="fas fa-folder-open"></i> Catalog
             </button>
+            <button id="openUrlBtn" class="header-btn"title="Open from a web address (url)">
+                <i class="fas fa-folder-open"></i> Web
+            </button>
+            <button id="openFileBtn" class="header-btn"title="Open from file on your device">
+                <i class="fas fa-folder-open"></i> File
+            </button>
+
             <div class="select-wrapper">
-                <label for="fileSelect">Select MandArt:</label>
+                <label for="fileSelect">Select:</label>
                 <select id="fileSelect"></select>
             </div>
-            <button id="saveMandartBtn" class="header-btn">
-                <i class="fas fa-download"></i> Save Inputs
+          
+   
+            <button id="saveMandartBtn" class="header-btn" title="Save Mandart Inputs to File">
+                <i class="fas fa-download"></i> File
             </button>
-            <button id="savePngBtn" class="header-btn">
-                <i class="fas fa-download"></i> Export PNG
+            <button id="savePngBtn" class="header-btn" title="Save as PNG">
+                <i class="fas fa-download"></i> PNG
             </button>
         </div>
 
@@ -44,25 +55,44 @@
         <!-- Left Side: Color Editor -->
         <aside id="colorEditor">
             <h2>Color Editor</h2>
+
+            <!-- 🔹 Hidden Color Settings (For Future Use) -->
+            <fieldset id="colorSettings" style="display: none;">
+                <legend>Color Settings</legend>
+
+                <label for="nBlocks">Number of Color Blocks:</label>
+                <input type="number" id="nBlocks" min="1" max="100" value="10">
+
+                <label for="spacingColorFar">Color Spacing Near Edge:</label>
+                <input type="number" id="spacingColorFar" min="1" max="100" value="1">
+
+                <label for="spacingColorNear">Color Spacing Near Mini-Mand:</label>
+                <input type="number" id="spacingColorNear" min="1" max="100" value="1">
+
+                <label for="yYInput">Hold Fraction (yY Input):</label>
+                <input type="range" id="yYInput" min="0" max="1" step="0.01" value="0.5">
+            </fieldset>
+
+            <!-- 🔹 Mand Color -->
             <div id="mandColorContainer">
                 <label for="mandColorPicker">Mand Color:</label>
                 <input type="color" id="mandColorPicker" value="#000000">
             </div>
+
+            <!-- 🔹 Add New Color -->
             <button id="addColorBtn">Add New Color</button>
+
+            <!-- 🔹 Hue List -->
             <div id="hueList" class="hue-list"></div>
-             <!-- GitHub Repo Link -->
-        <a
-        href="https://github.com/denisecase/mandart-web"
-        target="_blank"
-        id="githubLink"
-      >
-        <img
-          src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-          alt="(GH)"
-          id="githubIcon"
-        />
-      </a>
+
+            <!-- GitHub Repo Link -->
+            <a href="https://github.com/denisecase/mandart-web" target="_blank" id="githubLink">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="(GH)"
+                    id="githubIcon">
+            </a>
         </aside>
+
+
 
         <!-- Right Side: Canvas -->
         <section id="canvasSection">
@@ -71,11 +101,39 @@
                 <canvas id="canvas" width="1100" height="1000">
                 </canvas>
             </div>
+            <!-- Dedicated download container for PNG exports -->
             <div id="download-container"></div>
+            <!-- Dedicated download container for .mandart json input file saves -->
+            <div id="download-container-mandart"></div>
         </section>
-    </main>
 
+
+        <!-- Catalog Modal (Hidden by Default) -->
+        <aside id="catalogModal" class="modal">
+            <div class="modal-content">
+                <span id="catalogCloseBtn" class="modal-close-btn">&times;</span>
+                <h2>MandArt Catalog</h2>
+                <div id="mandartList" class="grid-container"></div>
+            </div>
+        </aside>
+
+
+        <!-- URL Modal (Hidden by Default) -->
+        <div id="urlModal" class="url-modal" style="display: none;">
+            <div class="url-modal-titlebar">Open from URL</div>
+            <div class="url-modal-content">
+                <textarea id="urlInput" class="url-input" placeholder="Enter URL"
+                    style="word-wrap: break-word; white-space: pre-wrap;"></textarea>
+                <div class="modal-buttons">
+                    <button id="loadUrlBtn" class="btn btn-primary">Load URL</button>
+                    <button id="cancelUrlBtn" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
     <script type="module" src="./index.js"></script>
+
 </body>
 
 </html>

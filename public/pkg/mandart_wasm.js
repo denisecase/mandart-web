@@ -217,14 +217,14 @@ export function api_clear_grid_cache() {
  * This function parses a PictureDefinition JSON string and extracts
  * shape and color inputs for Mandelbrot grid generation.
  *
- * @param {string} piddef_json - The JSON string representing a PictureDefinition
+ * @param {string} picdef_json - The JSON string representing a PictureDefinition
  * @returns {[JsArtImageShapeInputs, JsArtImageColorInputs]} A tuple containing:
  *   - Shape inputs for grid calculation
  *   - Color inputs for grid coloring
  *
  * @example
  * ```javascript
- * const [shapeInputs, colorInputs] = mandart.api_get_inputs_from_piddef_string(jsonString);
+ * const [shapeInputs, colorInputs] = mandart.api_get_inputs_from_picdef_string(jsonString);
  * console.log(shapeInputs.image_width); // Access specific properties
  * ```
  *
@@ -232,13 +232,13 @@ export function api_clear_grid_cache() {
  * - Provides default values if certain JSON fields are missing
  * - Extracts core parameters for Mandelbrot image generation
  * - Converts Swift-generated PictureDefinition JSON to WebAssembly-compatible inputs
- * @param {string} piddef_json
+ * @param {string} picdef_json
  * @returns {any}
  */
-export function api_get_inputs_from_piddef_string(piddef_json) {
-    const ptr0 = passStringToWasm0(piddef_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+export function api_get_inputs_from_picdef_string(picdef_json) {
+    const ptr0 = passStringToWasm0(picdef_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.api_get_inputs_from_piddef_string(ptr0, len0);
+    const ret = wasm.api_get_inputs_from_picdef_string(ptr0, len0);
     return ret;
 }
 
