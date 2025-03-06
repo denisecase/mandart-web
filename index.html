@@ -21,17 +21,17 @@
 
 <body>
     <header>
-      <!--   <h1 id="appTitle">MandArt Web </h1>--> 
+        <!--   <h1 id="appTitle">MandArt Web </h1>-->
 
-      <h1 id="appTitle">MandArt Web </h1>
+        <h1 id="appTitle">MandArt Web </h1>
         <div id="controlsContainer">
             <button id="openCatalogBtn" class="header-btn" title="Open from Mandart Catalog">
                 <i class="fas fa-folder-open"></i> Catalog
             </button>
-            <button id="openUrlBtn" class="header-btn"title="Open from a web address (url)">
+            <button id="openUrlBtn" class="header-btn" title="Open from a web address (url)">
                 <i class="fas fa-folder-open"></i> Web
             </button>
-            <button id="openFileBtn" class="header-btn"title="Open from file on your device">
+            <button id="openFileBtn" class="header-btn" title="Open from file on your device">
                 <i class="fas fa-folder-open"></i> File
             </button>
 
@@ -39,8 +39,8 @@
                 <label for="fileSelect">Select:</label>
                 <select id="fileSelect"></select>
             </div>
-          
-   
+
+
             <button id="saveMandartBtn" class="header-btn" title="Save Mandart Inputs to File">
                 <i class="fas fa-download"></i> File
             </button>
@@ -56,22 +56,7 @@
         <aside id="colorEditor">
             <h2>Color Editor</h2>
 
-            <!-- 🔹 Hidden Color Settings (For Future Use) -->
-            <fieldset id="colorSettings" style="display: none;">
-                <legend>Color Settings</legend>
 
-                <label for="nBlocks">Number of Color Blocks:</label>
-                <input type="number" id="nBlocks" min="1" max="100" value="10">
-
-                <label for="spacingColorFar">Color Spacing Near Edge:</label>
-                <input type="number" id="spacingColorFar" min="1" max="100" value="1">
-
-                <label for="spacingColorNear">Color Spacing Near Mini-Mand:</label>
-                <input type="number" id="spacingColorNear" min="1" max="100" value="1">
-
-                <label for="yYInput">Hold Fraction (yY Input):</label>
-                <input type="range" id="yYInput" min="0" max="1" step="0.01" value="0.5">
-            </fieldset>
 
             <!-- 🔹 Mand Color -->
             <div id="mandColorContainer">
@@ -84,6 +69,36 @@
 
             <!-- 🔹 Hue List -->
             <div id="hueList" class="hue-list"></div>
+
+            <!-- 🔹 Hidden Color Settings (For Future Use) -->
+            <fieldset id="colorSettings" style="display: block;">
+                <legend>More Info<br>(MandArt Needed)</legend>
+
+                <!-- Toggle switch for color settings (default: off) -->
+                <label class="switch" for="toggleColorSettings">
+                    <input type="checkbox" id="toggleColorSettings">
+                    <span class="slider round"></span>
+                </label>
+                <br>
+
+<!-- Container for color controls -->
+<div id="colorSettingsControls" style="display: none;">
+
+                <label for="nBlocks">Ct of Blocks:</label><span id="nBlocksDisplay"></span>
+                <input type="range" id="nBlocks" min="1" max="100" value="1" step="5" class="readonly">
+
+
+                <label for="spacingColorFar">Spacing Near Edge:</label> <span id="spacingColorFarDisplay"></span>
+                <input type="range" id="spacingColorFar" min="1" max="100" value="1" step="5" class="readonly">
+
+
+                <label for="spacingColorNear">Spacing Near MiniMand:</label> <span id="spacingColorNearDisplay"></span>
+                <input type="range" id="spacingColorNear" min="1" max="100" value="1" step="5" class="readonly">
+
+
+                <label for="yYInput">Hold Fraction:</label> <span id="yYInputDisplay"></span>
+                <input type="range" id="yYInput" min="0" max="1" step="0.10" value="0.0" class="readonly">
+          </div>  </fieldset>
 
             <!-- GitHub Repo Link -->
             <a href="https://github.com/denisecase/mandart-web" target="_blank" id="githubLink">
@@ -133,6 +148,33 @@
 
     </main>
     <script type="module" src="./index.js"></script>
+    <script>
+        document.getElementById('nBlocks').addEventListener('input', function () {
+            const numericValue = parseFloat(this.value);
+            document.getElementById('nBlocksDisplay').textContent = this.value;
+        })
+        document.getElementById('spacingColorFar').addEventListener('input', function () {
+            const numericValue = parseFloat(this.value);
+            document.getElementById('spacingColorFarDisplay').textContent = this.value;
+        });
+        document.getElementById('spacingColorNear').addEventListener('input', function () {
+            const numericValue = parseFloat(this.value);
+            document.getElementById('spacingColorNearDisplay').textContent = this.value;
+        });
+        document.getElementById('yYInput').addEventListener('input', function () {
+            const numericValue = parseFloat(this.value);
+            document.getElementById('yYInputDisplay').textContent = this.value;
+        });
+
+        document.getElementById('toggleColorSettings').addEventListener('change', function () {
+            const controls = document.getElementById('colorSettingsControls');
+            if (this.checked) {
+                controls.style.display = 'block';
+            } else {
+                controls.style.display = 'none';
+            }
+        });
+    </script>
 
 </body>
 

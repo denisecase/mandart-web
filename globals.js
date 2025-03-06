@@ -23,6 +23,10 @@ const globals = {
     mandColorPicker: null,
     addColorBtn: null,
     hueList: null,
+    nBlocks: null,
+    spacingColorFar: null,
+    spacingColorNear: null,
+    yYInput: null,
 
     // Other containers
     downloadContainer: null,
@@ -70,6 +74,10 @@ export function initGlobals() {
         globals.mandColorPicker = document.getElementById("mandColorPicker");
         globals.addColorBtn = document.getElementById("addColorBtn");
         globals.hueList = document.getElementById("hueList");
+        globals.nBlocks = document.getElementById("nBlocks");
+        globals.spacingColorFar = document.getElementById("spacingColorFar");
+        globals.spacingColorNear = document.getElementById("spacingColorNear");
+        globals.yYInput = document.getElementById("yYInput");
 
         // Other containers
         globals.downloadContainer = document.getElementById("download-container");
@@ -113,5 +121,9 @@ export function getUIElement(key) {
 export const COLOR_EDITOR_ELEMENTS = {
     hueList: 'hueList',
     addColorBtn: 'addColorBtn',
-    mandColorPicker: 'mandColorPicker'
+    mandColorPicker: 'mandColorPicker',
+    nBlocks: 'nBlocks',
+    spacingColorFar: 'spacingColorFar',
+    spacingColorNear: 'spacingColorNear',
+    yYInput: 'yYInput',
 };

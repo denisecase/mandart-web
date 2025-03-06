@@ -6,6 +6,41 @@ import { hexToRgb } from '../utils/color-utils.js'; // Assumes you have a conver
 export function initColorEditorControls() {
     const mandColorPicker = getUIElement('mandColorPicker');
     const addColorBtn = getUIElement('addColorBtn');
+    const nBlocks = getUIElement('nBlocks');
+    const spacingColorFar = getUIElement('spacingColorFar');
+    const spacingColorNear = getUIElement('spacingColorNear');
+    const yYInput = getUIElement('yYInput');
+
+    if (nBlocks) {
+        nBlocks.addEventListener('input', (event) => {
+            console.log("nBlocks changed:", event.target.value);
+            updateColorState({ n_blocks: event.target.value });
+            eventBus.emit('force-render-canvas');
+        });
+    }
+
+    if (spacingColorFar) {
+        spacingColorFar.addEventListener('input', (event) => {
+            console.log("spacingColorFar changed:", event.target.value);
+            updateColorState({ spacing_color_far: event.target.value });
+            eventBus.emit('force-render-canvas');
+        });
+    }       
+
+    if (spacingColorNear) {
+        spacingColorNear.addEventListener('input', (event) => {
+            console.log("spacingColorNear changed:", event.target.value);
+            updateColorState({ spacing_color_near: event.target.value });
+            eventBus.emit('force-render-canvas');
+        });
+    }
+    if (yYInput) {
+        yYInput.addEventListener('input', (event) => {
+            console.log("yYInput changed:", event.target.value);
+            updateColorState({ y_y_input: event.target.value });
+            eventBus.emit('force-render-canvas');
+        });
+    }   
 
     if (mandColorPicker) {
         // When the mand color picker changes, convert hex to RGB array

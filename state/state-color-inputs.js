@@ -12,11 +12,11 @@ let colorState = new ColorInputs();
 
 
 eventBus.subscribe('file-json-fetched', (jsonString) => {
-    console.log('💡 Shape/Color state received file-json-fetched event');
+  console.log('💡 Shape/Color state received file-json-fetched event');
 });
 
 eventBus.subscribe('file-clean', () => {
-    console.log('💡 Shape/Color state received file-clean event');
+  console.log('💡 Shape/Color state received file-clean event');
 });
 
 
@@ -203,6 +203,23 @@ export function updateColorState(updates) {
   }
   if (updates.mand_color) {
     updatedState.mand_color = JSON.parse(JSON.stringify(updates.mand_color));
+  }
+  if (updates.n_blocks!== undefined) {
+    updatedState.n_blocks = Number(updates.n_blocks);
+    nBlocksDisplay.textContent = Number(updates.n_blocks);
+  } 
+  if (updates.spacing_color_far!== undefined) {
+    updatedState.spacing_color_far = Number(updates.spacing_color_far);
+    spacingColorFar.textContent = Number(updates.spacing_color_far);
+  }
+  if (updates.spacing_color_near!== undefined) {
+    updatedState.spacing_color_near = Number(updates.spacing_color_near);
+    spacingColorNearDisplay.textContent = Number(updates.spacing_color_near);
+
+  } 
+  if (updates.y_y_input !== undefined) {
+    updatedState.y_y_input = Number(updates.y_y_input);
+    yYInputDisplay.textContent = Number(updates.y_y_input);
   }
 
   // Merge the updates with the deep-copied current state.

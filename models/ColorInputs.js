@@ -13,7 +13,7 @@ export default class ColorInputs {
    * @param {Array<Array<number>>} data.hues - Hues list in `[num, r, g, b]` format
    */
   constructor(data = {}) {
-    this.n_blocks = data.n_blocks ?? 10;
+    this.n_blocks = data.n_blocks ?? 10.0;
     this.spacing_color_far = data.spacing_color_far ?? 1.0;
     this.spacing_color_near = data.spacing_color_near ?? 1.0;
     this.y_y_input = data.y_y_input ?? 0.5;
@@ -85,7 +85,15 @@ this.hues = normalizedHues
    */
   toJSON() {
     return {
-      ...this
+      n_blocks: Number(this.n_blocks),
+      spacing_color_far: Number(this.spacing_color_far),
+      spacing_color_near: Number(this.spacing_color_near),
+      y_y_input: Number(this.y_y_input),
+      mand_color: Array.isArray(this.mand_color) ? this.mand_color.map(Number) : [0, 0, 0],
+      colors: Array.isArray(this.colors) ? this.colors.map(arr => arr.map(Number)) : [],
+      hues: Array.isArray(this.hues) ? this.hues.map(arr => arr.map(Number)) : [],
+      n_colors: Number(this.n_colors)
     };
   }
+  
 }

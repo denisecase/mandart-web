@@ -5,6 +5,8 @@ import { updateFileState , getFileLabel} from '../state/state-file.js';
 import { eventBus } from '../state/state-all.js';
 import { resetDropdownSelection } from '../state/state-dropdown-file-select.js';
 import { validateMandArtState } from './validate-mandart-file.js';
+import { loadColorInputsFromState } from './load-color-inputs-from-state.js';
+
 /**
  * Handles file selection and reads a local MandArt file.
  * @returns {Promise<string>} JSON string of the file.
@@ -52,6 +54,10 @@ export async function getMandartJsonStringFromLocalMachine() {
                     return;
                 }
 
+
+                // update controls
+                loadColorInputsFromState(jsonData);
+
                 resetDropdownSelection();
 
                 // Update file state with comprehensive data
@@ -61,7 +67,7 @@ export async function getMandartJsonStringFromLocalMachine() {
                     lastLoadedJson: jsonString
                 });
 
-                console.log("!!!!!!!!!!!!!!!!File state updated:", getFileLabel);
+                console.log("File state updated:", getFileLabel);
 
                 // Emit events for background processing
                 eventBus.emit('file-json-fetched', jsonString);

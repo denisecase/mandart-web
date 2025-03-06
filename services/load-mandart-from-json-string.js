@@ -4,6 +4,8 @@
 import { getInputsFromPicdefString } from "./wasm-get-inputs-from-picdef-string.js";
 import { getImageFromInputs } from "./wasm-get-image-from-inputs.js";
 import { getState, updateState } from "../state/state-all.js";
+import { loadColorInputsFromState } from "./load-color-inputs-from-state.js";   
+
 let lastLoadedId = null;
 /**
  * Process MandArt data and update application state.
@@ -53,6 +55,9 @@ export async function loadMandartFromJsonString(jsonString) {
                 }
             }
         });
+
+        // update controls
+        loadColorInputsFromState(colorInputsCopy);
 
         // Generate image using WASM (deep copy again for safety)
         const image = await getImageFromInputs(

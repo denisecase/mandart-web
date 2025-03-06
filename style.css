@@ -185,6 +185,15 @@ header h1 {
   gap: 15px;
 }
 
+#colorSettings legend {
+  text-align: center;
+}
+
+.readonly {
+  pointer-events: none;
+  opacity: 1; /* Optionally override the default opacity for disabled elements */
+}
+
 .header-btn {
   padding: 6px 12px;
   background-color: #4CAF50;
@@ -488,6 +497,58 @@ addColorBtn:hover {
   transform: scale(0.95);
 }
 
+/* Toggle switch container */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  margin: 8px auto;
+}
+
+/* Hide default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+/* The slider handle */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* When checked, change background and move handle */
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+
 /* ==========================================
      6. MAIN CONTENT & CANVAS
      ========================================== */
@@ -554,7 +615,7 @@ addColorBtn:hover {
   top: 20vh;
   transform: translateX(-50%);
   width: 30%;
-  max-width: 150px;
+  max-width: 200px;
   background: var(--surface-color);
   box-shadow: var(--shadow-md);
   padding: var(--spacing-md);
