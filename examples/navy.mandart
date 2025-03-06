@@ -1,0 +1,64 @@
+{
+  "id": "ced77530-5263-4ccb-b40e-882b0b66d596",
+  "scale": 430,
+  "huesOptimizedForPrinter": [],
+  "yCenter": 0,
+  "imageWidth": 1100,
+  "nImage": 0,
+  "spacingColorFar": 5,
+  "hues": [
+    {
+      "id": "d3902b1e-45fb-43fc-a1cb-26e7ee5a82ba",
+      "num": 1,
+      "r": 255,
+      "g": 255,
+      "b": 0,
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 0
+      }
+    },
+    {
+      "id": "6762f5a3-79ed-46fc-89bb-e7300dd053cc",
+      "num": 2,
+      "r": 57,
+      "g": 110,
+      "b": 53,
+      "color": {
+        "red": 0.2235,
+        "green": 0.4314,
+        "blue": 0.2078
+      }
+    },
+    {
+      "id": "9e0f37c4-1b8e-4975-8cb6-bf865e3ae9f0",
+      "num": 3,
+      "r": 23,
+      "g": 23,
+      "b": 166,
+      "color": {
+        "red": 0.0902,
+        "green": 0.0902,
+        "blue": 0.651
+      }
+    }
+  ],
+  "leftNumber": 1,
+  "theta": 0,
+  "rSqLimit": 400,
+  "iterationsMax": 10000,
+  "yY": 0,
+  "dFIterMin": 0,
+  "spacingColorNear": 15,
+  "imageHeight": 1000,
+  "nBlocks": 60,
+  "xCenter": -0.75,
+  "huesEstimatedPrintPreview": [],
+  "mandColor": [
+    0,
+    0,
+    0
+  ],
+  "mandPowerReal": 2
+}

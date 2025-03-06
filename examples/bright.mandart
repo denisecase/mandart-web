@@ -1,0 +1,100 @@
+{
+  "id": "43310f3f-9cf4-4eb3-8e24-4942dd9a69e1",
+  "scale": 430,
+  "huesOptimizedForPrinter": [],
+  "yCenter": 0,
+  "imageWidth": 1100,
+  "nImage": 0,
+  "spacingColorFar": 5,
+  "hues": [
+    {
+      "id": "0bfc03b8-02c6-4878-8e1a-4bbdd7859719",
+      "num": 1,
+      "r": 187,
+      "g": 0,
+      "b": 255,
+      "color": {
+        "red": 0.7333,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "id": "3ea46e08-8d12-4fc4-83f8-b83dba43d5d9",
+      "num": 2,
+      "r": 255,
+      "g": 255,
+      "b": 0,
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 0
+      }
+    },
+    {
+      "id": "6935b5fd-5c8b-4ada-92d6-fdda8085f5a0",
+      "num": 3,
+      "r": 57,
+      "g": 110,
+      "b": 53,
+      "color": {
+        "red": 0.2235,
+        "green": 0.4314,
+        "blue": 0.2078
+      }
+    },
+    {
+      "id": "773873d7-bc18-49e2-a3d1-eb47095cea44",
+      "num": 4,
+      "r": 255,
+      "g": 0,
+      "b": 255,
+      "color": {
+        "red": 1,
+        "green": 0,
+        "blue": 1
+      }
+    },
+    {
+      "id": "204de192-e524-44da-b4f8-a4bfb4ad5140",
+      "num": 5,
+      "r": 23,
+      "g": 23,
+      "b": 166,
+      "color": {
+        "red": 0.0902,
+        "green": 0.0902,
+        "blue": 0.651
+      }
+    },
+    {
+      "id": "220615c7-d560-4745-a3b9-e93208eb1b4e",
+      "num": 6,
+      "r": 0,
+      "g": 255,
+      "b": 255,
+      "color": {
+        "red": 0,
+        "green": 1,
+        "blue": 1
+      }
+    }
+  ],
+  "leftNumber": 1,
+  "theta": 0,
+  "rSqLimit": 400,
+  "iterationsMax": 10000,
+  "yY": 0,
+  "dFIterMin": 0,
+  "spacingColorNear": 15,
+  "imageHeight": 1000,
+  "nBlocks": 60,
+  "xCenter": -0.75,
+  "huesEstimatedPrintPreview": [],
+  "mandColor": [
+    0,
+    0,
+    0
+  ],
+  "mandPowerReal": 2
+}
